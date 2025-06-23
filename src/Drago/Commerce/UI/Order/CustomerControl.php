@@ -131,7 +131,7 @@ class CustomerControl extends ExtraControl
 	{
 		try {
 			$postCode  = $this->commerce->getPostCodeOnRegionPhone()
-				? (new PostcodeFormatter())->format($data->phone->getRegionCode(), $data->post_code)
+				? (new PostcodeFormatter)->format($data->phone->getRegionCode(), $data->post_code)
 				: $data->post_code;
 
 			$customer = new Customer(

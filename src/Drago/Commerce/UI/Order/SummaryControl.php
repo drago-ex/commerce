@@ -120,7 +120,7 @@ class SummaryControl extends ExtraControl
 				carrier_price: $this->getAmountPrice($order->carrier->price),
 				payment_price: $this->getAmountPrice($order->payment->price),
 				total_price: $this->getAmountPrice($this->getTotalPrice()),
-				date: new DateTimeImmutable(),
+				date: new DateTimeImmutable,
 			);
 
 			$this->orderRepository->save((array) $orderData);

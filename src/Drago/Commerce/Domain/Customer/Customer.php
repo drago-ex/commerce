@@ -30,6 +30,6 @@ class Customer
 		public ?string $note = null,
 		public ?DateTimeImmutable $created_at = null,
 	) {
-		$this->created_at ??= new DateTimeImmutable();
+		$this->created_at ??= new DateTimeImmutable;
 	}
 }

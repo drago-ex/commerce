@@ -57,7 +57,7 @@ class ProductControl extends ExtraControl
 		return new Multiplier(function (string $productId) {
 			$form = $this->create($productId);
 			$form->addSubmit('add', 'Add to cart');
-			$form->onSuccess[] = $this->add(...);
+			$form->onSuccess[] = $this->success(...);
 			return $form;
 		});
 	}
@@ -68,7 +68,7 @@ class ProductControl extends ExtraControl
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	public function add(Form $form): void
+	public function success(Form $form): void
 	{
 		$productId = $form->getValues()['productId'];
 		$row = $this->productRepository->getOne($productId);

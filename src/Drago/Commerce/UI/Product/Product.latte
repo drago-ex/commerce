@@ -3,5 +3,5 @@
 {foreach $products as $product}
     <h2>{$product->name}</h2>
     {$product->description}
-    {control "toCart-$product->id"}
+    {control "addToCart-$product->id"}
 {/foreach}

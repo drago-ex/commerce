@@ -1,0 +1,36 @@
+{
+	"name": "drago-ex/commerce",
+	"type": "library",
+	"description": "Simple shopping cart.",
+	"license": ["MIT"],
+	"authors": [
+		{
+			"name": "Zdeněk Papučík",
+			"homepage": "https://github.com/accgit"
+		}
+	],
+	"require": {
+		"php": ">=8.3 <9",
+	  	"latte/latte": "^v2.11",
+	  	"nette/application": "^3.1",
+	  	"nette/di": "^3.0",
+	  	"drago-ex/application": "^1.0",
+	  	"drago-ex/database": "^2.0",
+	  	"brick/money": "^0.5",
+	  	"brick/postcode": "^0.2",
+	  	"nepada/phone-number-input": "^1.0",
+	  	"geoip2/geoip2": "^2.12"
+	},
+	"require-dev": {
+		"nette/tester": "^2.3",
+		"tracy/tracy": "^2.7",
+		"phpstan/phpstan-nette": "^0.12"
+	},
+  "autoload": {
+	"classmap": ["src/"]
+  },
+  "scripts": {
+	"phpstan": "phpstan analyse --level 5 --configuration tests/phpstan.neon src",
+	"tester": "tester tests -s"
+  }
+}

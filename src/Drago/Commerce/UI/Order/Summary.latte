@@ -1,0 +1,61 @@
+{templateType Drago\Commerce\Control\Summary\SummaryTemplate}
+{varType Drago\Commerce\Domain\ProductCart[] $shoppingCart}
+
+{if count($shoppingCart)}
+	<p>Pre-shipment summary</p>
+	<table>
+		<thead>
+		<tr>
+			<th scope="col"><small>Product name</small></th>
+			<th scope="col"><small>Price</small></th>
+			<th scope="col"><small>Amount</small></th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr n:foreach="$shoppingCart as $cart">
+			<td>{$cart->product->name}</td>
+			<td>{$cart->product->price|money}</td>
+			<td>{$cart->amount}</td>
+		</tr>
+		<tr>
+			<td>{$orderDraft->carrier->name}</td>
+			<td colspan="3">{$orderDraft->carrier->price|money}</td>
+		</tr>
+		<tr>
+			<td>{$orderDraft->payment->name}</td>
+			<td colspan="3">{$orderDraft->payment->price|money}</td>
+		</tr>
+		<tr>
+			<td>Total to pay:</td>
+			<td colspan="3">{$totalPrice|money}</td>
+		</tr>
+		</tbody>
+	</table>
+	<table>
+		<thead>
+		<tr>
+			<th scope="col"><small>Name and surname</small></th>
+			<th scope="col"><small>Email</small></th>
+			<th scope="col"><small>Telephone contact</small></th>
+			<th scope="col"><small>Delivery address</small></th>
+			<th scope="col"><small>Order note</small></th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td>{$orderDraft->customer->name} {$orderDraft->customer->surname}</td>
+			<td>{$orderDraft->customer->email}</td>
+			<td>{$orderDraft->customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}</td>
+			<td>
+				{$orderDraft->customer->street}<br>
+				{$orderDraft->customer->post_code} {$orderDraft->customer->city} <br>
+				{$orderDraft->customer->country}
+			</td>
+			<td>{$orderDraft->customer->note}</td>
+		</tr>
+		</tbody>
+	</table>
+	<a href="{link orderDone!}">Confirm the purchase</a>
+{else}
+	<p>Your shopping cart is empty.</p>
+{/if}

@@ -1,0 +1,24 @@
+services:
+	- Drago\Commerce\Service\OrderSession
+	- Drago\Commerce\Service\ShoppingCartSession
+
+	- Drago\Commerce\Data\ReaderGeoLite
+
+	- Drago\Commerce\Domain\Product\ProductMapper
+	- Drago\Commerce\Domain\Product\ProductRepository
+
+	- Drago\Commerce\Domain\Delivery\CarrierMapper
+	- Drago\Commerce\Domain\Delivery\CarrierRepository
+	- Drago\Commerce\Domain\Delivery\PaymentMapper
+	- Drago\Commerce\Domain\Delivery\PaymentRepository
+
+	- Drago\Commerce\Domain\Customer\CustomerRepository
+
+	- Drago\Commerce\Domain\Order\OrderRepository
+	- Drago\Commerce\Domain\Order\OrderProductRepository
+
+	- Drago\Commerce\UI\Order\CustomerControl
+	- Drago\Commerce\UI\ShoppingCart\SummaryCartControl
+	- Drago\Commerce\UI\ShoppingCart\MiniCartControl
+	- Drago\Commerce\UI\Order\DeliveryControl
+	- Drago\Commerce\UI\Order\SummaryControl

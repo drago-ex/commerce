@@ -1,0 +1,59 @@
+{templateType Drago\Commerce\Control\Customer\CustomerTemplate}
+
+{if count($shoppingCart)}
+	<p>Information for delivery of goods</p>
+	<form n:name="customer">
+		<p>Contact information</p>
+		<ul n:if="$form->hasErrors()" class="errors">
+			<li n:foreach="$form->errors as $error">{$error}</li>
+		</ul>
+		<div>
+			<div>
+				<label n:name="email" />
+				<input n:name="email">
+			</div>
+			<div>
+				<label n:name="phone" />
+				<input n:name="phone">
+			</div>
+			<div>
+				<label n:name="name" />
+				<input n:name="name">
+			</div>
+			<div>
+				<label n:name="surname" />
+				<input n:name="surname">
+			</div>
+		</div>
+		<p>Billing information</p>
+		<div>
+			<div>
+				<label n:name="street" />
+				<input n:name="street">
+			</div>
+			<div>
+				<label n:name="city" />
+				<input n:name="city">
+			</div>
+			<div>
+				<label n:name="country" />
+				<input n:name="country">
+			</div>
+			<div>
+				<label n:name="post_code" />
+				<input n:name="post_code">
+			</div>
+		</div>
+		<p>Order information</p>
+		<div>
+			<label n:name="note" />
+			<textarea n:name="note"></textarea>
+		</div>
+
+		<div>
+			<input n:name="send">
+		</div>
+	</form>
+{else}
+	<p>Your shopping cart is empty.</p>
+{/if}

@@ -1,0 +1,40 @@
+{templateType Drago\Commerce\Control\ShoppingCart\ShoppingCartTemplate}
+{varType Drago\Commerce\Domain\ProductCart[] $shoppingCart}
+
+{if count($shoppingCart)}
+	<p>Your shopping cart</p>
+	<table>
+		<thead>
+		<tr>
+			<th scope="col"><small>Product name</small></th>
+			<th scope="col"><small>Price</small></th>
+			<th scope="col"><small>Amount</small></th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr n:foreach="$shoppingCart as $cart">
+			<td>{$cart->product->name}</td>
+			<td>{$cart->product->price|money}</td>
+			<td>{$cart->amount}</td>
+			<td>
+				<form n:name="addToBasket-{$cart->product->id}" class="ajax" data-items-cart data-naja-history="replace">
+					<input n:name="amount">
+				</form>
+			</td>
+			<td>
+				<a n:href="removeItem!, productId: $cart->product->id" class="ajax" data-naja-history="off">Remove</a>
+			</td>
+		</tr>
+		<tr>
+			<td>Total to pay:</td>
+			<td colspan="3">{$totalPrice|money}</td>
+		</tr>
+		</tbody>
+	</table>
+	<p>
+		<a href="{$linkOrderDelivery}">Continue in the order</a>
+	</p>
+{else}
+	<p>Your shopping cart is empty.</p>
+{/if}

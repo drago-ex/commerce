@@ -1,0 +1,7 @@
+{templateType Drago\Commerce\UI\Product\ProductTemplate}
+{varType Drago\Commerce\Domain\Product\ProductEntity[] $products}
+{foreach $products as $product}
+    <h2>{$product->name}</h2>
+    {$product->description}
+    {control "toCart-$product->id"}
+{/foreach}

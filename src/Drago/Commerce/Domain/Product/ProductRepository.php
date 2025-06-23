@@ -38,4 +38,18 @@ class ProductRepository
 			->setRowClass(ProductEntity::class)
 			->fetch();
 	}
+
+
+	/**
+	 * @return ProductEntity[]
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	public function getAll(): array
+	{
+		return $this->read('*')
+			->execute()
+			->setRowClass(ProductEntity::class)
+			->fetchAll();
+	}
 }

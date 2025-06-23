@@ -62,7 +62,7 @@ class SummaryCartControl extends ExtraControl
 	{
 		// Set default values for addToBasket forms based on basket items
 		foreach ($this->shoppingCart->getItems() as $item) {
-			$form = $this['addToBasket'][$item->product->id] ?? null;
+			$form = $this['changeQuantity'][$item->product->id] ?? null;
 			if ($form instanceof Form) {
 				$form->setDefaults($item);
 			}
@@ -82,12 +82,12 @@ class SummaryCartControl extends ExtraControl
 	/**
 	 * Component for adding an item with amount to the cart.
 	 */
-	protected function createComponentAddToBasket(): Multiplier
+	protected function createComponentChangeQuantity(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
 			$form = $this->createWithAmount($productId);
 			$form->setTranslator($this->translator);
-			$form->onSuccess[] = $this->success(...);
+			$form->onSuccess[] = $this->changeQuantity(...);
 			return $form;
 		});
 	}
@@ -102,7 +102,7 @@ class SummaryCartControl extends ExtraControl
 	{
 		if ($this->isAjax()) {
 			$this->getPresenter()->redrawControl('shoppingCart');
-			$this->getPresenter()->redrawControl('basket');
+			$this->getPresenter()->redrawControl('cart');
 		} else {
 			$this->redirect('this');
 		}
@@ -118,7 +118,7 @@ class SummaryCartControl extends ExtraControl
 	 * @throws UnknownCurrencyException
 	 * @throws BadRequestException
 	 */
-	public function success(Form $form, FactoryData $data): void
+	public function changeQuantity(Form $form, FactoryData $data): void
 	{
 		$product = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
 		$this->shoppingCart->addItem($this->productMapper->map($product), $data->amount, dontCount: true);

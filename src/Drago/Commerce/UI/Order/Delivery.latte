@@ -1,7 +1,7 @@
-{templateType Drago\Commerce\Control\Delivery\DeliveryTemplate}
+{templateType Drago\Commerce\UI\Order\DeliveryTemplate}
 
-{varType Drago\Commerce\Domain\Order\Carrier[] $carrier}
-{varType Drago\Commerce\Domain\Order\Payment[] $payment}
+{varType Drago\Commerce\Domain\Delivery\Carrier[] $carrier}
+{varType Drago\Commerce\Domain\Delivery\Payment[] $payment}
 
 {if count($shoppingCart)}
 	<form n:name="delivery" n:if="count($carrier) && count($payment)">

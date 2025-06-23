@@ -1,5 +1,5 @@
-{templateType Drago\Commerce\Control\ShoppingCart\ShoppingCartTemplate}
-{varType Drago\Commerce\Domain\ProductCart[] $shoppingCart}
+{templateType Drago\Commerce\UI\ShoppingCart\SummaryCartTemplate}
+{varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
 
 {if count($shoppingCart)}
 	<p>Your shopping cart</p>
@@ -18,7 +18,7 @@
 			<td>{$cart->product->price|money}</td>
 			<td>{$cart->amount}</td>
 			<td>
-				<form n:name="addToBasket-{$cart->product->id}" class="ajax" data-items-cart data-naja-history="replace">
+				<form n:name="changeQuantity-{$cart->product->id}" class="ajax" data-items-cart data-naja-history="replace">
 					<input n:name="amount">
 				</form>
 			</td>

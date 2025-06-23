@@ -24,7 +24,7 @@ class ReaderGeoLite
 	/**
 	 * @throws InvalidDatabaseException
 	 */
-	public function getCity(string $ip = '94.113.197.225'): ?City
+	public function getCity(string $ip = '127.0.0.0'): ?City
 	{
 		try {
 			return $this->reader()->city($ip);

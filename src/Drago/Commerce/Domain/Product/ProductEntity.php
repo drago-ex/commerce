@@ -62,4 +62,10 @@ class ProductEntity extends Entity
 	{
 		return $this->discount !== null && $this->discount > 0;
 	}
+
+
+	public function getDiscountPercent(): int
+	{
+		return $this->discount ?? 0;
+	}
 }

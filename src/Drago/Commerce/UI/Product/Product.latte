@@ -29,8 +29,8 @@
 
                     <div class="mt-auto">
                         {if $product->hasDiscount()}
-                            <span class="badge bg-danger text-white mb-1" title="Discount {$product->discount}%">
-                                Discount {$product->discount}%
+                            <span class="badge bg-danger text-white mb-1" title="Discount {$product->getDiscountPercent()}%">
+                                Discount {$product->getDiscountPercent()}%
                             </span>
                             <div class="mb-2">
                                 <span class="text-muted text-decoration-line-through me-2" aria-label="Original price">

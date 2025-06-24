@@ -46,7 +46,6 @@ CREATE TABLE `orders` (
     KEY `customer` (`customer_id`),
     KEY `carrier_id` (`carrier_id`),
     KEY `payment_id` (`payment_id`),
-    KEY `date` (`date`),
     CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
     CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`carrier_id`) REFERENCES `carrier` (`id`),
     CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`)

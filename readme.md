@@ -95,7 +95,7 @@ protected function createComponentShoppingCart(): SummaryCartControl
 }
 
 
-protected function createComponentMini(): MiniCartControl
+protected function createComponentMiniCart(): MiniCartControl
 {
 	$control = $this->miniCartControl;
 	$control->setLinkRedirectTarget(self::PageShoppingCart);

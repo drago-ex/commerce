@@ -12,12 +12,12 @@ namespace Drago\Commerce\UI\Order;
 use Brick\Postcode\InvalidPostcodeException;
 use Brick\Postcode\PostcodeFormatter;
 use Brick\Postcode\UnknownCountryException;
-use Drago\Application\UI\ExtraControl;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Data\ReaderGeoLite;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
 use Nette\Application\AbortException;
@@ -26,7 +26,7 @@ use Nette\Application\AbortException;
 /**
  * @property-read CustomerTemplate $template
  */
-class CustomerControl extends ExtraControl
+class CustomerControl extends BaseControl
 {
 	/** URL to process the order customer */
 	public string $linkRedirectTarget;
@@ -53,7 +53,7 @@ class CustomerControl extends ExtraControl
 	public function render(): void
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/Customer.latte');
+		$template->setFile($this->templateControl ?: __DIR__ . '/Customer.latte');
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->render();
 	}

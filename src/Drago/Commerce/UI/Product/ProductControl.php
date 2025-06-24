@@ -13,13 +13,13 @@ use Brick\Money\Currency;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
-use Drago\Application\UI\ExtraControl;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\Factory;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
@@ -28,7 +28,7 @@ use Nette\Application\UI\Multiplier;
 /**
  * @property-read ProductTemplate $template
  */
-class ProductControl extends ExtraControl
+class ProductControl extends BaseControl
 {
 	use Factory;
 
@@ -47,7 +47,7 @@ class ProductControl extends ExtraControl
 	public function render(): void
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/Product.latte');
+		$template->setFile($this->templateControl ?: __DIR__ . '/Product.latte');
 		$template->setTranslator($this->translator);
 		$template->products = $this->productRepository->getAll();
 		$template->render();

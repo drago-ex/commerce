@@ -12,11 +12,11 @@ namespace Drago\Commerce\UI\ShoppingCart;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
-use Drago\Application\UI\ExtraControl;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\Factory;
 use Drago\Commerce\UI\FactoryData;
 use Nette\Application\AbortException;
@@ -29,7 +29,7 @@ use Nette\Application\UI\Multiplier;
 /**
  * @property-read SummaryCartTemplate $template
  */
-class SummaryCartControl extends ExtraControl
+class SummaryCartControl extends BaseControl
 {
 	use Factory;
 
@@ -69,7 +69,7 @@ class SummaryCartControl extends ExtraControl
 		}
 
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/SummaryCart.latte');
+		$template->setFile($this->templateControl ?: __DIR__ . '/SummaryCart.latte');
 		$template->setTranslator($this->translator);
 		$template->totalPrice = $this->shoppingCart->getTotalPrice();
 		$template->amountItems = $this->shoppingCart->getAmountItems();

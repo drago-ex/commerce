@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\ShoppingCart;
 
 use Brick\Money\Exception\MoneyMismatchException;
-use Drago\Application\UI\ExtraControl;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 use Nette\Application\UI\InvalidLinkException;
 
 
@@ -20,7 +20,7 @@ use Nette\Application\UI\InvalidLinkException;
  *
  * @property-read MiniCartTemplate $template
  */
-class MiniCartControl extends ExtraControl
+class MiniCartControl extends BaseControl
 {
 	/** URL or presenter link target for the shopping cart */
 	private string $linkRedirectTarget;
@@ -50,7 +50,7 @@ class MiniCartControl extends ExtraControl
 	public function render(): void
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/MiniCart.latte');
+		$template->setFile($this->templateControl ?: __DIR__ . '/MiniCart.latte');
 		$template->setTranslator($this->translator);
 		$template->totalPrice = $this->shoppingCartSession->getTotalPrice();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();

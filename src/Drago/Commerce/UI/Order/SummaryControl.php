@@ -15,7 +15,6 @@ use Brick\PhoneNumber\PhoneNumberFormat;
 use DateTimeImmutable;
 use Dibi\DriverException;
 use Dibi\Exception;
-use Drago\Application\UI\ExtraControl;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
@@ -23,13 +22,14 @@ use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 use Tracy\Debugger;
 
 
 /**
  * @property-read SummaryTemplate $template
  */
-class SummaryControl extends ExtraControl
+class SummaryControl extends BaseControl
 {
 	/** URL to process the order done */
 	public string $linkRedirectTarget;
@@ -60,7 +60,7 @@ class SummaryControl extends ExtraControl
 	public function render(): void
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/Summary.latte');
+		$template->setFile($this->templateControl ?: __DIR__ . '/Summary.latte');
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
 		$template->totalPrice = $this->getTotalPrice();

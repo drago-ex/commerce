@@ -11,7 +11,6 @@ namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
-use Drago\Application\UI\ExtraControl;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Delivery\CarrierMapper;
 use Drago\Commerce\Domain\Delivery\CarrierRepository;
@@ -19,6 +18,7 @@ use Drago\Commerce\Domain\Delivery\PaymentMapper;
 use Drago\Commerce\Domain\Delivery\PaymentRepository;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -27,7 +27,7 @@ use Nette\Application\UI\Form;
 /**
  * @property-read DeliveryTemplate $template
  */
-class DeliveryControl extends ExtraControl
+class DeliveryControl extends BaseControl
 {
 	/** URL to process the order customer */
 	public string $linkRedirectTarget;
@@ -61,7 +61,7 @@ class DeliveryControl extends ExtraControl
 	public function render(): void
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/Delivery.latte');
+		$template->setFile($this->templateControl ?: __DIR__ . '/Delivery.latte');
 		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->carrier = $this->carrierRepository->getCarrierItems();

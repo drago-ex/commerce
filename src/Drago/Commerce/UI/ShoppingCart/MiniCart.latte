@@ -1,5 +1,10 @@
 {templateType Drago\Commerce\UI\ShoppingCart\MiniCartTemplate}
 
-<a href="{$linkShoppingCart}">Shopping Cart</a>
-<p>{$totalPrice|money}</p>
-<p>{$amountItems}</p>
+<div class="d-flex justify-content-end border-bottom pb-2">
+    <a href="{$linkShoppingCart}" class="d-flex align-items-center text-decoration-none text-dark">
+        {if $amountItems > 0}
+            <span class="badge bg-danger rounded me-2">{$amountItems}</span>
+        {/if}
+        <span class="fw-semibold">{$totalPrice|money}</span>
+    </a>
+</div>

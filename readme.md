@@ -125,7 +125,7 @@ private function getOrderDraft(): OrderDraft
 
 /**
  * Handles the 'delivery' action.
- * Redirects to the default page if the cart is empty and current action is not 'default'.
+ * Redirects to the products page if the cart is empty and current action is not 'products'.
  */
 public function actionDelivery(): void
 {
@@ -139,7 +139,7 @@ public function actionDelivery(): void
  * Handles the 'customer' action.
  * Redirects based on whether carrier is selected and if the cart has items:
  * If no carrier but cart has items, redirects to 'delivery'.
- * If no carrier and cart is empty, redirect to 'default'.
+ * If no carrier and cart is empty, redirect to 'products'.
  */
 public function actionCustomer(): void
 {
@@ -162,7 +162,7 @@ public function actionCustomer(): void
 /**
  * Handles the 'summary' action.
  * Redirects based on the completeness of the order:
- * If carrier is missing but cart has items, redirects to 'delivery'.
+ * If carrier is missing but cart has items, redirects to 'products'.
  * If the carrier is missing and the cart is empty, redirects to 'default'.
  * If customer data is missing but carrier is selected, redirects to 'customer'.
  */

@@ -1,14 +1,10 @@
 <?php
 
-/**
- * Drago Extension
- * Package built on Nette Framework
- */
-
 declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
 
+use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Drago\Application\UI\ExtraTemplate;
 use Drago\Commerce\Commerce;
@@ -29,5 +25,16 @@ class BaseTemplate extends ExtraTemplate
 	public function money(Money $money): string
 	{
 		return $money->formatTo(Commerce::$moneyFormat);
+	}
+
+
+	/**
+	 * @throws UnknownCurrencyException
+	 */
+	#[TemplateFilter]
+	public function price(float|int $amount): string
+	{
+		$money = Money::of($amount, Commerce::$currency);
+		return $this->money($money);
 	}
 }

@@ -22,7 +22,7 @@ use Drago\Commerce\UI\ShoppingCart\SummaryCartControl;
  */
 trait CommerceControl
 {
-	public MiniCartControl $basketControl;
+	public MiniCartControl $miniCartControl;
 	public SummaryCartControl $shoppingCartControl;
 	public DeliveryControl $deliveryControl;
 	public CustomerControl $customerControl;
@@ -34,7 +34,7 @@ trait CommerceControl
 	 * Inject all commerce controls.
 	 */
 	public function injectCommerceControl(
-		MiniCartControl $basketControl,
+		MiniCartControl $miniCartControl,
 		SummaryCartControl $shoppingCartControl,
 		DeliveryControl $deliveryControl,
 		CustomerControl $customerControl,
@@ -42,7 +42,7 @@ trait CommerceControl
 		ProductControl $productControl,
 	): void
 	{
-		$this->basketControl = $basketControl;
+		$this->miniCartControl = $miniCartControl;
 		$this->shoppingCartControl = $shoppingCartControl;
 		$this->deliveryControl = $deliveryControl;
 		$this->customerControl = $customerControl;

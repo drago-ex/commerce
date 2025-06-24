@@ -1,10 +1,14 @@
 {templateType Drago\Commerce\UI\ShoppingCart\MiniCartTemplate}
 
 <div class="d-flex justify-content-end border-bottom pb-2">
-    <a href="{$linkShoppingCart}" class="d-flex align-items-center text-decoration-none text-dark">
+    <a
+            href="{$linkShoppingCart}"
+            class="d-flex align-items-center text-decoration-none text-dark"
+            aria-label="Go to shopping cart with {$amountItems} items, total price {$totalPrice|money}"
+    >
         {if $amountItems > 0}
-            <span class="badge bg-danger rounded me-2">{$amountItems}</span>
+            <span class="badge bg-danger rounded me-2" aria-live="polite">{$amountItems}</span>
         {/if}
-        <span class="fw-semibold">{$totalPrice|money}</span>
+        <span class="fw-semibold" aria-atomic="true">{$totalPrice|money}</span>
     </a>
 </div>

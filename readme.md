@@ -50,6 +50,16 @@ We insert a trait with components in the presenter.
 use CommerceControl;
 ```
 
+## Transfer of classes where all information about the order is stored.
+```php
+public function __construct(
+	private readonly ShoppingCartSession $shoppingCartSession,
+	private readonly OrderSession $orderSession,
+) {
+	parent::__construct();
+}
+```
+
 ## Setting the unique template names that the commerce will use.
 ```php
 private const string

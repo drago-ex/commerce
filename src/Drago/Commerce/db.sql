@@ -40,7 +40,6 @@ CREATE TABLE `orders` (
     `carrier_price` decimal(10,2) NOT NULL,
     `payment_price` decimal(10,2) NOT NULL,
     `total_price` decimal(10,2) NOT NULL,
-    `date` datetime NOT NULL,
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `status` varchar(20) NOT NULL DEFAULT 'pending',
     PRIMARY KEY (`id`),

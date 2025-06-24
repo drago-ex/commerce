@@ -31,6 +31,7 @@ class CommerceExtension extends CompilerExtension
 			'currency' => Expect::type('string|int'),
 			'moneyFormat' => Expect::string(),
 			'moneySymbol' => Expect::string(),
+			'moneyFractionDigits' => Expect::int(),
 			'defaultRegionCode' => Expect::type('array|string|false'),
 			'allowedRegionPhoneNumber' => Expect::type('array|string'),
 			'postCodeOnRegionPhone' => Expect::bool(),

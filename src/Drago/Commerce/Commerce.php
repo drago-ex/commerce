@@ -18,6 +18,7 @@ class Commerce
 	public static string $currency;
 	public static string $moneyFormat;
 	public static string $moneySymbol;
+	public static int $moneyFractionDigits;
 
 	private array $config;
 
@@ -29,6 +30,7 @@ class Commerce
 		self::$currency = (string) ($config['currency'] ?? 'EUR');
 		self::$moneyFormat = (string) ($config['moneyFormat'] ?? 'de_DE');
 		self::$moneySymbol = (string) ($config['moneySymbol'] ?? '');
+		self::$moneyFractionDigits = (int) ($config['moneyFractionDigits'] ?? 2);
 	}
 
 

@@ -27,6 +27,9 @@ commerce:
 	# Custom currency symbol
 	moneySymbol: ''
 
+	# Number of fraction digits to display in price (0 = whole number)
+	moneyFractionDigits: 0
+
 	# If you do not require the customer to always enter the international telephone prefix for the order,
 	# enter the default value according to ISO 3166-1 alpha-2 country codes.
 	# We can also use automatic detection with a set default value in case automatic detection fails.

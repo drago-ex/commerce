@@ -31,12 +31,10 @@ class ProductRepository
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	public function getOne(int $id): array|ProductEntity|null
+	public function getOne(int $id): ProductEntity|null
 	{
 		return $this->get($id)
-			->execute()
-			->setRowClass(ProductEntity::class)
-			->fetch();
+			->record();
 	}
 
 
@@ -48,8 +46,6 @@ class ProductRepository
 	public function getAll(): array
 	{
 		return $this->read('*')
-			->execute()
-			->setRowClass(ProductEntity::class)
-			->fetchAll();
+			->recordAll();
 	}
 }

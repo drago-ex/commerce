@@ -17,7 +17,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(PaymentEntity::Table, PaymentEntity::PrimaryKey)]
+#[Table(PaymentEntity::Table, PaymentEntity::PrimaryKey, class: PaymentEntity::class)]
 class PaymentRepository
 {
 	use Database;
@@ -43,11 +43,10 @@ class PaymentRepository
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
-	public function getOne(int $id): array|PaymentEntity|null
+	public function getOne(int $id): PaymentEntity|null
 	{
-		return $this->get($id)->execute()
-			->setRowClass(PaymentEntity::class)
-			->fetch();
+		return $this->get($id)
+			->record();
 	}
 
 
@@ -58,9 +57,8 @@ class PaymentRepository
 	 */
 	private function getAll(): array
 	{
-		return $this->read('*')->execute()
-			->setRowClass(PaymentEntity::class)
-			->fetchAll();
+		return $this->read('*')
+			->recordAll();
 	}
 
 

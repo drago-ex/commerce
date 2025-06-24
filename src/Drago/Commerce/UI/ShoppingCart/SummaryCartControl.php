@@ -31,8 +31,6 @@ use Nette\Application\UI\Multiplier;
  */
 class SummaryCartControl extends BaseControl
 {
-	use Factory;
-
 	/** URL to process the order delivery */
 	public string $linkRedirectTarget;
 
@@ -41,6 +39,7 @@ class SummaryCartControl extends BaseControl
 		private readonly ShoppingCartSession $shoppingCart,
 		private readonly ProductRepository $productRepository,
 		private readonly ProductMapper $productMapper,
+		private readonly Factory $factory,
 	) {
 	}
 
@@ -85,7 +84,7 @@ class SummaryCartControl extends BaseControl
 	protected function createComponentChangeQuantity(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
-			$form = $this->createWithAmount($productId);
+			$form = $this->factory->createWithAmount($productId);
 			$form->setTranslator($this->translator);
 			$form->onSuccess[] = $this->changeQuantity(...);
 			return $form;

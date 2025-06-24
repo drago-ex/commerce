@@ -3,6 +3,7 @@ services:
 	- Drago\Commerce\Service\ShoppingCartSession
 
 	- Drago\Commerce\Data\ReaderGeoLite
+	- Drago\Commerce\UI\Factory
 
 	- Drago\Commerce\Domain\Product\ProductMapper
 	- Drago\Commerce\Domain\Product\ProductRepository

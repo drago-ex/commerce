@@ -30,12 +30,11 @@ use Nette\Application\UI\Multiplier;
  */
 class ProductControl extends BaseControl
 {
-	use Factory;
-
 	public function __construct(
 		readonly private ProductRepository $productRepository,
 		readonly private ShoppingCartSession $shoppingCartSession,
 		readonly private Commerce $commerce,
+		readonly private Factory $factory,
 	) {
 	}
 
@@ -57,7 +56,7 @@ class ProductControl extends BaseControl
 	protected function createComponentAddToCart(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
-			$form = $this->create($productId);
+			$form = $this->factory->create($productId);
 			$form->addSubmit('add', 'Add to cart');
 			$form->onSuccess[] = $this->success(...);
 			return $form;

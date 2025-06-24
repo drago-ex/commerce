@@ -13,10 +13,9 @@ use Nette\Application\UI\Form;
 
 
 /**
- * Trait Factory
  * Provides factory methods to create forms for product operations.
  */
-trait Factory
+class Factory
 {
 	/**
 	 * Create form with product ID.

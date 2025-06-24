@@ -16,7 +16,14 @@ class ProductEntity extends Entity
 {
 	public const string
 		Table = 'products',
-		PrimaryKey = 'id';
+		PrimaryKey = 'id',
+		Category = 'category',
+		Name = 'name',
+		Description = 'description',
+		Discount = 'discount',
+		Price = 'price',
+		Photo = 'photo',
+		Active = 'active';
 
 	public int $id;
 	public int $category;

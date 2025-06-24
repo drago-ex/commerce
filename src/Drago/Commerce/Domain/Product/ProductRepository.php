@@ -46,6 +46,7 @@ class ProductRepository
 	public function getAll(): array
 	{
 		return $this->read('*')
+			->where(ProductEntity::Active, '= ?', 1)
 			->recordAll();
 	}
 }

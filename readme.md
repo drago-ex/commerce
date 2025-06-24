@@ -24,6 +24,9 @@ commerce:
 	# Formats this Money to the given locale.
 	moneyFormat: cs_CZ
 
+	# Custom currency symbol
+	moneySymbol: ''
+
 	# If you do not require the customer to always enter the international telephone prefix for the order,
 	# enter the default value according to ISO 3166-1 alpha-2 country codes.
 	# We can also use automatic detection with a set default value in case automatic detection fails.

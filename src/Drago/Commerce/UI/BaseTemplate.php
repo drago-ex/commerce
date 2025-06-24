@@ -9,6 +9,7 @@ use Brick\Money\Money;
 use Drago\Application\UI\ExtraTemplate;
 use Drago\Commerce\Commerce;
 use Latte\Attributes\TemplateFilter;
+use NumberFormatter;
 
 
 /**
@@ -24,7 +25,19 @@ class BaseTemplate extends ExtraTemplate
 	#[TemplateFilter]
 	public function money(Money $money): string
 	{
-		return $money->formatTo(Commerce::$moneyFormat);
+		$formatter = new NumberFormatter(
+			Commerce::$moneyFormat,
+			NumberFormatter::CURRENCY,
+		);
+
+		if (Commerce::$moneySymbol) {
+			$formatter->setSymbol(
+				NumberFormatter::CURRENCY_SYMBOL,
+				Commerce::$moneySymbol,
+			);
+		}
+
+		return $money->formatWith($formatter);
 	}
 
 

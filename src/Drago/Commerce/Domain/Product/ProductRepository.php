@@ -16,7 +16,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(ProductEntity::Table, ProductEntity::PrimaryKey, class:  ProductEntity::class)]
+#[Table(ProductEntity::Table, ProductEntity::PrimaryKey, class: ProductEntity::class)]
 class ProductRepository
 {
 	use Database;

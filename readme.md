@@ -59,6 +59,14 @@ private const string
 	PageSummary = 'summary',
 	PageShoppingCart = 'shoppingCart',
 	PageOrderDone = 'done';
+
+	private array $steps = [
+		self::PageShoppingCart => 'Shopping Cart',
+		self::PageDelivery => 'Delivery',
+		self::PageCustomer => 'Customer Info',
+		self::PageSummary => 'Summary',
+		self::PageOrderDone => 'Order Complete',
+	];
 ```
 
 ## Transfer of classes where all information about the order is stored.

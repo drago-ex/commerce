@@ -209,30 +209,42 @@ public function actionSummary(): void
 	}
 }
 
+/**
+ * Returns an array of completed steps based on the current order state.
+ *
+ * This method checks which steps in the order process are completed
+ * according to the presence of shopping cart items, selected delivery method,
+ * and filled customer information. It also considers the summary step completed
+ * only if all previous steps are completed.
+ *
+ * @return string[] List of completed step identifiers.
+ */
 private function getCompletedSteps(): array
 {
-    // Get the current state of the order from session
-    $orderDraft = $this->orderSession->getItems();
-    
-    // Initialize an array to hold completed step identifiers
-    $completedSteps = [];
+	$orderDraft = $this->orderSession->getItems();
+	$completedSteps = [];
 
-    // If the shopping cart has items, mark the Shopping Cart step as completed
-    if ($this->shoppingCartSession->getAmountItems() > 0) {
-        $completedSteps[] = self::PageShoppingCart;
-    }
+	if ($this->shoppingCartSession->getAmountItems() > 0) {
+		$completedSteps[] = self::PageShoppingCart;
+	}
 
-    // If a delivery method (carrier) is selected, mark the Delivery step as completed
-    if ($orderDraft->carrier !== null) {
-        $completedSteps[] = self::PageDelivery;
-    }
+	if ($orderDraft->carrier !== null) {
+		$completedSteps[] = self::PageDelivery;
+	}
 
-    // If customer information is filled in, mark the Customer step as completed
-    if ($orderDraft->customer !== null) {
-        $completedSteps[] = self::PageCustomer;
-    }
+	if ($orderDraft->customer !== null) {
+		$completedSteps[] = self::PageCustomer;
+	}
 
-    // Return the list of completed steps
-    return $completedSteps;
+	if (
+		$this->shoppingCartSession->getAmountItems() > 0 &&
+		$orderDraft->carrier !== null &&
+		$orderDraft->customer !== null
+	) {
+		$completedSteps[] = self::PageSummary;
+	}
+
+	return $completedSteps;
 }
+
 ```

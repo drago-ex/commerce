@@ -37,5 +37,4 @@ class BaseControl extends ExtraControl
 	{
 		$this->completedSteps = $completedSteps;
 	}
-
 }

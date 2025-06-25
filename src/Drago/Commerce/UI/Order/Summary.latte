@@ -26,14 +26,14 @@
 			</tr>
 
 			<tr>
-				<td><strong class="fw-semibold">{$orderDraft->carrier->name}</strong></td>
-				<td colspan="2" class="text-end">{$orderDraft->carrier->price|money}</td>
+				<td><strong class="fw-semibold">{$carrier->name}</strong></td>
+				<td colspan="2" class="text-end">{$carrier->price|money}</td>
 			</tr>
 
 			{* Payment method and cost  *}
 			<tr>
-				<td><strong class="fw-semibold">{$orderDraft->payment->name}</strong></td>
-				<td colspan="2" class="text-end">{$orderDraft->payment->price|money}</td>
+				<td><strong class="fw-semibold">{$payment->name}</strong></td>
+				<td colspan="2" class="text-end">{$payment->price|money}</td>
 			</tr>
 
 			</tbody>
@@ -50,25 +50,25 @@
 	<div class="mb-4">
 		<p class="mb-2">
 			<strong class="fw-semibold">Name and surname:</strong><br>
-			{$orderDraft->customer->name} {$orderDraft->customer->surname}
+			{$customer->name} {$customer->surname}
 		</p>
 		<p class="mb-2">
 			<strong class="fw-semibold">Email:</strong><br>
-			{$orderDraft->customer->email}
+			{$customer->email}
 		</p>
 		<p class="mb-2">
 			<strong class="fw-semibold">Telephone:</strong><br>
-			{$orderDraft->customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
+			{$customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
 		</p>
 		<p class="mb-2">
 			<strong class="fw-semibold">Delivery address:</strong><br>
-			{$orderDraft->customer->street}<br>
-			{$orderDraft->customer->post_code} {$orderDraft->customer->city}<br>
-			{$orderDraft->customer->country}
+			{$customer->street}<br>
+			{$customer->post_code} {$customer->city}<br>
+			{$customer->country}
 		</p>
-		{if $orderDraft->customer->note}
+		{if $customer->note}
 			<p class="mb-0"><strong class="fw-semibold">Order note:</strong><br>
-				{$orderDraft->customer->note}
+				{$customer->note ?? null}
 			</p>
 		{/if}
 	</div>

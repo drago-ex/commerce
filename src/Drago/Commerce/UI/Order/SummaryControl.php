@@ -64,8 +64,17 @@ class SummaryControl extends BaseControl
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
 		$template->totalPrice = $this->getTotalPrice();
-		$template->orderDraft = $this->orderSession->getItems();
+		$template->carrier = $this->getOrderItem('carrier');
+		$template->customer = $this->getOrderItem('customer');
+		$template->payment = $this->getOrderItem('payment');
 		$template->render();
+	}
+
+
+	private function getOrderItem(string $name): mixed
+	{
+		$items = $this->orderSession->getItems();
+		return $items->{$name} ?? null;
 	}
 
 

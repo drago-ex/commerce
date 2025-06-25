@@ -24,7 +24,7 @@ class Order
 		public float $carrier_price,
 		public float $payment_price,
 		public float $total_price,
-		public DateTimeImmutable $date,
+		public DateTimeImmutable $created_at,
 	) {
 	}
 }

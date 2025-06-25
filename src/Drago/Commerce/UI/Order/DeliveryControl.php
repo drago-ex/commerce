@@ -66,6 +66,7 @@ class DeliveryControl extends BaseControl
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->carrier = $this->carrierRepository->getCarrierItems();
 		$template->payment = $this->paymentRepository->getPaymentItems();
+		$template->breadcrumbs = $this->getBreadcrumbs();
 		$template->render();
 	}
 

@@ -67,6 +67,7 @@ class SummaryControl extends BaseControl
 		$template->carrier = $this->getOrderItem('carrier');
 		$template->customer = $this->getOrderItem('customer');
 		$template->payment = $this->getOrderItem('payment');
+		$template->breadcrumbs = $this->getBreadcrumbs();
 		$template->render();
 	}
 
@@ -129,7 +130,7 @@ class SummaryControl extends BaseControl
 				carrier_price: $this->getAmountPrice($order->carrier->price),
 				payment_price: $this->getAmountPrice($order->payment->price),
 				total_price: $this->getAmountPrice($this->getTotalPrice()),
-				date: new DateTimeImmutable,
+				created_at: new DateTimeImmutable,
 			);
 
 			$this->orderRepository->save((array) $orderData);

@@ -74,6 +74,7 @@ class SummaryCartControl extends BaseControl
 		$template->amountItems = $this->shoppingCart->getAmountItems();
 		$template->shoppingCart = $this->shoppingCart->getItems();
 		$template->linkOrderDelivery = $this->getPresenter()->link($this->linkRedirectTarget);
+		$template->breadcrumbs = $this->getBreadcrumbs();
 		$template->render();
 	}
 

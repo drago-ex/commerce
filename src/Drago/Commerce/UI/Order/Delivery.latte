@@ -1,8 +1,12 @@
 {templateType Drago\Commerce\UI\Order\DeliveryTemplate}
 {varType Drago\Commerce\Domain\Delivery\Carrier[] $carrier}
 {varType Drago\Commerce\Domain\Delivery\Payment[] $payment}
+{import '../@breadcrumbs.latte'}
 
 {if count($shoppingCart)}
+
+	{* Includes the breadcrumbs component to render the navigation steps. *}
+	{include breadcrumbs, $breadcrumbs}
 
 	<form n:name="delivery" n:if="count($carrier) && count($payment)" class="mb-4">
 

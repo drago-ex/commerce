@@ -1,7 +1,11 @@
 {templateType Drago\Commerce\UI\ShoppingCart\SummaryCartTemplate}
 {varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
+{import '../@breadcrumbs.latte'}
 
 {if count($shoppingCart)}
+
+	{* Includes the breadcrumbs component to render the navigation steps. *}
+	{include breadcrumbs, $breadcrumbs}
 
 	{* Page heading *}
 	<h1 class="mb-4 display-6">Your shopping cart</h1>

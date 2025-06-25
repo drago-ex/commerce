@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Drago Extension
+ * Package built on Nette Framework
+ */
+
 declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
@@ -17,9 +22,25 @@ use NumberFormatter;
  */
 class BaseTemplate extends ExtraTemplate
 {
+	/**
+	 * Items in the shopping cart
+	 */
 	public array $shoppingCart;
-	public Money $totalPrice;
+
+	/**
+	 * Total number of items
+	 */
 	public int $amountItems;
+
+	/**
+	 * Total price as a Money object
+	 */
+	public Money $totalPrice;
+
+	/**
+	 * Breadcrumbs navigation data
+	 */
+	public Breadcrumbs $breadcrumbs;
 
 
 	#[TemplateFilter]

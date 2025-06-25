@@ -1,6 +1,10 @@
 {templateType Drago\Commerce\UI\Order\CustomerTemplate}
+{import '../@breadcrumbs.latte'}
 
 {if count($shoppingCart)}
+
+	{* Includes the breadcrumbs component to render the navigation steps. *}
+	{include breadcrumbs, $breadcrumbs}
 
 	{* Customer information form with two columns layout *}
 	<h1 class="mb-4 display-6">Information for delivery of goods</h1>

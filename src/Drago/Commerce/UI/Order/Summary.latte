@@ -1,7 +1,11 @@
 {templateType Drago\Commerce\UI\Order\SummaryTemplate}
 {varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
+{import '../@breadcrumbs.latte'}
 
 {if count($shoppingCart)}
+
+	{* Includes the breadcrumbs component to render the navigation steps. *}
+	{include breadcrumbs, $breadcrumbs}
 
 	{* Pre-shipment summary heading *}
 	<h2 class="mb-4 display-6">Pre-shipment summary</h2>

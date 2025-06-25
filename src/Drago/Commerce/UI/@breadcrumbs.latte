@@ -1,16 +1,17 @@
-{define breadcrumbs, array $steps, string $currentStep, array $completedSteps}
+{varType \Drago\Commerce\UI\Breadcrumbs $breadcrumbs}
+{define breadcrumbs, $breadcrumbs}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            {foreach $steps as $key => $label}
+            {foreach $breadcrumbs->steps as $step => $label}
 
                 {* If this is the current step, render it as active (not a link) *}
-                {if $key === $currentStep}
+                {if $step === $breadcrumbs->currentStep}
                     <li class="breadcrumb-item active" aria-current="page">{$label}</li>
 
                     {* If this step is already completed, render it as a clickable link *}
-                {elseif in_array($key, $completedSteps, true)}
+                {elseif in_array($step, $breadcrumbs->completedSteps, true)}
                     <li class="breadcrumb-item">
-                        <a href="{link this, $key}">{$label}</a>
+                        <a href="{plink $step}">{$label}</a>
                     </li>
 
                     {* If the step is neither current nor completed, render it as disabled *}

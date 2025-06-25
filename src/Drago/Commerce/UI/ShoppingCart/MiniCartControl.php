@@ -52,9 +52,9 @@ class MiniCartControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/MiniCart.latte');
 		$template->setTranslator($this->translator);
-		$template->totalPrice = $this->shoppingCartSession->getTotalPrice();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
 		$template->linkShoppingCart = $this->getPresenter()->link($this->linkRedirectTarget);
+		$template->formattedTotalPrice = $template->money($this->shoppingCartSession->getTotalPrice());
 		$template->render();
 	}
 }

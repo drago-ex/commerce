@@ -18,4 +18,5 @@ use Drago\Commerce\UI\BaseTemplate;
 class MiniCartTemplate extends BaseTemplate
 {
 	public string $linkShoppingCart;
+	public string $formattedTotalPrice;
 }

@@ -1,14 +1,32 @@
 {templateType Drago\Commerce\UI\ShoppingCart\MiniCartTemplate}
 
+{*
+    Mini shopping cart summary component
+    Shows total items in cart and total price
+*}
+
+{* Clickable link to the full shopping cart page *}
 <div class="d-flex justify-content-end border-bottom pb-2">
-    <a
-            href="{$linkShoppingCart}"
-            class="d-flex align-items-center text-decoration-none text-dark"
-            aria-label="Go to shopping cart with {$amountItems} items, total price {$totalPrice|money}"
-    >
+
+    {var $linkAttrs = [
+        'href' => $linkShoppingCart,
+        'class' => "d-flex align-items-center text-decoration-none text-dark",
+        'aria-label' => "Go to shopping cart with $amountItems items, total price $formattedTotalPrice"
+    ]}
+
+    {* Clickable link to the full shopping cart page *}
+    <a  n:attr="$linkAttrs">
+
+        {* Display item count badge only if there are items in cart *}
         {if $amountItems > 0}
-            <span class="badge bg-danger rounded me-2" aria-live="polite">{$amountItems}</span>
+            <span class="badge bg-danger rounded me-2" aria-live="polite">
+                {$amountItems}
+            </span>
         {/if}
-        <span class="fw-semibold" aria-atomic="true">{$totalPrice|money}</span>
+
+        {* Show total cart price *}
+        <span class="fw-semibold" aria-atomic="true">
+            {$formattedTotalPrice}
+        </span>
     </a>
 </div>

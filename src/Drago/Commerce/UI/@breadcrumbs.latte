@@ -1,0 +1,23 @@
+{define breadcrumbs, array $steps, string $currentStep, array $completedSteps}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            {foreach $steps as $key => $label}
+
+                {* If this is the current step, render it as active (not a link) *}
+                {if $key === $currentStep}
+                    <li class="breadcrumb-item active" aria-current="page">{$label}</li>
+
+                    {* If this step is already completed, render it as a clickable link *}
+                {elseif in_array($key, $completedSteps, true)}
+                    <li class="breadcrumb-item">
+                        <a href="{link this, $key}">{$label}</a>
+                    </li>
+
+                    {* If the step is neither current nor completed, render it as disabled *}
+                {else}
+                    <li class="breadcrumb-item disabled">{$label}</li>
+                {/if}
+            {/foreach}
+        </ol>
+    </nav>
+{/define}

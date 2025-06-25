@@ -200,4 +200,31 @@ public function actionSummary(): void
 		$this->redirect($redirectTarget);
 	}
 }
+
+private function getCompletedSteps(): array
+{
+    // Get the current state of the order from session
+    $orderDraft = $this->orderSession->getItems();
+    
+    // Initialize an array to hold completed step identifiers
+    $completedSteps = [];
+
+    // If the shopping cart has items, mark the Shopping Cart step as completed
+    if ($this->shoppingCartSession->getAmountItems() > 0) {
+        $completedSteps[] = self::PageShoppingCart;
+    }
+
+    // If a delivery method (carrier) is selected, mark the Delivery step as completed
+    if ($orderDraft->carrier !== null) {
+        $completedSteps[] = self::PageDelivery;
+    }
+
+    // If customer information is filled in, mark the Customer step as completed
+    if ($orderDraft->customer !== null) {
+        $completedSteps[] = self::PageCustomer;
+    }
+
+    // Return the list of completed steps
+    return $completedSteps;
+}
 ```

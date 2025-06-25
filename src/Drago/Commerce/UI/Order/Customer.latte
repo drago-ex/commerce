@@ -1,59 +1,71 @@
 {templateType Drago\Commerce\UI\Order\CustomerTemplate}
 
 {if count($shoppingCart)}
-	<p>Information for delivery of goods</p>
+
+	{* Customer information form with two columns layout *}
+	<h1 class="mb-4 display-6">Information for delivery of goods</h1>
+
 	<form n:name="customer">
-		<p>Contact information</p>
+
+		{* Display validation errors *}
 		<ul n:if="$form->hasErrors()" class="errors">
 			<li n:foreach="$form->errors as $error">{$error}</li>
 		</ul>
-		<div>
-			<div>
-				<label n:name="email" />
-				<input n:name="email">
+
+		<div class="row">
+			<div class="col-md-6">
+				<p class="fw-semibold">Contact information</p>
+				<div class="mb-3">
+					<label n:name="email" class="form-label" />
+					<input n:name="email" type="email" class="form-control" required />
+				</div>
+				<div class="mb-3">
+					<label n:name="phone" class="form-label" />
+					<input n:name="phone" type="tel" class="form-control" />
+				</div>
+				<div class="mb-3">
+					<label n:name="name" class="form-label" />
+					<input n:name="name" type="text" class="form-control" required />
+				</div>
+				<div class="mb-3">
+					<label n:name="surname" class="form-label" />
+					<input n:name="surname" type="text" class="form-control" required />
+				</div>
 			</div>
-			<div>
-				<label n:name="phone" />
-				<input n:name="phone">
+
+			<div class="col-md-6">
+				<p class="fw-semibold">Billing information</p>
+				<div class="mb-3">
+					<label n:name="street" class="form-label" />
+					<input n:name="street" type="text" class="form-control" required />
+				</div>
+				<div class="mb-3">
+					<label n:name="city" class="form-label" />
+					<input n:name="city" type="text" class="form-control" required />
+				</div>
+				<div class="mb-3">
+					<label n:name="country" class="form-label" />
+					<input n:name="country" type="text" class="form-control" required />
+				</div>
+				<div class="mb-3">
+					<label n:name="post_code" class="form-label" />
+					<input n:name="post_code" type="text" class="form-control" required />
+				</div>
 			</div>
-			<div>
-				<label n:name="name" />
-				<input n:name="name">
-			</div>
-			<div>
-				<label n:name="surname" />
-				<input n:name="surname">
-			</div>
-		</div>
-		<p>Billing information</p>
-		<div>
-			<div>
-				<label n:name="street" />
-				<input n:name="street">
-			</div>
-			<div>
-				<label n:name="city" />
-				<input n:name="city">
-			</div>
-			<div>
-				<label n:name="country" />
-				<input n:name="country">
-			</div>
-			<div>
-				<label n:name="post_code" />
-				<input n:name="post_code">
-			</div>
-		</div>
-		<p>Order information</p>
-		<div>
-			<label n:name="note" />
-			<textarea n:name="note"></textarea>
 		</div>
 
-		<div>
-			<input n:name="send">
+		<p class="fw-semibold">Order information</p>
+		<div class="mb-3">
+			<label n:name="note" class="form-label" />
+			<textarea n:name="note" class="form-control" rows="3"></textarea>
 		</div>
+
+		<div class="text-end">
+			<input n:name="send" type="submit" class="btn btn-primary" value="Send Order" />
+		</div>
+
 	</form>
+
 {else}
 	<p>Your shopping cart is empty.</p>
 {/if}

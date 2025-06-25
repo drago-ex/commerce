@@ -2,60 +2,84 @@
 {varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
 
 {if count($shoppingCart)}
-	<p>Pre-shipment summary</p>
-	<table>
-		<thead>
-		<tr>
-			<th scope="col"><small>Product name</small></th>
-			<th scope="col"><small>Price</small></th>
-			<th scope="col"><small>Amount</small></th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr n:foreach="$shoppingCart as $cart">
-			<td>{$cart->product->name}</td>
-			<td>{$cart->product->price|money}</td>
-			<td>{$cart->amount}</td>
-		</tr>
-		<tr>
-			<td>{$orderDraft->carrier->name}</td>
-			<td colspan="3">{$orderDraft->carrier->price|money}</td>
-		</tr>
-		<tr>
-			<td>{$orderDraft->payment->name}</td>
-			<td colspan="3">{$orderDraft->payment->price|money}</td>
-		</tr>
-		<tr>
-			<td>Total to pay:</td>
-			<td colspan="3">{$totalPrice|money}</td>
-		</tr>
-		</tbody>
-	</table>
-	<table>
-		<thead>
-		<tr>
-			<th scope="col"><small>Name and surname</small></th>
-			<th scope="col"><small>Email</small></th>
-			<th scope="col"><small>Telephone contact</small></th>
-			<th scope="col"><small>Delivery address</small></th>
-			<th scope="col"><small>Order note</small></th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr>
-			<td>{$orderDraft->customer->name} {$orderDraft->customer->surname}</td>
-			<td>{$orderDraft->customer->email}</td>
-			<td>{$orderDraft->customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}</td>
-			<td>
-				{$orderDraft->customer->street}<br>
-				{$orderDraft->customer->post_code} {$orderDraft->customer->city} <br>
-				{$orderDraft->customer->country}
-			</td>
-			<td>{$orderDraft->customer->note}</td>
-		</tr>
-		</tbody>
-	</table>
-	<a href="{link orderDone!}">Confirm the purchase</a>
+
+	{* Pre-shipment summary heading *}
+	<h2 class="mb-4 display-6">Pre-shipment summary</h2>
+
+	{* Products and costs summary table *}
+	<div class="table-responsive mb-4">
+		<table class="table table-borderless table-hover align-middle">
+			<thead class="table-light">
+			<tr>
+				<th scope="col"><small>Product name</small></th>
+				<th scope="col" class="text-end"><small>Price</small></th>
+				<th scope="col" class="text-center"><small>Amount</small></th>
+			</tr>
+			</thead>
+			<tbody>
+
+			{* Loop through cart products  *}
+			<tr n:foreach="$shoppingCart as $cart">
+				<td>{$cart->product->name}</td>
+				<td class="text-end">{$cart->product->price|money}</td>
+				<td class="text-center">{$cart->amount}</td>
+			</tr>
+
+			<tr>
+				<td><strong class="fw-semibold">{$orderDraft->carrier->name}</strong></td>
+				<td colspan="2" class="text-end">{$orderDraft->carrier->price|money}</td>
+			</tr>
+
+			{* Payment method and cost  *}
+			<tr>
+				<td><strong class="fw-semibold">{$orderDraft->payment->name}</strong></td>
+				<td colspan="2" class="text-end">{$orderDraft->payment->price|money}</td>
+			</tr>
+
+			</tbody>
+		</table>
+	</div>
+
+	{* Total price to pay outside the table for better emphasis *}
+	<p class="text-end text-danger fw-semibold fs-5 mb-4">
+		Total to pay: {$totalPrice|money}
+	</p>
+
+	{* Customer information summary *}
+	<h2 class="mb-4 display-6">Customer Information</h2>
+	<div class="mb-4">
+		<p class="mb-2">
+			<strong class="fw-semibold">Name and surname:</strong><br>
+			{$orderDraft->customer->name} {$orderDraft->customer->surname}
+		</p>
+		<p class="mb-2">
+			<strong class="fw-semibold">Email:</strong><br>
+			{$orderDraft->customer->email}
+		</p>
+		<p class="mb-2">
+			<strong class="fw-semibold">Telephone:</strong><br>
+			{$orderDraft->customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
+		</p>
+		<p class="mb-2">
+			<strong class="fw-semibold">Delivery address:</strong><br>
+			{$orderDraft->customer->street}<br>
+			{$orderDraft->customer->post_code} {$orderDraft->customer->city}<br>
+			{$orderDraft->customer->country}
+		</p>
+		{if $orderDraft->customer->note}
+			<p class="mb-0"><strong class="fw-semibold">Order note:</strong><br>
+				{$orderDraft->customer->note}
+			</p>
+		{/if}
+	</div>
+
+	{* Confirm purchase button with accessibility label *}
+	<div class="text-end mt-3">
+		<a href="{link orderDone!}" class="btn btn-sm btn-success" aria-label="Confirm your order and complete the purchase">
+			Confirm the purchase
+		</a>
+	</div>
+
 {else}
 	<p>Your shopping cart is empty.</p>
 {/if}

@@ -2,39 +2,75 @@
 {varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
 
 {if count($shoppingCart)}
-	<p>Your shopping cart</p>
-	<table>
-		<thead>
-		<tr>
-			<th scope="col"><small>Product name</small></th>
-			<th scope="col"><small>Price</small></th>
-			<th scope="col"><small>Amount</small></th>
-			<th></th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr n:foreach="$shoppingCart as $cart">
-			<td>{$cart->product->name}</td>
-			<td>{$cart->product->price|money}</td>
-			<td>{$cart->amount}</td>
-			<td>
-				<form n:name="changeQuantity-{$cart->product->id}" class="ajax" data-items-cart data-naja-history="replace">
-					<input n:name="amount">
-				</form>
-			</td>
-			<td>
-				<a n:href="removeItem!, productId: $cart->product->id" class="ajax" data-naja-history="off">Remove</a>
-			</td>
-		</tr>
-		<tr>
-			<td>Total to pay:</td>
-			<td colspan="3">{$totalPrice|money}</td>
-		</tr>
-		</tbody>
-	</table>
-	<p>
-		<a href="{$linkOrderDelivery}">Continue in the order</a>
+
+	{* Page heading *}
+	<h1 class="mb-4 display-6">Your shopping cart</h1>
+
+	{* Responsive product table *}
+	<div class="table-responsive">
+		<table class="table table-hover table-sm align-middle table-borderless">
+			<thead class="table-light">
+			<tr>
+				<th scope="col"><small>Product name</small></th>
+				<th scope="col"><small>Price</small></th>
+				<th scope="col"><small>Amount</small></th>
+				<th scope="col"></th>
+			</tr>
+			</thead>
+			<tbody>
+
+			{* Loop through cart items *}
+			<tr n:foreach="$shoppingCart as $cart">
+				<td>{$cart->product->name}</td>
+
+				{* Product price, right-aligned *}
+				<td class="text-end">{$cart->product->price|money}</td>
+
+				{* Quantity change form *}
+				<td>
+					<form n:name="changeQuantity-{$cart->product->id}" class="ajax d-flex" data-items-cart data-naja-history="replace">
+						<label n:name="amount" class="w-25">
+							<input n:name="amount"class="form-control form-control-sm" />
+						</label>
+					</form>
+				</td>
+
+				{* Remove item link *}
+				<td>
+					{var $linkAttrs = [
+						'role' => "button",
+						'class' => "ajax btn btn-sm btn-outline-danger",
+						'aria-label' => "Remove {$cart->product->name} from cart",
+						'data-naja-history' => "off"
+					]}
+
+					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">
+						Remove
+					</a>
+				</td>
+			</tr>
+
+			{* Total price row *}
+			<tr>
+				<td class="text-danger fw-semibold">Total to pay:</td>
+				<td colspan="3" class="fw-semibold text-danger text-end">
+					{$totalPrice|money}
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	{* Continue to order button *}
+	<p class="text-end">
+		<a href="{$linkOrderDelivery}" class="btn btn-sm btn-primary">
+			Continue with order
+		</a>
 	</p>
+
 {else}
+
+	{* Message for empty cart *}
 	<p>Your shopping cart is empty.</p>
+
 {/if}

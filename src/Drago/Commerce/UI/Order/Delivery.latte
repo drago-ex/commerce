@@ -1,44 +1,53 @@
 {templateType Drago\Commerce\UI\Order\DeliveryTemplate}
-
 {varType Drago\Commerce\Domain\Delivery\Carrier[] $carrier}
 {varType Drago\Commerce\Domain\Delivery\Payment[] $payment}
 
 {if count($shoppingCart)}
-	<form n:name="delivery" n:if="count($carrier) && count($payment)">
-		<p>Select a transport</p>
-		<div>
+
+	<form n:name="delivery" n:if="count($carrier) && count($payment)" class="mb-4">
+
+		{* Section: Choose a carrier (shipping method) *}
+		<p class="fw-semibold mb-2">Select a transport</p>
+		<div class="mb-4">
 			{foreach $form[carrierId]->items as $key => $val}
-				<div>
-					<input n:name="carrierId:$key">
-					<label n:name="carrierId:$key">
+				<div class="form-check">
+					<input n:name="carrierId:$key" class="form-check-input" />
+					<label n:name="carrierId:$key" class="form-check-label">
 						{foreach $carrier as $item}
 							{if $item->id === $val}
-								{$item->name} {$item->price|money}
+								{$item->name} – {$item->price|money}
 							{/if}
 						{/foreach}
 					</label>
 				</div>
 			{/foreach}
 		</div>
-		<p>Select a payment</p>
-		<div>
+
+		{* Section: Choose a payment method *}
+		<p class="fw-semibold mb-2">Select a payment</p>
+		<div class="mb-4">
 			{foreach $form[paymentId]->items as $key => $val}
-				<div>
-					<input n:name="paymentId:$key">
-					<label n:name="paymentId:$key">
+				<div class="form-check">
+					<input n:name="paymentId:$key" class="form-check-input" />
+					<label n:name="paymentId:$key" class="form-check-label">
 						{foreach $payment as $item}
 							{if $item->id === $val}
-								{$item->name} {$item->price|money}
+								{$item->name} – {$item->price|money}
 							{/if}
 						{/foreach}
 					</label>
 				</div>
 			{/foreach}
 		</div>
-		<div>
-			<input n:name="send">
+
+		{* Submit button *}
+		<div class="text-end">
+			<input n:name="send" class="btn btn-primary btn-sm" />
 		</div>
+
 	</form>
+
 {else}
+	{* Show empty cart message if no products are in the cart *}
 	<p>Your shopping cart is empty.</p>
 {/if}

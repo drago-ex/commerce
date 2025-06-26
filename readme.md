@@ -76,6 +76,26 @@ protected function createComponentDelivery(): DeliveryControl
 // same pattern for other createComponent* methods (Customer, Summary, ShoppingCart, MiniCart)
 ```
 
+## Optional Custom Template
+Each control/component has a public property called `templateControl` that lets you specify a custom template file for rendering. Use this if you want to customize the look or layout of the component.
+
+Here’s a simple example showing how to set a custom template in the component factory method:
+```php
+protected function createComponentDelivery(): DeliveryControl
+{
+	$control = $this->deliveryControl;
+
+	// Optional: override the default template file
+	$control->templateControl = __DIR__ . '/templates/Delivery/customTemplate.latte';
+
+	// Additional setup like steps, current step, etc.
+	$control->setSteps($this->checkoutProcess->getSteps());
+	// ...
+
+	return $control;
+}
+```
+
 ## Handle Redirects in Actions
 ```php
 private function redirectIfNecessary(): void

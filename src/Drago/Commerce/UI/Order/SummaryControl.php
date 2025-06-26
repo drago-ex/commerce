@@ -145,7 +145,7 @@ class SummaryControl extends BaseControl
 
 				//Save order products.
 				$orderProduct = new OrderProduct(
-					order_id: $this->orderRepository->getInsertId(),
+					order_id: $orderId,
 					product_id: $item->product->id,
 					amount: $item->amount->toInt(),
 				);

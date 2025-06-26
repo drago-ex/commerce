@@ -67,6 +67,24 @@ class DeliveryControl extends BaseControl
 		$template->carrier = $this->carrierRepository->getCarrierItems();
 		$template->payment = $this->paymentRepository->getPaymentItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
+
+		$delivery = $this->orderSession->getItems();
+		if ($delivery->carrier !== null && $delivery->payment !== null) {
+			$form = $this->getComponent('delivery');
+
+			// Prefill form with data from session only if the form wasn't submitted yet.
+			if (!$form->isSubmitted()) {
+
+				$buttonSend = $this->getFormComponent($form, 'send');
+				$buttonSend->setCaption('Update');
+
+				$data = new DeliveryData();
+				$data->carrierId = $delivery->carrier->id;
+				$data->paymentId = $delivery->payment->id;
+				$form->setDefaults($data);
+			}
+		}
+
 		$template->render();
 	}
 

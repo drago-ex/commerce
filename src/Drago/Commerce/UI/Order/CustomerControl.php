@@ -56,6 +56,20 @@ class CustomerControl extends BaseControl
 		$template->setFile($this->templateControl ?: __DIR__ . '/Customer.latte');
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
+
+		$customer = $this->orderSession
+			->getItems()
+			->customer;
+
+		if ($customer !== null) {
+			$form = $this->getComponent('customer');
+			if (!$form->isSubmitted()) {
+				$buttonSend = $this->getFormComponent($form, 'send');
+				$buttonSend->setCaption('Update');
+				$form->setDefaults($customer);
+			}
+		}
+
 		$template->render();
 	}
 

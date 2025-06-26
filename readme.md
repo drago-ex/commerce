@@ -6,245 +6,105 @@ Simple shopping cart.
 - composer
 
 ## Installation
-```
+```bash
 composer require drago-ex/commerce
 ```
 
-## Extension registration
+## Register the Extension
+In your `config.neon` file, register the extension:
 ```neon
 extensions:
-	- Nepada\Bridges\PhoneNumberInputDI\PhoneNumberInputExtension
-	commerce: Drago\Commerce\DI\CommerceExtension
+    - Nepada\Bridges\PhoneNumberInputDI\PhoneNumberInputExtension
+    commerce: Drago\Commerce\DI\CommerceExtension
+```
 
+## Configure Commerce Settings
+Still in `config.neon`, configure the basic commerce settings:
+```neon
 commerce:
-
-	# Currency selection, ISO currency code or ISO numeric currency code.
-	currency: CZK
-
-	# Formats this Money to the given locale.
-	moneyFormat: cs_CZ
-
-	# Custom currency symbol
-	moneySymbol: ''
-
-	# Number of fraction digits to display in price (0 = whole number)
-	moneyFractionDigits: 0
-
-	# If you do not require the customer to always enter the international telephone prefix for the order,
-	# enter the default value according to ISO 3166-1 alpha-2 country codes.
-	# We can also use automatic detection with a set default value in case automatic detection fails.
-	# In this case we will use the field, the first value must be "autoDetect" the second value according to county codes.
-	defaultRegionCode: ['autoDetect', 'CZ']
-
-	# Restricted to specific international telephone numbers only.
-	# Specify one or more ISO 3166-1 alpha-2 country codes.
-	allowedRegionPhoneNumber: CZ
-
-	# Request a postal code of the same region as your phone number.
-	postCodeOnRegionPhone: true
+    currency: CZK
+    moneyFormat: cs_CZ
+    moneySymbol: ''
+    moneyFractionDigits: 0
+    defaultRegionCode: ['autoDetect', 'CZ']
+    allowedRegionPhoneNumber: CZ
+    postCodeOnRegionPhone: true
 ```
 
-## Usage
-We insert a trait with components in the presenter.
+## Register Services
+Register the core services in `config.neon`:
+```neon
+services:
+    - Drago\Commerce\Domain\Checkout\CheckoutProcess
+    - Drago\Commerce\Domain\Checkout\CheckoutStepsonPhoneNumber: CZ
+    post
+```
+
+## Use Commerce Trait in Your Presenter
+Add the `CommerceControl` trait to your presenter for easy integration of commerce components:
 ```php
-use CommerceControl;
+use Drago\Commerce\UI\CommerceControl;
+
+class CheckoutPresenter extends Nette\Application\UI\Presenter
+{
+    use CommerceControl;
+
+    // other code
+}
 ```
 
-## Setting the unique template names that the commerce will use.
-```php
-private const string
-	PageProducts = 'products',
-	PageDelivery = 'delivery',
-	PageCustomer = 'customer',
-	PageSummary = 'summary',
-	PageShoppingCart = 'shoppingCart',
-	PageOrderDone = 'done';
-
-	private array $steps = [
-		self::PageShoppingCart => 'Shopping Cart',
-		self::PageDelivery => 'Delivery',
-		self::PageCustomer => 'Customer Info',
-		self::PageSummary => 'Summary',
-		self::PageOrderDone => 'Order Complete',
-	];
-```
-
-## Transfer of classes where all information about the order is stored.
+## Inject CheckoutProcess Service
 ```php
 public function __construct(
-	private readonly ShoppingCartSession $shoppingCartSession,
-	private readonly OrderSession $orderSession,
+    private readonly CheckoutProcess $checkoutProcess
 ) {
-	parent::__construct();
+    parent::__construct();
 }
 ```
 
-## We will set up the commerce components.
+##  Setup Checkout Components
 ```php
-protected function createComponentProducts(): ProductControl
-{
-	return $this->productControl;
-}
-
-
 protected function createComponentDelivery(): DeliveryControl
 {
-	$control = $this->deliveryControl;
-	$control->setLinkRedirectTarget(self::PageCustomer);
-	return $control;
+    $control = $this->deliveryControl;
+    $control->setSteps($this->checkoutProcess->getSteps());
+    $control->setCompletedSteps($this->checkoutProcess->getCompletedSteps());
+    $control->setCurrentStep($this->checkoutProcess->steps()->delivery);
+    $control->setLinkRedirectTarget($this->checkoutProcess->steps()->customer);
+    return $control;
 }
 
-
-protected function createComponentCustomer(): CustomerControl
-{
-	$control = $this->customerControl;
-	$control->setLinkRedirectTarget(self::PageSummary);
-	return $control;
-}
-
-
-protected function createComponentSummary(): SummaryControl
-{
-	$control = $this->summaryControl;
-	$control->setLinkRedirectTarget(self::PageOrderDone);
-	return $control;
-}
-
-
-protected function createComponentShoppingCart(): SummaryCartControl
-{
-	$control = $this->shoppingCartControl;
-	$control->setLinkRedirectTarget(self::PageDelivery);
-	return $control;
-}
-
-
-protected function createComponentMiniCart(): MiniCartControl
-{
-	$control = $this->miniCartControl;
-	$control->setLinkRedirectTarget(self::PageShoppingCart);
-	return $control;
-}
+// similarly for createComponentCustomer, createComponentSummary, createComponentShoppingCart, createComponentMiniCart
 ```
 
-## Handling redirects if the user arrives at a page that is not current.
+## Handle Redirects in Actions
 ```php
-/**
- * Checks if the shopping cart contains any items.
- */
-private function hasItems(): bool
+private function redirectIfNecessary(): void
 {
-	return count($this->shoppingCart->getItems()) > 0;
+    $target = $this->checkoutProcess->getRedirectTargetForAction($this->getAction());
+    if ($target !== null && $target !== $this->getAction()) {
+        $this->redirect($target);
+    }
 }
 
-
-/**
- * Retrieves the current order draft.
- */
-private function getOrderDraft(): OrderDraft
-{
-	return $this->customerOrder->getItems();
-}
-
-
-/**
- * Handles the 'delivery' action.
- * Redirects to the products page if the cart is empty and current action is not 'products'.
- */
 public function actionDelivery(): void
 {
-	if (!$this->hasItems() && $this->getAction() !== self::PageProducts) {
-		$this->redirect(self::PageProducts);
-	}
+    $this->redirectIfNecessary();
 }
 
-
-/**
- * Handles the 'customer' action.
- * Redirects based on whether carrier is selected and if the cart has items:
- * If no carrier but cart has items, redirects to 'delivery'.
- * If no carrier and cart is empty, redirect to 'products'.
- */
 public function actionCustomer(): void
 {
-	$draft = $this->getOrderDraft();
-	$hasItems = $this->hasItems();
-	$carrier = $draft->carrier;
-
-	$redirectTarget = match (true) {
-		$carrier === null && $hasItems => self::PageDelivery,
-		$carrier === null && !$hasItems => self::PageProducts,
-		default => null,
-	};
-
-	if ($redirectTarget !== null && $this->getAction() !== $redirectTarget) {
-		$this->redirect($redirectTarget);
-	}
+    $this->redirectIfNecessary();
 }
 
-
-/**
- * Handles the 'summary' action.
- * Redirects based on the completeness of the order:
- * If carrier is missing but cart has items, redirects to 'products'.
- * If the carrier is missing and the cart is empty, redirects to 'default'.
- * If customer data is missing but carrier is selected, redirects to 'customer'.
- */
 public function actionSummary(): void
 {
-	$draft = $this->getOrderDraft();
-	$customer = $draft->customer;
-	$carrier = $draft->carrier;
-	$hasItems = $this->hasItems();
-
-	$redirectTarget = match (true) {
-		$carrier === null && $hasItems => self::PageDelivery,
-		$carrier === null && !$hasItems => self::PageProducts,
-		$customer === null && $carrier !== null => self::PageCustomer,
-		default => null,
-	};
-
-	if ($redirectTarget !== null && $this->getAction() !== $redirectTarget) {
-		$this->redirect($redirectTarget);
-	}
+    $this->redirectIfNecessary();
 }
-
-/**
- * Returns an array of completed steps based on the current order state.
- *
- * This method checks which steps in the order process are completed
- * according to the presence of shopping cart items, selected delivery method,
- * and filled customer information. It also considers the summary step completed
- * only if all previous steps are completed.
- *
- * @return string[] List of completed step identifiers.
- */
-private function getCompletedSteps(): array
-{
-	$orderDraft = $this->orderSession->getItems();
-	$completedSteps = [];
-
-	if ($this->shoppingCartSession->getAmountItems() > 0) {
-		$completedSteps[] = self::PageShoppingCart;
-	}
-
-	if ($orderDraft->carrier !== null) {
-		$completedSteps[] = self::PageDelivery;
-	}
-
-	if ($orderDraft->customer !== null) {
-		$completedSteps[] = self::PageCustomer;
-	}
-
-	if (
-		$this->shoppingCartSession->getAmountItems() > 0 &&
-		$orderDraft->carrier !== null &&
-		$orderDraft->customer !== null
-	) {
-		$completedSteps[] = self::PageSummary;
-	}
-
-	return $completedSteps;
-}
-
 ```
+
+## Customize Checkout Steps (Optional)
+If you want to use custom step names or add new steps, create your own instance of `CheckoutStep`s and register it as a service, then pass it to `CheckoutProcess`.
+
+## Summary
+This way you have a fully configured commerce module ready for extension and use in your Nette application.

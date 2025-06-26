@@ -65,7 +65,7 @@ class DeliveryControl extends BaseControl
 				$buttonSend = $this->getFormComponent($form, 'send');
 				$buttonSend->setCaption('Update');
 
-				$data = new DeliveryData();
+				$data = new DeliveryData;
 				$data->carrierId = $delivery->carrier->id;
 				$data->paymentId = $delivery->payment->id;
 				$form->setDefaults($data);

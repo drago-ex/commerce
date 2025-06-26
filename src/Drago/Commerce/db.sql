@@ -80,6 +80,7 @@ CREATE TABLE `products` (
     `price` decimal(10,2) NOT NULL,
     `photo` text NOT NULL,
     `active` tinyint(1) NOT NULL DEFAULT 0,
+    `stock` int(11) NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY `name` (`name`),
     KEY `category` (`category`),

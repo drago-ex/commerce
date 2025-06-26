@@ -66,6 +66,20 @@
 
                         {/if}
 
+                        {if $product->getStock() > 5}
+                            <p class="small text-muted mb-2 text-success">
+                                In stock &gt; 5 ks
+                            </p>
+                        {elseif $product->getStock() > 0}
+                            <p class="small text-muted mb-2 text-warning">
+                                In stock: {$product->getStock()} ks
+                            </p>
+                        {else}
+                            <p class="small text-muted mb-2 text-danger">
+                                Out of stock
+                            </p>
+                        {/if}
+
                         {* Add to cart form button with accessible label *}
                         <form n:name="addToCart-{$product->id}">
                             {input add, class: "btn btn-secondary btn-sm", aria-label => "Add {$product->name} to cart"}

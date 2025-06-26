@@ -27,7 +27,8 @@ class ProductEntity extends Entity
 		Discount = 'discount',
 		Price = 'price',
 		Photo = 'photo',
-		Active = 'active';
+		Active = 'active',
+		Stock = 'stock';
 
 	public int $id;
 	public int $category;
@@ -37,6 +38,7 @@ class ProductEntity extends Entity
 	public float $price;
 	public string $photo;
 	public int $active;
+	public int $stock;
 
 
 	/**
@@ -67,5 +69,11 @@ class ProductEntity extends Entity
 	public function getDiscountPercent(): int
 	{
 		return $this->discount ?? 0;
+	}
+
+
+	public function getStock(): int
+	{
+		return $this->stock ?? 0;
 	}
 }

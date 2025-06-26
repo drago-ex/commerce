@@ -20,6 +20,8 @@ use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
+use Drago\Commerce\Domain\Product\ProductEntity;
+use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -37,6 +39,7 @@ class SummaryControl extends BaseControl
 		private readonly OrderRepository $orderRepository,
 		private readonly OrderProductRepository $orderProductsRepository,
 		private readonly CustomerRepository $customerRepository,
+		private readonly ProductRepository $productRepository,
 	) {
 	}
 
@@ -88,6 +91,7 @@ class SummaryControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 * @throws DriverException
+	 * @throws \Exception
 	 */
 	public function handleOrderDone(): void
 	{
@@ -97,6 +101,7 @@ class SummaryControl extends BaseControl
 		try {
 			$this->orderRepository->getConnection()->begin();
 
+			// Save the customer.
 			$customerData = new Customer(
 				email: $customer->email,
 				phone: $customer->phone->format(PhoneNumberFormat::INTERNATIONAL),
@@ -110,6 +115,7 @@ class SummaryControl extends BaseControl
 			);
 			$this->customerRepository->save((array) $customerData);
 
+			// Save order.
 			$orderData = new Order(
 				customer_id: $this->customerRepository->getInsertId(),
 				carrier_id: $order->carrier->id,
@@ -122,7 +128,22 @@ class SummaryControl extends BaseControl
 
 			$this->orderRepository->save((array) $orderData);
 
+			$orderId = $this->orderRepository->getInsertId();
 			foreach ($this->shoppingCartSession->getItems() as $item) {
+				$product = $this->productRepository->getOne($item->product->id);
+
+				if ($product->stock < $item->amount->toInt()) {
+					throw new \Exception("The product '{$product->name}' is not in stock in the requested quantity.");
+				}
+
+				// Deduct inventory.
+				$newStock = $product->stock - $item->amount->toInt();
+				$productEntity = new ProductEntity;
+				$productEntity->id = $product->id;
+				$productEntity->stock = $newStock;
+				$this->productRepository->save($productEntity);
+
+				//Save order products.
 				$orderProduct = new OrderProduct(
 					order_id: $this->orderRepository->getInsertId(),
 					product_id: $item->product->id,

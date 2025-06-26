@@ -73,7 +73,7 @@ protected function createComponentDelivery(): DeliveryControl
     return $control;
 }
 
-// similarly for createComponentCustomer, createComponentSummary, createComponentShoppingCart, createComponentMiniCart
+// same pattern for other createComponent* methods (Customer, Summary, ShoppingCart, MiniCart)
 ```
 
 ## Handle Redirects in Actions

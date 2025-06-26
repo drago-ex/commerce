@@ -123,7 +123,31 @@ public function actionSummary(): void
 ```
 
 ## Customize Checkout Steps (Optional)
-If you want to use custom step names or add new steps, create your own instance of `CheckoutStep`s and register it as a service, then pass it to `CheckoutProcess`.
+If you want to rename the default checkout steps or add custom ones, you can configure your own instance of `CheckoutSteps` via the service container and pass it to `CheckoutProcess`. This gives you full control over step naming (e.g. for localization, branding, or structural changes).
+
+Example configuration in `neon`:
+```neon
+services:
+	# Register CheckoutSteps with custom step keys
+	checkoutSteps:
+		factory: Drago\Commerce\Domain\Checkout\CheckoutSteps
+		arguments:
+			-  # Custom step names (you can omit or override only selected ones)
+				products: 'products'
+				delivery: 'shipping'
+				customer: 'billing'
+				summary: 'summary'
+				shoppingCart: 'shoppingCart'
+				orderDone: 'done'
+
+	# Register CheckoutProcess with dependencies injected
+	checkoutProcess:
+		factory: Drago\Commerce\Domain\Checkout\CheckoutProcess
+		arguments:
+			- @Drago\Commerce\Service\ShoppingCartSession
+			- @Drago\Commerce\Service\OrderSession
+			- @checkoutSteps
+```
 
 ## Summary
 This way you have a fully configured commerce module ready for extension and use in your Nette application.

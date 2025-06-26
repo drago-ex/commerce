@@ -74,7 +74,8 @@ class CustomerControl extends BaseControl
 
 		$phone = $form->addPhoneNumber('phone', 'Phone')
 			->setRequired()
-			->setHtmlAttribute('autocomplete', 'off');
+			->setHtmlAttribute('autocomplete', 'off')
+			->setHtmlAttribute('pattern', null);
 
 		$defaultRegionCode = $this->commerce->getDefaultRegionCode();
 		if ($defaultRegionCode) {

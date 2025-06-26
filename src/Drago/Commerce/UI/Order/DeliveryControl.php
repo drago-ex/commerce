@@ -29,10 +29,6 @@ use Nette\Application\UI\Form;
  */
 class DeliveryControl extends BaseControl
 {
-	/** URL to process the order customer */
-	public string $linkRedirectTarget;
-
-
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCartSession,
 		private readonly OrderSession $orderSession,
@@ -41,15 +37,6 @@ class DeliveryControl extends BaseControl
 		private readonly CarrierMapper $carrierMapper,
 		private readonly PaymentMapper $paymentMapper,
 	) {
-	}
-
-
-	public function setLinkRedirectTarget(string $link): void
-	{
-		if (empty($link)) {
-			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
-		}
-		$this->linkRedirectTarget = $link;
 	}
 
 

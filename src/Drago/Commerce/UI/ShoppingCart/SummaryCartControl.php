@@ -31,25 +31,12 @@ use Nette\Application\UI\Multiplier;
  */
 class SummaryCartControl extends BaseControl
 {
-	/** URL to process the order delivery */
-	public string $linkRedirectTarget;
-
-
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCart,
 		private readonly ProductRepository $productRepository,
 		private readonly ProductMapper $productMapper,
 		private readonly Factory $factory,
 	) {
-	}
-
-
-	public function setLinkRedirectTarget(string $link): void
-	{
-		if (empty($link)) {
-			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
-		}
-		$this->linkRedirectTarget = $link;
 	}
 
 

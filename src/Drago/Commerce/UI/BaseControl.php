@@ -25,6 +25,11 @@ class BaseControl extends ExtraControl
 	public ?string $templateControl = null;
 
 	/**
+	 * Redirect to the next step of the order.
+	 */
+	public string $linkRedirectTarget;
+
+	/**
 	 * List of all steps in the navigation.
 	 * Associative array where keys are step identifiers and values are labels.
 	 *
@@ -82,5 +87,14 @@ class BaseControl extends ExtraControl
 			completedSteps: $this->completedSteps,
 			currentStep: $this->currentStep,
 		);
+	}
+
+
+	public function setLinkRedirectTarget(string $link): void
+	{
+		if (empty($link)) {
+			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
+		}
+		$this->linkRedirectTarget = $link;
 	}
 }

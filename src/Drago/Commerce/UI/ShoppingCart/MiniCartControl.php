@@ -22,22 +22,9 @@ use Nette\Application\UI\InvalidLinkException;
  */
 class MiniCartControl extends BaseControl
 {
-	/** URL or presenter link target for the shopping cart */
-	private string $linkRedirectTarget;
-
-
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCartSession,
 	) {
-	}
-
-
-	public function setLinkRedirectTarget(string $link): void
-	{
-		if (empty($link)) {
-			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
-		}
-		$this->linkRedirectTarget = $link;
 	}
 
 

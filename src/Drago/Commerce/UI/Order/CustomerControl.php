@@ -28,25 +28,12 @@ use Nette\Application\AbortException;
  */
 class CustomerControl extends BaseControl
 {
-	/** URL to process the order customer */
-	public string $linkRedirectTarget;
-
-
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCartSession,
 		private readonly OrderSession $orderSession,
 		private readonly ReaderGeoLite $readerGeoLite,
 		private readonly Commerce $commerce,
 	) {
-	}
-
-
-	public function setLinkRedirectTarget(string $link): void
-	{
-		if (empty($link)) {
-			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
-		}
-		$this->linkRedirectTarget = $link;
 	}
 
 

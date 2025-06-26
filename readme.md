@@ -36,8 +36,7 @@ Register the core services in `config.neon`:
 ```neon
 services:
     - Drago\Commerce\Domain\Checkout\CheckoutProcess
-    - Drago\Commerce\Domain\Checkout\CheckoutStepsonPhoneNumber: CZ
-    post
+    - Drago\Commerce\Domain\Checkout\CheckoutSteps
 ```
 
 ## Use Commerce Trait in Your Presenter

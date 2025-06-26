@@ -61,7 +61,7 @@ public function __construct(
 }
 ```
 
-##  Setup Checkout Components
+##  Setup Shopping Cart & Checkout Components
 ```php
 protected function createComponentDelivery(): DeliveryControl
 {

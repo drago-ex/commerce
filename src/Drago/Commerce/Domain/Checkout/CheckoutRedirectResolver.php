@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Commerce\Domain\Checkout;
+namespace Drago\Commerce\Domain\Checkout;
 
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;

@@ -12,7 +12,7 @@
 	"require": {
 		"php": ">=8.3 <9",
 		"ext-intl": "*",
-		"latte/latte": "^3",
+		"latte/latte": "^3.0",
 		"nette/application": "^3.1",
 		"nette/di": "^3.0",
 		"drago-ex/application": "^1.0",

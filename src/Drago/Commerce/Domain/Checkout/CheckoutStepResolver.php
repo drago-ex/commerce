@@ -34,11 +34,12 @@ final readonly class CheckoutStepResolver
 	 */
 	public function getCompletedSteps(): array
 	{
+		$hasItems = $this->shoppingCartSession->getAmountItems() > 0;
 		$orderDraft = $this->orderSession->getItems();
 		$completedSteps = [];
 		$step = $this->checkoutSteps;
 
-		if ($this->shoppingCartSession->getAmountItems() > 0) {
+		if ($hasItems) {
 			$completedSteps[] = $step->shoppingCart;
 		}
 
@@ -51,7 +52,7 @@ final readonly class CheckoutStepResolver
 		}
 
 		if (
-			$this->shoppingCartSession->getAmountItems() > 0 &&
+			$hasItems &&
 			$orderDraft->carrier !== null &&
 			$orderDraft->customer !== null
 		) {

@@ -11,7 +11,7 @@ namespace Drago\Commerce\UI;
 
 use Drago\Commerce\UI\Order\CustomerControl;
 use Drago\Commerce\UI\Order\DeliveryControl;
-use Drago\Commerce\UI\Order\SummaryControl;
+use Drago\Commerce\UI\Order\SummaryOrderControl;
 use Drago\Commerce\UI\Product\ProductControl;
 use Drago\Commerce\UI\ShoppingCart\MiniCartControl;
 use Drago\Commerce\UI\ShoppingCart\SummaryCartControl;
@@ -26,7 +26,7 @@ trait CommerceControl
 	public SummaryCartControl $shoppingCartControl;
 	public DeliveryControl $deliveryControl;
 	public CustomerControl $customerControl;
-	public SummaryControl $summaryControl;
+	public SummaryOrderControl $summaryOrderControl;
 	public ProductControl $productControl;
 
 
@@ -38,7 +38,7 @@ trait CommerceControl
 		SummaryCartControl $shoppingCartControl,
 		DeliveryControl $deliveryControl,
 		CustomerControl $customerControl,
-		SummaryControl $summaryControl,
+		SummaryOrderControl $summaryOrderControl,
 		ProductControl $productControl,
 	): void
 	{
@@ -46,7 +46,7 @@ trait CommerceControl
 		$this->shoppingCartControl = $shoppingCartControl;
 		$this->deliveryControl = $deliveryControl;
 		$this->customerControl = $customerControl;
-		$this->summaryControl = $summaryControl;
+		$this->summaryOrderControl = $summaryOrderControl;
 		$this->productControl = $productControl;
 	}
 }

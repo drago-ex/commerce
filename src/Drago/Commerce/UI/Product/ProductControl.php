@@ -13,6 +13,7 @@ use Brick\Money\Currency;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
+use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\Product;
@@ -71,6 +72,19 @@ class ProductControl extends BaseControl
 	 */
 	public function success(Form $form, ProductData $data): void
 	{
+		$product = $this->productRepository->getOne($data->productId);
+
+		if (!$product || !$product->active) {
+			$this->getPresenter()->flashMessage('The product does not exist or is not active.', Alert::Danger);
+			$this->getPresenter()->redirect('this');
+		}
+
+
+		if ($product->stock <= 0) {
+			$this->getPresenter()->flashMessage('The product is out of stock.', Alert::Warning);
+			$this->getPresenter()->redirect('this');
+		}
+
 		$product = $this->getProduct($data->productId);
 		$item = new Product(
 			id: $product->id,
@@ -78,6 +92,7 @@ class ProductControl extends BaseControl
 			price: Money::of($product->price, $this->getCurrency()),
 		);
 		$this->shoppingCartSession->addItem($item);
+		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
 		$this->redirect('this');
 	}
 

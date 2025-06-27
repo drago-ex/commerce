@@ -1,4 +1,4 @@
-{templateType Drago\Commerce\UI\Order\SummaryTemplate}
+{templateType Drago\Commerce\UI\Order\SummaryOrderTemplate}
 {varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
 {import '../@breadcrumbs.latte'}
 
@@ -79,9 +79,9 @@
 
 	{* Confirm purchase button with accessibility label *}
 	<div class="text-end mt-3">
-		<a href="{link orderDone!}" class="btn btn-sm btn-success" aria-label="Confirm your order and complete the purchase">
-			Confirm the purchase
-		</a>
+		<form n:name="sendOrder" n:if="$customer !== null && $carrier !== null">
+			<input n:name="send" class="btn btn-sm btn-success" aria-label="Confirm your order and complete the purchase">
+		</form>
 	</div>
 
 {else}

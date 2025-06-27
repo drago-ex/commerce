@@ -25,13 +25,14 @@ use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Nette\Application\UI\Form;
 use Tracy\Debugger;
 
 
 /**
- * @property-read SummaryTemplate $template
+ * @property-read SummaryOrderTemplate $template
  */
-class SummaryControl extends BaseControl
+class SummaryOrderControl extends BaseControl
 {
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCartSession,
@@ -88,12 +89,21 @@ class SummaryControl extends BaseControl
 	}
 
 
+	protected function createComponentSendOrder(): Form
+	{
+		$form = new Form;
+		$form->addSubmit('send', 'Confirm the purchase');
+		$form->onSuccess[] = $this->processOrder(...);
+		return $form;
+	}
+
+
 	/**
 	 * @throws MoneyMismatchException
 	 * @throws DriverException
 	 * @throws \Exception
 	 */
-	public function handleOrderDone(): void
+	public function processOrder(Form $form): void
 	{
 		$order = $this->orderSession->getItems();
 		$customer = $order->customer;

@@ -67,15 +67,15 @@
                         {/if}
 
                         {if $product->getStock() > 5}
-                            <p class="small text-muted mb-2 text-success">
+                            <p class="small text-muted mb-2">
                                 In stock &gt; 5 pcs
                             </p>
                         {elseif $product->getStock() > 0}
-                            <p class="small text-muted mb-2 text-warning">
+                            <p class="small text-muted mb-2">
                                 In stock: {$product->getStock()} pcs
                             </p>
                         {else}
-                            <p class="small text-muted mb-2 text-danger">
+                            <p class="small mb-2 text-danger">
                                 Out of stock
                             </p>
                         {/if}

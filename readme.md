@@ -73,7 +73,7 @@ protected function createComponentDelivery(): DeliveryControl
     return $control;
 }
 
-// same pattern for other createComponent* methods (Customer, Summary, ShoppingCart, MiniCart)
+// same pattern for other createComponent* methods (Customer, SummaryOrder, SummaryCart, MiniCart)
 ```
 
 ## Optional Custom Template

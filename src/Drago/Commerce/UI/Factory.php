@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
 
-use App\Commerce\UI\BaseForm;
 use Nette\Localization\Translator;
 
 

@@ -7,7 +7,7 @@
 
 declare (strict_types=1);
 
-namespace App\Commerce\UI;
+namespace Drago\Commerce\UI;
 
 use Drago\Forms\Forms;
 use Nepada\Bridges\PhoneNumberInputForms\PhoneNumberInputMixin;

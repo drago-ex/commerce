@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\Order;
 
 
-use App\Commerce\UI\BaseForm;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Data\ReaderGeoLite;
+use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
-use Drago\Commerce\UI\Order\CustomerData;
 use Drago\Forms\Autocomplete;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;

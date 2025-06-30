@@ -27,7 +27,7 @@ class CustomerData extends ArrayHash
 		Surname = 'surname',
 		Street = 'street',
 		City = 'city',
-		PostCode = 'post_code',
+		PostalCode = 'postal_code',
 		Country = 'country',
 		Note = 'note',
 		CreatedAt = 'created_at';
@@ -39,7 +39,7 @@ class CustomerData extends ArrayHash
 	public string $surname;
 	public string $street;
 	public string $city;
-	public string $post_code;
+	public string $postal_code;
 	public string $country;
 	public string $note;
 	public ?\DateTimeImmutable $created_at = null;

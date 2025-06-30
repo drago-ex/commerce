@@ -119,7 +119,7 @@ class SummaryOrderControl extends BaseControl
 				surname: $customer->surname,
 				street: $customer->street,
 				city: $customer->city,
-				post_code: $customer->post_code,
+				postal_code: $customer->postal_code,
 				country: $customer->country,
 				note: $customer->note,
 			);

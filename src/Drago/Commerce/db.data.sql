@@ -12,7 +12,7 @@ INSERT INTO `payment` (`id`, `name`, `price`) VALUES
 (2, 'Dobírka', 50.00),
 (3, 'Bankovní převod', 0.00);
 
-INSERT INTO `customers` (`id`, `email`, `phone`, `name`, `surname`, `street`, `city`, `post_code`, `country`, `note`, `created_at`) VALUES
+INSERT INTO `customers` (`id`, `email`, `phone`, `name`, `surname`, `street`, `city`, `postal_code`, `country`, `note`, `created_at`) VALUES
 (1, 'jan.novak@example.com', '+420777123456', 'Jan', 'Novák', 'Hlavní 123', 'Praha', '11000', 'Česká republika', '', '2025-05-30 10:00:00'),
 (2, 'petra.svobodova@example.com', '+420777654321', 'Petra', 'Svobodová', 'Náměstí 45', 'Brno', '60200', 'Česká republika', 'Zákazník preferuje dodání po poledni', '2025-05-31 09:30:00');
 

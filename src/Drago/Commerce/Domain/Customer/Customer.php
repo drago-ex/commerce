@@ -25,7 +25,7 @@ class Customer
 		public string $surname,
 		public string $street,
 		public string $city,
-		public string $post_code,
+		public string $postal_code,
 		public string $country,
 		public ?string $note = null,
 		public ?DateTimeImmutable $created_at = null,

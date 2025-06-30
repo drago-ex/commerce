@@ -109,7 +109,7 @@ class CustomerControl extends BaseControl
 			->setHtmlAttribute('autocomplete', 'off')
 			->setRequired();
 
-		$form->addText(CustomerData::PostCode, 'Post code')
+		$form->addText(CustomerData::PostalCode, 'Postal code')
 			->setHtmlAttribute('autocomplete', 'off')
 			->setRequired();
 
@@ -134,8 +134,8 @@ class CustomerControl extends BaseControl
 	{
 		try {
 			$postCode  = $this->commerce->getPostCodeOnRegionPhone()
-				? (new PostcodeFormatter)->format($data->phone->getRegionCode(), $data->post_code)
-				: $data->post_code;
+				? (new PostcodeFormatter)->format($data->phone->getRegionCode(), $data->postal_code)
+				: $data->postal_code;
 
 			$customer = new Customer(
 				email: $data->email,
@@ -144,7 +144,7 @@ class CustomerControl extends BaseControl
 				surname: $data->surname,
 				street: $data->street,
 				city: $data->city,
-				post_code: $postCode,
+				postal_code: $postCode,
 				country: $data->country,
 				note: $data->note,
 			);

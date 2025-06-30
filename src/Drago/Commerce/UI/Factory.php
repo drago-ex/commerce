@@ -9,43 +9,46 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
 
-use Nette\Application\UI\Form;
+use App\Commerce\UI\BaseForm;
+use Nette\Localization\Translator;
 
 
 /**
- * Provides factory methods to create forms for product operations.
+ * Factory class for creating instances of FormBase with necessary configurations.
  */
-class Factory
+readonly class Factory
 {
-	/**
-	 * Create form with product ID.
-	 *
-	 * @param string $productId
-	 * @return Form
-	 */
-	public function create(string $productId): Form
+	public function __construct(
+		private Translator $translator,
+	) {
+	}
+
+
+	public function create(): BaseForm
 	{
-		$form = new Form;
-		$form->addHidden(FactoryData::ProductId, (int) $productId)
+		$form = new BaseForm;
+		$form->setTranslator($this->translator);
+		return $form;
+	}
+
+
+	public function addHiddenProductId(string $productId): BaseForm
+	{
+		$form = $this->create();
+		$form->addHidden(FactoryData::ProductId, $productId)
 			->addRule($form::Integer);
 
 		return $form;
 	}
 
 
-	/**
-	 * Create form with product ID and amount.
-	 *
-	 * @param string $productId
-	 * @return Form
-	 */
-	public function createWithAmount(string $productId): Form
+	public function addChangeAmountInCart(string $productId): BaseForm
 	{
-		$form = $this->create($productId);
+		$form = $this->addHiddenProductId($productId);
 		$form->addInteger(FactoryData::Amount)
 			->setDefaultValue(1)
 			->setHtmlAttribute('autocomplete', 'off')
-			->addRule($form::Min, null, 1)
+			->addRule($form::Min, arg: 1)
 			->addRule($form::Integer)
 			->setRequired();
 

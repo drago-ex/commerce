@@ -59,7 +59,7 @@ class CustomerFactory
 			$phone->addRule(
 				PhoneNumberInput::REGION,
 				'Only phone numbers are allowed',
-				$allowedPhoneNumber
+				$allowedPhoneNumber,
 			);
 		}
 

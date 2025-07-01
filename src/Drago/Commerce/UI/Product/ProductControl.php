@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\Product;
 
 use Brick\Money\Currency;
+use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
@@ -57,7 +58,7 @@ class ProductControl extends BaseControl
 	protected function createComponentAddToCart(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
-			$form = $this->factory->create($productId);
+			$form = $this->factory->addHiddenProductId($productId);
 			$form->addSubmit('add', 'Add to cart');
 			$form->onSuccess[] = $this->success(...);
 			return $form;
@@ -69,6 +70,7 @@ class ProductControl extends BaseControl
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
 	 * @throws AttributeDetectionException
+	 * @throws MoneyMismatchException
 	 */
 	public function success(Form $form, ProductData $data): void
 	{
@@ -79,18 +81,29 @@ class ProductControl extends BaseControl
 			$this->getPresenter()->redirect('this');
 		}
 
-
 		if ($product->stock <= 0) {
 			$this->getPresenter()->flashMessage('The product is out of stock.', Alert::Warning);
 			$this->getPresenter()->redirect('this');
 		}
 
 		$product = $this->getProduct($data->productId);
+		$originalPrice = Money::of($product->price, $this->getCurrency());
+		$discountPercent = $product->discount ?? 0;
+
+		if ($discountPercent > 0) {
+			$discountAmount = $originalPrice->multipliedBy($discountPercent)->dividedBy(100);
+			$finalPrice = $originalPrice->minus($discountAmount);
+
+		} else {
+			$finalPrice = $originalPrice;
+		}
+
 		$item = new Product(
 			id: $product->id,
 			name: $product->name,
-			price: Money::of($product->price, $this->getCurrency()),
+			price: $finalPrice,
 		);
+
 		$this->shoppingCartSession->addItem($item);
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
 		$this->redirect('this');

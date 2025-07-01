@@ -1,23 +1,81 @@
 {varType \Drago\Commerce\UI\Breadcrumbs $breadcrumbs}
 {define breadcrumbs, $breadcrumbs}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+    {* Navigation container for the breadcrumb component *}
+    <nav aria-label="breadcrumb" class="mb-2 mt-3 border-bottom">
+
+        {* Ordered list of breadcrumb steps with custom arrow separator *}
+        <ol class="breadcrumb fw-semibold d-flex flex-wrap align-items-center"
+            style="--bs-breadcrumb-divider: '\2192'; gap: 1rem;">
+
+            {var $stepNumber = 1}
             {foreach $breadcrumbs->steps as $step => $label}
 
-                {* If this is the current step, render it as active (not a link) *}
+                {* CURRENT STEP – visually highlighted with primary color and white background *}
                 {if $step === $breadcrumbs->currentStep}
-                    <li class="breadcrumb-item active" aria-current="page">{$label}</li>
+                    <li class="breadcrumb-item active d-flex align-items-center"
+                        aria-current="page" style="color: #0d6efd;">
 
-                    {* If this step is already completed, render it as a clickable link *}
-                {elseif in_array($step, $breadcrumbs->completedSteps, true)}
-                    <li class="breadcrumb-item">
-                        <a href="{plink $step}">{$label}</a>
+                        {* Step number badge *}
+                        <span class="badge rounded-circle bg-primary me-2"
+                              style="
+                                    width: 1.5rem;
+                                    height: 1.5rem;
+                                    display: inline-flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 0.9rem;">
+                            {$stepNumber}
+                        </span>
+
+                        {* Step label *}
+                        {$label}
                     </li>
 
-                    {* If the step is neither current nor completed, render it as disabled *}
+                    {* COMPLETED STEP – clickable with a secondary badge and link *}
+                {elseif in_array($step, $breadcrumbs->completedSteps, true)}
+                    <li class="breadcrumb-item d-flex align-items-center">
+                        <a href="{plink $step}" class="text-secondary d-flex align-items-center" style="text-decoration: none;">
+
+                            {* Step number badge *}
+                            <span class="badge rounded-circle bg-secondary me-2"
+                                  style="
+                                        width: 1.5rem;
+                                        height: 1.5rem;
+                                        display: inline-flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        font-size: 0.9rem;">
+                                {$stepNumber}
+                            </span>
+
+                            {* Step label *}
+                            <span>{$label}</span>
+                        </a>
+                    </li>
+
+                    {* UPCOMING / INACTIVE STEP – disabled, non-clickable *}
                 {else}
-                    <li class="breadcrumb-item disabled">{$label}</li>
+                    <li class="breadcrumb-item disabled text-muted d-flex align-items-center" style="cursor: default;">
+
+                        {* Step number badge (light style with border) *}
+                        <span class="badge rounded-circle bg-light text-muted border me-2"
+                              style="
+                                    width: 1.5rem;
+                                    height: 1.5rem;
+                                    display: inline-flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 0.9rem;">
+                            {$stepNumber}
+                        </span>
+
+                        {* Step label *}
+                        {$label}
+                    </li>
                 {/if}
+
+                {* Increment step number for the next iteration *}
+                {var $stepNumber = $stepNumber + 1}
             {/foreach}
         </ol>
     </nav>

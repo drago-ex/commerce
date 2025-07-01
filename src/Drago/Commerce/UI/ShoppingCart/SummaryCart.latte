@@ -8,7 +8,7 @@
 	{include breadcrumbs, $breadcrumbs}
 
 	{* Page heading *}
-	<h1 class="mb-4 display-6">Your shopping cart</h1>
+	<h2 class="mb-4 fw-normal fs-4">Your shopping cart</h2>
 
 	{* Responsive product table *}
 	<div class="table-responsive">
@@ -42,10 +42,10 @@
 				{* Remove item link *}
 				<td>
 					{var $linkAttrs = [
-						'role' => "button",
-						'class' => "ajax btn btn-sm btn-outline-danger",
-						'aria-label' => "Remove {$cart->product->name} from cart",
-						'data-naja-history' => "off"
+					'role' => "button",
+					'class' => "ajax btn btn-sm btn-outline-danger",
+					'aria-label' => "Remove {$cart->product->name} from cart",
+					'data-naja-history' => "off"
 					]}
 
 					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">

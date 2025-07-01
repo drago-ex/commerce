@@ -1,31 +1,47 @@
 {templateType Drago\Commerce\UI\ShoppingCart\MiniCartTemplate}
 
 {*
-    Mini shopping cart summary component
-    Shows total items in cart and total price
+    Mini shopping cart summary component with shop name on the left
+    and cart icon with item count and total price on the right.
 *}
 
-{* Clickable link to the full shopping cart page *}
-<div class="d-flex justify-content-end border-bottom pb-2">
+<div class="d-flex justify-content-between align-items-center border-bottom pb-2">
 
+    {* Shop name on the left linking to homepage *}
+    <a href="/" class="text-decoration-none text-dark fw-semibold fs-3 ps-0">
+        Drago Commerce
+    </a>
+
+    {* Mini cart on the right *}
     {var $linkAttrs = [
         'href' => $linkShoppingCart,
-        'class' => "d-flex align-items-center text-decoration-none text-dark",
+        'class' => "d-flex align-items-center text-decoration-none text-dark pe-3",
         'aria-label' => "Go to shopping cart with $amountItems items, total price $formattedTotalPrice"
     ]}
 
-    {* Clickable link to the full shopping cart page *}
-    <a  n:attr="$linkAttrs">
+    <a n:attr="$linkAttrs">
 
-        {* Display item count badge only if there are items in cart *}
-        {if $amountItems > 0}
-            <span class="badge bg-danger rounded me-2" aria-live="polite">
-                {$amountItems}
-            </span>
-        {/if}
+        <div class="position-relative" style="width: 1.5rem; height: 1.5rem;">
+            <i class="fa fa-shopping-cart" style="font-size: 1.5rem;"></i>
 
-        {* Show total cart price *}
-        <span class="fw-semibold" aria-atomic="true">
+            {* Show badge only if cart has items *}
+            {if $amountItems > 0}
+                <span class="position-absolute start-100 translate-middle badge rounded-pill bg-danger border border-white"
+                      style="
+                            top: 0.25rem;
+                            font-size: 0.75rem;
+                            min-width: 1.125rem;
+                            height: 1.125rem;
+                            line-height: 1.125rem;
+                            padding: 0;
+                            box-sizing: content-box;"
+                      aria-live="polite">
+                    {$amountItems}
+                </span>
+            {/if}
+        </div>
+
+        <span class="fw-semibold ms-3" aria-atomic="true">
             {$formattedTotalPrice}
         </span>
     </a>

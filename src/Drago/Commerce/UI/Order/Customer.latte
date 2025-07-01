@@ -6,9 +6,7 @@
 	{* Includes the breadcrumbs component to render the navigation steps. *}
 	{include breadcrumbs, $breadcrumbs}
 
-	{* Customer information form with two columns layout *}
-	<h1 class="mb-4 display-6">Information for delivery of goods</h1>
-
+	<h2 class="mb-4 fw-normal fs-4">Information for delivery of goods</h2>
 	<form n:name="customer">
 
 		{* Display validation errors *}
@@ -16,9 +14,12 @@
 			<li n:foreach="$form->errors as $error">{$error}</li>
 		</ul>
 
-		<div class="row">
-			<div class="col-md-6">
-				<p class="fw-semibold">Contact information</p>
+		{* Add gap between columns *}
+		<div class="row gx-3 gy-3">
+
+			{* Contact information section with light blue background *}
+			<div class="col-6 bg-primary bg-opacity-10 rounded p-3">
+				<p class="fw-semibold text-end">Contact information</p>
 				<div class="mb-3">
 					<label n:name="email" class="form-label" />
 					<input n:name="email" type="email" class="form-control" required />
@@ -27,38 +28,57 @@
 					<label n:name="phone" class="form-label" />
 					<input n:name="phone" type="tel" class="form-control" />
 				</div>
-				<div class="mb-3">
-					<label n:name="name" class="form-label" />
-					<input n:name="name" type="text" class="form-control" required />
+
+				{* Row for name and surname side by side *}
+				<div class="row gx-2">
+					<div class="col-6">
+						<div class="mb-3">
+							<label n:name="name" class="form-label" />
+							<input n:name="name" type="text" class="form-control" required />
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="mb-3">
+							<label n:name="surname" class="form-label" />
+							<input n:name="surname" type="text" class="form-control" required />
+						</div>
+					</div>
 				</div>
-				<div class="mb-3">
-					<label n:name="surname" class="form-label" />
-					<input n:name="surname" type="text" class="form-control" required />
-				</div>
+
 			</div>
 
-			<div class="col-md-6">
-				<p class="fw-semibold">Billing information</p>
+			{* Billing information section with light gray background *}
+			<div class="col-6 bg-light rounded p-3">
+				<p class="fw-semibold text-end">Billing information</p>
 				<div class="mb-3">
 					<label n:name="street" class="form-label" />
 					<input n:name="street" type="text" class="form-control" required />
 				</div>
-				<div class="mb-3">
-					<label n:name="city" class="form-label" />
-					<input n:name="city" type="text" class="form-control" required />
+
+				{* Row for city and country side by side *}
+				<div class="row gx-2">
+					<div class="col-6">
+						<div class="mb-3">
+							<label n:name="city" class="form-label" />
+							<input n:name="city" type="text" class="form-control" required />
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="mb-3">
+							<label n:name="country" class="form-label" />
+							<input n:name="country" type="text" class="form-control" required />
+						</div>
+					</div>
 				</div>
+
 				<div class="mb-3">
-					<label n:name="country" class="form-label" />
-					<input n:name="country" type="text" class="form-control" required />
-				</div>
-				<div class="mb-3">
-					<label n:name="post_code" class="form-label" />
-					<input n:name="post_code" type="text" class="form-control" required />
+					<label n:name="postal_code" class="form-label" />
+					<input n:name="postal_code" type="text" class="form-control" required />
 				</div>
 			</div>
 		</div>
 
-		<p class="fw-semibold">Order information</p>
+		<p class="fw-semibold text-end mt-4">Order information</p>
 		<div class="mb-3">
 			<label n:name="note" class="form-label" />
 			<textarea n:name="note" class="form-control" rows="3"></textarea>

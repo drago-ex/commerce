@@ -42,7 +42,9 @@ class ProductEntity extends Entity
 
 
 	/**
-	 * @throws UnknownCurrencyException
+	 * Returns the original product price as a Money object.
+	 *
+	 * @throws UnknownCurrencyException if the currency is invalid
 	 */
 	public function getPrice(): Money
 	{
@@ -51,7 +53,9 @@ class ProductEntity extends Entity
 
 
 	/**
-	 * @throws UnknownCurrencyException
+	 * Returns the price after discount as a Money object.
+	 *
+	 * @throws UnknownCurrencyException if the currency is invalid
 	 */
 	public function getDiscountedPrice(): Money
 	{
@@ -60,18 +64,27 @@ class ProductEntity extends Entity
 	}
 
 
+	/**
+	 * Checks if the product currently has a discount.
+	 */
 	public function hasDiscount(): bool
 	{
 		return $this->discount !== null && $this->discount > 0;
 	}
 
 
+	/**
+	 * Returns the discount percentage (0 if none).
+	 */
 	public function getDiscountPercent(): int
 	{
 		return $this->discount ?? 0;
 	}
 
 
+	/**
+	 * Returns the current stock quantity.
+	 */
 	public function getStock(): int
 	{
 		return $this->stock ?? 0;

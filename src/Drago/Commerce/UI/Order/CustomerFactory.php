@@ -9,7 +9,7 @@ use Drago\Commerce\Commerce;
 use Drago\Commerce\Data\ReaderGeoLite;
 use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
-use Drago\Forms\Autocomplete;
+use Drago\Form\Autocomplete;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
 

@@ -9,7 +9,7 @@ declare (strict_types=1);
 
 namespace Drago\Commerce\UI;
 
-use Drago\Forms\Forms;
+use Drago\Form\Forms;
 use Nepada\Bridges\PhoneNumberInputForms\PhoneNumberInputMixin;
 
 

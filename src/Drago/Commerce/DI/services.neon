@@ -35,5 +35,5 @@ services:
 	eventDispatcher:
 		class: Drago\Commerce\Event\EventDispatcher
 		setup:
-			- addListener(Drago\Commerce\Event\ProductAddedToCartEvent,@discountListener)
+			- addListener(Drago\Commerce\Event\ProductAddedToCart,@discountListener)
 			- addListener(Drago\Commerce\Event\OrderPlaced, @orderLoggerListener)

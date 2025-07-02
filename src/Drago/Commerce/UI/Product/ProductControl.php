@@ -84,14 +84,15 @@ class ProductControl extends BaseControl
 		$entity = $this->productRepository->getOne($data->productId);
 		$this->validateProduct($entity);
 
-		// Create domain model Product with original price for event dispatch
-		$productForEvent = $this->createProductFromEntity($entity, $this->commerce->moneyOf($entity->price));
+		// Create domain model Product with original price
+		$product = $this->createProductEntity($entity, $this->commerce->moneyOf($entity->price));
 
-		// Calculate final price after discounts/modifications via event
-		$finalPrice = $this->calculateFinalPrice($productForEvent);
+		// Dispatch event to possibly modify price (e.g., apply discount)
+		$event = new ProductAddedToCart($product, $product->price);
+		$this->eventDispatcher->dispatch($event);
 
-		// Create product item for cart with final price
-		$item = $this->createProductFromEntity($entity, $finalPrice);
+		// Create cart item with possibly modified price
+		$item = $this->createProductEntity($entity, $event->getPrice());
 
 		$this->shoppingCartSession->addItem($item);
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
@@ -118,21 +119,9 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Calculate final product price using event dispatching
-	 */
-	private function calculateFinalPrice(Product $product): Money
-	{
-		$originalPrice = $product->price;
-		$event = new ProductAddedToCart($product, $originalPrice);
-		$this->eventDispatcher->dispatch($event);
-		return $event->getFinalPrice();
-	}
-
-
-	/**
 	 * Create a Product domain object from entity and given price
 	 */
-	private function createProductFromEntity(ProductEntity $entity, Money $price): Product
+	private function createProductEntity(ProductEntity $entity, Money $price): Product
 	{
 		$product = new Product(
 			id: $entity->id,

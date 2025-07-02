@@ -23,7 +23,7 @@ class ProductAddedToCart
 	/**
 	 * Set the final price after discounts or modifications.
 	 */
-	public function setFinalPrice(Money $price): void
+	public function setPrice(Money $price): void
 	{
 		$this->finalPrice = $price;
 	}
@@ -32,7 +32,7 @@ class ProductAddedToCart
 	/**
 	 * Get the current final price of the product.
 	 */
-	public function getFinalPrice(): Money
+	public function getPrice(): Money
 	{
 		return $this->finalPrice;
 	}

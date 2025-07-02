@@ -15,5 +15,6 @@ class CartItemChanged
 	public function __construct(
 		public Product $product,
 		public int $amount,
-	) {}
+	) {
+	}
 }

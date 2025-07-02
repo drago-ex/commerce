@@ -16,5 +16,6 @@ class DeliveryOptionsChanged
 	public function __construct(
 		public Carrier $carrier,
 		public Payment $payment,
-	) {}
+	) {
+	}
 }

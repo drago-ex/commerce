@@ -22,5 +22,6 @@ class OrderPlaced
 		public Carrier $carrier,
 		public Payment $payment,
 		public ShoppingCartSession $shoppingCartSession,
-	) {}
+	) {
+	}
 }

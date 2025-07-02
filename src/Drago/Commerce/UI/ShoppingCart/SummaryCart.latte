@@ -42,16 +42,17 @@
 
 				{* Discount *}
 				<td>
-					<span class="badge bg-light text-danger">{$cart->product->discount}%</span>
+					{var $discount = $cart->product->discount ?? null}
+					<span n:if="$discount" class="badge bg-light text-danger">{$discount}%</span>
 				</td>
 
 				{* Remove item link *}
 				<td>
 					{var $linkAttrs = [
-						'role' => "button",
-						'class' => "ajax btn btn-sm btn-outline-danger",
-						'aria-label' => "Remove {$cart->product->name} from cart",
-						'data-naja-history' => "off"
+					'role' => "button",
+					'class' => "ajax btn btn-sm btn-outline-danger",
+					'aria-label' => "Remove {$cart->product->name} from cart",
+					'data-naja-history' => "off"
 					]}
 
 					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">

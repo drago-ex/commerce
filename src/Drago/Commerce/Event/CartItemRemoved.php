@@ -14,5 +14,6 @@ class CartItemRemoved
 {
 	public function __construct(
 		public Product $product,
-	) {}
+	) {
+	}
 }

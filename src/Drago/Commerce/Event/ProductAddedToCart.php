@@ -16,7 +16,8 @@ class ProductAddedToCart
 	public function __construct(
 		public Product $product,
 		public Money $finalPrice,
-	) {}
+	) {
+	}
 
 
 	/**

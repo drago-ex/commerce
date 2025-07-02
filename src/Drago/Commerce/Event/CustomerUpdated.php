@@ -14,5 +14,6 @@ class CustomerUpdated
 {
 	public function __construct(
 		public Customer $customer,
-	) {}
+	) {
+	}
 }

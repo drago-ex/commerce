@@ -168,6 +168,7 @@ class SummaryOrderControl extends BaseControl
 			$this->orderRepository->getConnection()->commit();
 			$this->eventDispatcher->dispatch(
 				new OrderPlaced(
+					orderId: $orderId,
 					orderSummary: $orderData,
 					customer: $customer,
 					carrier: $order->carrier,

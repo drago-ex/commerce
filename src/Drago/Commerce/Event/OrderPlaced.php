@@ -17,6 +17,7 @@ use Drago\Commerce\UI\Order\OrderSummary;
 class OrderPlaced
 {
 	public function __construct(
+		public int $orderId,
 		public OrderSummary $orderSummary,
 		public Customer $customer,
 		public Carrier $carrier,

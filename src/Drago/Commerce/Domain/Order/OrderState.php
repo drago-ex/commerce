@@ -19,7 +19,7 @@ use Drago\Commerce\Domain\Delivery\Payment;
  * This class aggregates the carrier, payment, and customer information
  * related to a single order. Each property can be null if not set yet.
  */
-class OrderDraft
+class OrderState
 {
 	public function __construct(
 		public ?Carrier $carrier,

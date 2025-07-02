@@ -23,3 +23,17 @@ services:
 	- Drago\Commerce\UI\ShoppingCart\MiniCartControl
 	- Drago\Commerce\UI\Order\DeliveryControl
 	- Drago\Commerce\UI\Order\SummaryOrderControl
+
+
+	# events listeners
+	discountListener:
+		class: Drago\Commerce\EventListener\DiscountListener
+
+	orderLoggerListener:
+		class: Drago\Commerce\EventListener\OrderLoggerListener
+
+	eventDispatcher:
+		class: Drago\Commerce\Event\EventDispatcher
+		setup:
+			- addListener(Drago\Commerce\Event\ProductAddedToCartEvent,@discountListener)
+			- addListener(Drago\Commerce\Event\OrderPlaced, @orderLoggerListener)

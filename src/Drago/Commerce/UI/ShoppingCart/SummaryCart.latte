@@ -18,6 +18,7 @@
 				<th scope="col"><small>Product name</small></th>
 				<th scope="col"><small>Price</small></th>
 				<th scope="col"><small>Amount</small></th>
+				<th scope="col">Discount</th>
 				<th scope="col"></th>
 			</tr>
 			</thead>
@@ -39,13 +40,18 @@
 					</form>
 				</td>
 
+				{* Discount *}
+				<td>
+					<span class="badge bg-light text-danger">{$cart->product->discount}%</span>
+				</td>
+
 				{* Remove item link *}
 				<td>
 					{var $linkAttrs = [
-					'role' => "button",
-					'class' => "ajax btn btn-sm btn-outline-danger",
-					'aria-label' => "Remove {$cart->product->name} from cart",
-					'data-naja-history' => "off"
+						'role' => "button",
+						'class' => "ajax btn btn-sm btn-outline-danger",
+						'aria-label' => "Remove {$cart->product->name} from cart",
+						'data-naja-history' => "off"
 					]}
 
 					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">

@@ -14,6 +14,8 @@ use Brick\Postcode\PostcodeFormatter;
 use Brick\Postcode\UnknownCountryException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
+use Drago\Commerce\Event\CustomerUpdated;
+use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -33,6 +35,7 @@ class CustomerControl extends BaseControl
 		private readonly OrderSession $orderSession,
 		private readonly Commerce $commerce,
 		private readonly CustomerFactory $customerFactory,
+		private readonly EventDispatcher $eventDispatcher,
 	) {
 	}
 
@@ -97,7 +100,8 @@ class CustomerControl extends BaseControl
 				note: $data->note,
 			);
 
-			$this->orderSession->addItemCustomer($customer);
+			$this->orderSession->setCustomer($customer);
+			$this->eventDispatcher->dispatch(new CustomerUpdated($customer));
 			$this->getPresenter()->redirect($this->linkRedirectTarget);
 
 		} catch (InvalidPostcodeException | UnknownCountryException $e) {

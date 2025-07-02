@@ -26,10 +26,13 @@ class ProductMapper
 	 */
 	public function map(ProductEntity $entity): Product
 	{
-		return new Product(
+		$product = new Product(
 			id: $entity->id,
 			name: $entity->name,
 			price: $this->commerce->moneyOf($entity->price),
 		);
+
+		$product->setDiscount($entity->discount);
+		return $product;
 	}
 }

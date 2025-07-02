@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Delivery;
 
+use App\Commerce\Domain\Discount;
 use Drago\Commerce\Domain\Item;
 
 
@@ -17,4 +18,5 @@ use Drago\Commerce\Domain\Item;
  */
 class Carrier extends Item
 {
+	use Discount;
 }

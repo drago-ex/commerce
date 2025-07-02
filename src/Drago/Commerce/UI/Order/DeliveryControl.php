@@ -16,6 +16,8 @@ use Drago\Commerce\Domain\Delivery\CarrierMapper;
 use Drago\Commerce\Domain\Delivery\CarrierRepository;
 use Drago\Commerce\Domain\Delivery\PaymentMapper;
 use Drago\Commerce\Domain\Delivery\PaymentRepository;
+use Drago\Commerce\Event\DeliveryOptionsChanged;
+use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -36,6 +38,7 @@ class DeliveryControl extends BaseControl
 		private readonly PaymentRepository $paymentRepository,
 		private readonly CarrierMapper $carrierMapper,
 		private readonly PaymentMapper $paymentMapper,
+		private readonly EventDispatcher $eventDispatcher,
 	) {
 	}
 
@@ -82,7 +85,6 @@ class DeliveryControl extends BaseControl
 	protected function createComponentDelivery(): Form
 	{
 		$form = new Form;
-
 		$carrierItems = $this->carrierRepository->getOnlyIds();
 		$form->addRadioList(DeliveryData::CarrierId, 'Carrier', $carrierItems)
 			->setRequired('Please select a carrier.');
@@ -106,15 +108,20 @@ class DeliveryControl extends BaseControl
 	 */
 	public function success(Form $form, DeliveryData $data): void
 	{
-		$carrier = $this->carrierRepository->getOne($data->carrierId);
-		$payment = $this->paymentRepository->getOne($data->paymentId);
+		$carrierEntity = $this->carrierRepository->getOne($data->carrierId);
+		$paymentEntity = $this->paymentRepository->getOne($data->paymentId);
 
-		if (!$carrier || !$payment) {
+		if (!$carrierEntity || !$paymentEntity) {
 			$this->error('Selected carrier or payment method not found.');
 		}
 
-		$this->orderSession->addItemCarrier($this->carrierMapper->map($carrier));
-		$this->orderSession->addItemPayment($this->paymentMapper->map($payment));
+		$carrier = $this->carrierMapper->map($carrierEntity);
+		$payment = $this->paymentMapper->map($paymentEntity);
+
+		$this->orderSession->setCarrier($carrier);
+		$this->orderSession->setPayment($payment);
+
+		$this->eventDispatcher->dispatch(new DeliveryOptionsChanged($carrier, $payment));
 		$this->getPresenter()->redirect($this->linkRedirectTarget);
 	}
 }

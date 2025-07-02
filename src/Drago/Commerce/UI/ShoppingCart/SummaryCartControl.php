@@ -15,6 +15,9 @@ use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
+use Drago\Commerce\Event\CartItemChanged;
+use Drago\Commerce\Event\CartItemRemoved;
+use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\Factory;
@@ -36,6 +39,7 @@ class SummaryCartControl extends BaseControl
 		private readonly ProductRepository $productRepository,
 		private readonly ProductMapper $productMapper,
 		private readonly Factory $factory,
+		private readonly EventDispatcher $eventDispatcher,
 	) {
 	}
 
@@ -72,7 +76,7 @@ class SummaryCartControl extends BaseControl
 	protected function createComponentChangeQuantity(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
-			$form = $this->factory->createWithAmount($productId);
+			$form = $this->factory->addChangeAmountInCart($productId);
 			$form->setTranslator($this->translator);
 			$form->onSuccess[] = $this->changeQuantity(...);
 			return $form;
@@ -107,8 +111,11 @@ class SummaryCartControl extends BaseControl
 	 */
 	public function changeQuantity(Form $form, FactoryData $data): void
 	{
-		$product = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
-		$this->shoppingCart->addItem($this->productMapper->map($product), $data->amount, dontCount: true);
+		$productEntity = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
+		$product = $this->productMapper->map($productEntity);
+		$this->shoppingCart->addItem($product, $data->amount, dontCount: true);
+
+		$this->eventDispatcher->dispatch(new CartItemChanged($product, $data->amount));
 		$this->redrawShoppingCart();
 	}
 
@@ -124,8 +131,11 @@ class SummaryCartControl extends BaseControl
 	 */
 	public function handleRemoveItem(int $productId): void
 	{
-		$product = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
-		$this->shoppingCart->removeItem($this->productMapper->map($product));
+		$productEntity = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
+		$product = $this->productMapper->map($productEntity);
+		$this->shoppingCart->removeItem($product);
+
+		$this->eventDispatcher->dispatch(new CartItemRemoved($product));
 		$this->redrawShoppingCart();
 	}
 }

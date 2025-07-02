@@ -15,7 +15,7 @@ use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
-use Drago\Commerce\Domain\Order\OrderDraft;
+use Drago\Commerce\Domain\Order\OrderState;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
@@ -60,16 +60,16 @@ class OrderSession
 	/**
 	 * Loads all order items from session.
 	 *
-	 * @return OrderDraft<Carrier|null, Payment|null, Customer|null>
+	 * @return OrderState<Carrier|null, Payment|null, Customer|null>
 	 */
-	public function getItems(): OrderDraft
+	public function getItems(): OrderState
 	{
 		$items = [];
 		foreach ($this->items() as $item) {
 			$items[$item] = $this->sessionSection->get($item);
 		}
 
-		return new OrderDraft(
+		return new OrderState(
 			$items[self::Carrier] ?? null,
 			$items[self::Payment] ?? null,
 			$items[self::Customer] ?? null,
@@ -82,7 +82,7 @@ class OrderSession
 	 *
 	 * @param Carrier $carrier Carrier object.
 	 */
-	public function addItemCarrier(Carrier $carrier): void
+	public function setCarrier(Carrier $carrier): void
 	{
 		$this->sessionSection->set(self::Carrier, $carrier);
 	}
@@ -112,7 +112,7 @@ class OrderSession
 	 *
 	 * @param Payment $payment Payment object.
 	 */
-	public function addItemPayment(Payment $payment): void
+	public function setPayment(Payment $payment): void
 	{
 		$this->sessionSection->set(self::Payment, $payment);
 	}
@@ -142,7 +142,7 @@ class OrderSession
 	 *
 	 * @param Customer $customer Customer object.
 	 */
-	public function addItemCustomer(Customer $customer): void
+	public function setCustomer(Customer $customer): void
 	{
 		$this->sessionSection->set(self::Customer, $customer);
 	}

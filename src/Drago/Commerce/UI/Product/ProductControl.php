@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Product;
 
-use Brick\Money\Currency;
-use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
@@ -20,6 +18,8 @@ use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductRepository;
+use Drago\Commerce\Event\EventDispatcher;
+use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\Factory;
@@ -37,11 +37,13 @@ class ProductControl extends BaseControl
 		readonly private ShoppingCartSession $shoppingCartSession,
 		readonly private Commerce $commerce,
 		readonly private Factory $factory,
+		readonly private EventDispatcher $eventDispatcher,
 	) {
 	}
 
 
 	/**
+	 * Render product listing template
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
@@ -55,6 +57,9 @@ class ProductControl extends BaseControl
 	}
 
 
+	/**
+	 * Create add-to-cart forms for each product using Nette Multiplier
+	 */
 	protected function createComponentAddToCart(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
@@ -67,15 +72,39 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * @throws UnknownCurrencyException
+	 * Handle add-to-cart form success
+	 * Validates product, calculates final price, adds item to cart
+	 *
 	 * @throws Exception
 	 * @throws AttributeDetectionException
-	 * @throws MoneyMismatchException
+	 * @throws UnknownCurrencyException
 	 */
 	public function success(Form $form, ProductData $data): void
 	{
-		$product = $this->productRepository->getOne($data->productId);
+		$entity = $this->productRepository->getOne($data->productId);
+		$this->validateProduct($entity);
 
+		// Create domain model Product with original price for event dispatch
+		$productForEvent = $this->createProductFromEntity($entity, $this->commerce->moneyOf($entity->price));
+
+		// Calculate final price after discounts/modifications via event
+		$finalPrice = $this->calculateFinalPrice($productForEvent);
+
+		// Create product item for cart with final price
+		$item = $this->createProductFromEntity($entity, $finalPrice);
+
+		$this->shoppingCartSession->addItem($item);
+		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
+		$this->redirect('this');
+	}
+
+
+	/**
+	 * Validate product existence, activity and stock
+	 * Redirects with a flash message if invalid
+	 */
+	private function validateProduct(?ProductEntity $product): void
+	{
 		if (!$product || !$product->active) {
 			$this->getPresenter()->flashMessage('The product does not exist or is not active.', Alert::Danger);
 			$this->getPresenter()->redirect('this');
@@ -85,44 +114,33 @@ class ProductControl extends BaseControl
 			$this->getPresenter()->flashMessage('The product is out of stock.', Alert::Warning);
 			$this->getPresenter()->redirect('this');
 		}
-
-		$product = $this->getProduct($data->productId);
-		$originalPrice = Money::of($product->price, $this->getCurrency());
-		$discountPercent = $product->discount ?? 0;
-
-		if ($discountPercent > 0) {
-			$discountAmount = $originalPrice->multipliedBy($discountPercent)->dividedBy(100);
-			$finalPrice = $originalPrice->minus($discountAmount);
-
-		} else {
-			$finalPrice = $originalPrice;
-		}
-
-		$item = new Product(
-			id: $product->id,
-			name: $product->name,
-			price: $finalPrice,
-		);
-
-		$this->shoppingCartSession->addItem($item);
-		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
-		$this->redirect('this');
-	}
-
-
-	private function getCurrency(): Currency
-	{
-		return $this->commerce->moneyZero()
-			->getCurrency();
 	}
 
 
 	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
+	 * Calculate final product price using event dispatching
 	 */
-	private function getProduct(int $productId): array|ProductEntity
+	private function calculateFinalPrice(Product $product): Money
 	{
-		return $this->productRepository->getOne($productId);
+		$originalPrice = $product->price;
+		$event = new ProductAddedToCart($product, $originalPrice);
+		$this->eventDispatcher->dispatch($event);
+		return $event->getFinalPrice();
+	}
+
+
+	/**
+	 * Create a Product domain object from entity and given price
+	 */
+	private function createProductFromEntity(ProductEntity $entity, Money $price): Product
+	{
+		$product = new Product(
+			id: $entity->id,
+			name: $entity->name,
+			price: $price,
+		);
+
+		$product->setDiscount($entity->discount);
+		return $product;
 	}
 }

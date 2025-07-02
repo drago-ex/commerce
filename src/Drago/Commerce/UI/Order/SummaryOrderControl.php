@@ -22,6 +22,8 @@ use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductRepository;
+use Drago\Commerce\Event\EventDispatcher;
+use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -41,6 +43,7 @@ class SummaryOrderControl extends BaseControl
 		private readonly OrderProductRepository $orderProductsRepository,
 		private readonly CustomerRepository $customerRepository,
 		private readonly ProductRepository $productRepository,
+		private readonly EventDispatcher $eventDispatcher,
 	) {
 	}
 
@@ -126,7 +129,7 @@ class SummaryOrderControl extends BaseControl
 			$this->customerRepository->save((array) $customerData);
 
 			// Save order.
-			$orderData = new Order(
+			$orderData = new OrderSummary(
 				customer_id: $this->customerRepository->getInsertId(),
 				carrier_id: $order->carrier->id,
 				payment_id: $order->payment->id,
@@ -163,6 +166,15 @@ class SummaryOrderControl extends BaseControl
 			}
 
 			$this->orderRepository->getConnection()->commit();
+			$this->eventDispatcher->dispatch(
+				new OrderPlaced(
+					orderSummary: $orderData,
+					customer: $customer,
+					carrier: $order->carrier,
+					payment: $order->payment,
+					shoppingCartSession: $this->shoppingCartSession,
+				),
+			);
 
 			$this->shoppingCartSession->remove();
 			$this->orderSession->remove();

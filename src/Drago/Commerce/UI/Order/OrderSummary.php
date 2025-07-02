@@ -15,7 +15,7 @@ use DateTimeImmutable;
 /**
  * Represents a customer order.
  */
-class Order
+class OrderSummary
 {
 	public function __construct(
 		public int $customer_id,

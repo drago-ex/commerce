@@ -35,7 +35,7 @@
 				<td>
 					<form n:name="changeQuantity-{$cart->product->id}" class="ajax d-flex" data-items-cart data-naja-history="replace">
 						<label n:name="amount" class="w-25">
-							<input n:name="amount"class="form-control form-control-sm" />
+							<input n:name="amount" value="{$cart->amount}" class="form-control form-control-sm" />
 						</label>
 					</form>
 				</td>
@@ -49,10 +49,10 @@
 				{* Remove item link *}
 				<td>
 					{var $linkAttrs = [
-					'role' => "button",
-					'class' => "ajax btn btn-sm btn-outline-danger",
-					'aria-label' => "Remove {$cart->product->name} from cart",
-					'data-naja-history' => "off"
+						'role' => "button",
+						'class' => "ajax btn btn-sm btn-outline-danger",
+						'aria-label' => "Remove {$cart->product->name} from cart",
+						'data-naja-history' => "off"
 					]}
 
 					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">

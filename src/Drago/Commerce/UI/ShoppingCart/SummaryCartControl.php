@@ -12,6 +12,7 @@ namespace Drago\Commerce\UI\ShoppingCart;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
+use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
@@ -113,8 +114,16 @@ class SummaryCartControl extends BaseControl
 	{
 		$productEntity = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
 		$product = $this->productMapper->map($productEntity);
-		$this->shoppingCart->addItem($product, $data->amount, dontCount: true);
 
+		if ($productEntity->stock < $data->amount) {
+			$message = "The product $product->name is only $productEntity->stock pcs in stock.";
+			$this->getPresenter()->flashMessage($message, Alert::Danger);
+			$this->getPresenter()->redrawControl('message');
+			$this->redrawShoppingCart();
+			return;
+		}
+
+		$this->shoppingCart->addItem($product, $data->amount, dontCount: true);
 		$this->eventDispatcher->dispatch(new CartItemChanged($product, $data->amount));
 		$this->redrawShoppingCart();
 	}

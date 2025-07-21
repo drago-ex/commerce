@@ -1,4 +1,4 @@
-# Drago Commerce
+# Drago Commerce (development version)
 Simple shopping cart.
 
 ## Requirements

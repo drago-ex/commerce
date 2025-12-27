@@ -2,8 +2,9 @@
 Simple shopping cart.
 
 ## Requirements
-- PHP 8.3 or higher
-- composer
+- PHP >= 8.3
+- Nette Framework
+- Composer
 
 ## Installation
 ```bash

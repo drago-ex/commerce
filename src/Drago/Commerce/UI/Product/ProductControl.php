@@ -33,11 +33,11 @@ use Nette\Application\UI\Multiplier;
 class ProductControl extends BaseControl
 {
 	public function __construct(
-		readonly private ProductRepository $productRepository,
-		readonly private ShoppingCartSession $shoppingCartSession,
-		readonly private Commerce $commerce,
-		readonly private Factory $factory,
-		readonly private EventDispatcher $eventDispatcher,
+		private readonly ProductRepository $productRepository,
+		private readonly ShoppingCartSession $shoppingCartSession,
+		private readonly Commerce $commerce,
+		private readonly Factory $factory,
+		private readonly EventDispatcher $eventDispatcher,
 	) {
 	}
 

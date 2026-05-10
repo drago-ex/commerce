@@ -1,5 +1,8 @@
 # Drago Commerce (development version)
+
 Simple shopping cart.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/drago-ex/commerce/blob/main/license)
 
 ## Requirements
 - PHP >= 8.3
@@ -11,7 +14,7 @@ Simple shopping cart.
 composer require drago-ex/commerce
 ```
 
-## Register the Extension
+## Extension Registration
 In your `config.neon` file, register the extension:
 ```neon
 extensions:
@@ -80,7 +83,7 @@ protected function createComponentDelivery(): DeliveryControl
 ## Optional Custom Template
 Each control/component has a public property called `templateControl` that lets you specify a custom template file for rendering. Use this if you want to customize the look or layout of the component.
 
-Here’s a simple example showing how to set a custom template in the component factory method:
+Here's a simple example showing how to set a custom template in the component factory method:
 ```php
 protected function createComponentDelivery(): DeliveryControl
 {

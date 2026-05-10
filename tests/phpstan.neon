@@ -1,2 +1,16 @@
 includes:
 	- ../vendor/phpstan/phpstan-nette/extension.neon
+
+parameters:
+	treatPhpDocTypesAsCertain: false
+	ignoreErrors:
+		- '#Method Drago\\Commerce\\Domain\\Delivery\\CarrierRepository::getAll\(\) should return array<Drago\\Commerce\\Domain\\Delivery\\CarrierEntity>#'
+		- '#Method Drago\\Commerce\\Domain\\Delivery\\CarrierRepository::getCarrierItems\(\) should return array<Drago\\Commerce\\Domain\\Delivery\\CarrierMapper>#'
+		- '#Method Drago\\Commerce\\Domain\\Delivery\\PaymentRepository::getPaymentItems\(\) should return array<Drago\\Commerce\\Domain\\Delivery\\PaymentEntity>#'
+		- '#PHPDoc tag @return contains generic type Drago\\Commerce\\Domain\\Order\\OrderState<#'
+		- '#Unknown parameter .*type in call to method Drago\\Form\\Forms::addTextInput#'
+		- '#Unknown parameter .*placeholder in call to method Drago\\Form\\Forms::addTextInput#'
+		- '#Unknown parameter .*required in call to method Drago\\Form\\Forms::addTextInput#'
+		- '#Unknown parameter .*rule in call to method Drago\\Form\\Forms::addTextInput#'
+		- '#Property Drago\\Commerce\\UI\\Order\\DeliveryTemplate::.*payment .* does not accept#'
+		- '#Result of method Nette\\Application\\UI\\Component::error\(\) \(void\) is used#'

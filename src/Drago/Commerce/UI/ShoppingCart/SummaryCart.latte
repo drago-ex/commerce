@@ -13,7 +13,7 @@
 	{* Responsive product table *}
 	<div class="table-responsive">
 		<table class="table table-hover table-sm align-middle table-borderless">
-			<thead class="table-light">
+			<thead>
 			<tr>
 				<th scope="col"><small>Product name</small></th>
 				<th scope="col"><small>Price</small></th>
@@ -43,7 +43,7 @@
 				{* Discount *}
 				<td>
 					{var $discount = $cart->product->discount ?? null}
-					<span n:if="$discount" class="badge bg-light text-danger">{$discount}%</span>
+					<span n:if="$discount" class="badge border border-danger-subtle text-danger">{$discount}%</span>
 				</td>
 
 				{* Remove item link *}

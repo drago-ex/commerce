@@ -32,7 +32,7 @@
                     </h6>
 
                     {* Short product description *}
-                    <p class="card-text small text-muted mb-2">
+                    <p class="card-text small text-body-secondary mb-2">
                         {$product->description|truncate:50}
                     </p>
 
@@ -48,7 +48,7 @@
                             <div class="mb-2">
 
                                 {* Original price, crossed out, for visual indication of discount *}
-                                <span class="text-muted text-decoration-line-through me-2" aria-label="Original price">
+                                <span class="text-body-secondary text-decoration-line-through me-2" aria-label="Original price">
                                     {$product->getPrice()|money}
                                 </span>
 
@@ -67,11 +67,11 @@
                         {/if}
 
                         {if $product->getStock() > 5}
-                            <p class="small text-muted mb-2">
+                            <p class="small text-body-secondary mb-2">
                                 In stock &gt; 5 pcs
                             </p>
                         {elseif $product->getStock() > 0}
-                            <p class="small text-muted mb-2">
+                            <p class="small text-body-secondary mb-2">
                                 In stock: {$product->getStock()} pcs
                             </p>
                         {else}

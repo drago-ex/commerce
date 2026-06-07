@@ -8,14 +8,14 @@
 <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
 
     {* Shop name on the left linking to homepage *}
-    <a href="/" class="text-decoration-none text-dark fw-semibold fs-3 ps-0">
+    <a href="/" class="text-decoration-none text-body-emphasis fw-semibold fs-3 ps-0">
         Drago Commerce
     </a>
 
     {* Mini cart on the right *}
     {var $linkAttrs = [
         'href' => $linkShoppingCart,
-        'class' => "d-flex align-items-center text-decoration-none text-dark pe-3",
+        'class' => "d-flex align-items-center text-decoration-none text-body-emphasis pe-3",
         'aria-label' => "Go to shopping cart with $amountItems items, total price $formattedTotalPrice"
     ]}
 

@@ -19,9 +19,9 @@ use Drago\Commerce\UI\BaseTemplate;
  */
 class DeliveryTemplate extends BaseTemplate
 {
-	/** @temp CarrierMapper[] */
+	/** @var CarrierMapper[] */
 	public array $carrier = [];
 
-	/** @temp PaymentMapper[] */
+	/** @var PaymentMapper[] */
 	public array $payment = [];
 }

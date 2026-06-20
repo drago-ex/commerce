@@ -11,7 +11,7 @@ namespace Drago\Commerce\Event;
  */
 class EventDispatcher
 {
-	/** @temp array<string, callable|object[]> Listeners by event class */
+	/** @var array<string, callable|object[]> Listeners by event class */
 	private array $listeners = [];
 
 

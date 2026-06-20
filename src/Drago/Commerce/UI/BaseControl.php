@@ -33,7 +33,7 @@ class BaseControl extends ExtraControl
 	 * List of all steps in the navigation.
 	 * Associative array where keys are step identifiers and values are labels.
 	 *
-	 * @var array<string, string>
+	 * @temp array<string, string>
 	 */
 	protected array $steps = [];
 
@@ -45,7 +45,7 @@ class BaseControl extends ExtraControl
 	/**
 	 * List of identifiers for completed steps.
 	 *
-	 * @var string[]
+	 * @temp string[]
 	 */
 	protected array $completedSteps = [];
 

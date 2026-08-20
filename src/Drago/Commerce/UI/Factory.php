@@ -34,7 +34,7 @@ readonly class Factory
 	public function addHiddenProductId(string $productId): BaseForm
 	{
 		$form = $this->create();
-		$form->addHidden(FactoryData::ProductId, $productId)
+		$form->addHidden(FactoryValues::ProductId, $productId)
 			->addRule($form::Integer);
 
 		return $form;
@@ -44,7 +44,7 @@ readonly class Factory
 	public function addChangeAmountInCart(string $productId): BaseForm
 	{
 		$form = $this->addHiddenProductId($productId);
-		$form->addInteger(FactoryData::Amount)
+		$form->addInteger(FactoryValues::Amount)
 			->setDefaultValue(1)
 			->setHtmlAttribute('autocomplete', 'off')
 			->addRule($form::Min, arg: 1)

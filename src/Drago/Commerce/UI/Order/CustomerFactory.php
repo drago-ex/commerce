@@ -30,16 +30,11 @@ class CustomerFactory
 	public function addCustomer(): BaseForm
 	{
 		$form = $this->factory->create();
-		$form->addTextInput(
-			name: CustomerData::Email,
-			label: 'Email',
-			type: 'email',
-			placeholder: 'Email address',
-			required: 'Please enter your email address.',
-			rule: $form::Email,
-		)->setAutocomplete(Autocomplete::Email);
+		$form->addEmailInput(CustomerValues::Email, 'Email')
+			->setAutocomplete(Autocomplete::Email)
+			->addRule($form::Email);
 
-		$phone = $form->addPhoneNumber(CustomerData::Phone, 'Phone')
+		$phone = $form->addPhoneNumber(CustomerValues::Phone, 'Phone')
 			->setHtmlAttribute('autocomplete', Autocomplete::Tel)
 			->setHtmlAttribute('placeholder', 'Please enter a phone number')
 			->setHtmlAttribute('pattern', null)
@@ -63,51 +58,38 @@ class CustomerFactory
 			);
 		}
 
-		$form->addTextInput(
-			name: CustomerData::Name,
-			label: 'Name',
-			placeholder: 'Your name',
-			required: 'Please enter your name',
-		)->setAutocomplete(Autocomplete::GivenName);
+		$form->addTextInput(CustomerValues::Name, 'Name')
+			->setAutocomplete(Autocomplete::GivenName)
+			->setPlaceholder('Your name')
+			->setRequired('Please enter your name');
 
-		$form->addTextInput(
-			name: CustomerData::Surname,
-			label: 'Surname',
-			placeholder: 'Your surname',
-			required: 'Please enter your surname',
-		)->setAutocomplete(Autocomplete::FamilyName);
+		$form->addTextInput(CustomerValues::Surname, 'Surname')
+			->setAutocomplete(Autocomplete::FamilyName)
+			->setPlaceholder('Your surname')
+			->setRequired('Please enter your surname');
 
-		$form->addTextInput(
-			name: CustomerData::Street,
-			label: 'Street',
-			placeholder: 'Your street',
-			required: 'Please enter your street',
-		)->setAutocomplete(Autocomplete::AddressLine1);
+		$form->addTextInput(CustomerValues::Street, 'Street')
+			->setAutocomplete(Autocomplete::AddressLine1)
+			->setPlaceholder('Your street')
+			->setRequired('Please enter your street');
 
-		$form->addTextInput(
-			name: CustomerData::City,
-			label: 'City',
-			placeholder: 'Your city',
-			required: 'Please enter your city',
-		)->setAutocomplete(Autocomplete::AddressLevel2);
+		$form->addTextInput(CustomerValues::City, 'City')
+			->setAutocomplete(Autocomplete::AddressLevel2)
+			->setPlaceholder('Your city')
+			->setRequired('Please enter your city');
 
-		$form->addTextInput(
-			name: CustomerData::Country,
-			label: 'Country',
-			placeholder: 'Your country',
-			required: 'Please enter your country',
-		)->setAutocomplete(Autocomplete::Country);
+		$form->addTextInput(CustomerValues::Country, 'Country')
+			->setAutocomplete(Autocomplete::Country)
+			->setPlaceholder('Your country')
+			->setRequired('Please enter your country');
 
-		$form->addTextInput(
-			name: CustomerData::PostalCode,
-			label: 'Postal Code',
-			placeholder: 'Your postal code',
-			required: 'Please enter your postal code',
-		)->setAutocomplete(Autocomplete::PostalCode);
+		$form->addTextInput(CustomerValues::PostalCode, 'Postal Code')
+			->setAutocomplete(Autocomplete::PostalCode)
+			->setPlaceholder('Your postal code')
+			->setRequired('Please enter your postal code');
 
 
-		$form->addTextArea(CustomerData::Note, 'Note');
-		$form->addProtection('The form has expired! Please try again.');
+		$form->addTextArea(CustomerValues::Note, 'Note');
 		$form->addSubmit('send', 'Continue');
 
 		return $form;

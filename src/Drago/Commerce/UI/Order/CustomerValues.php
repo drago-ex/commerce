@@ -17,7 +17,7 @@ use Nette\Utils\ArrayHash;
  * Data transfer object for customer information.
  * Represents customer details used in forms and order processing.
  */
-class CustomerData extends ArrayHash
+class CustomerValues extends ArrayHash
 {
 	public const string
 		Id = 'id',

@@ -68,7 +68,7 @@ class DeliveryControl extends BaseControl
 				$buttonSend = $this->getFormComponent($form, 'send');
 				$buttonSend->setCaption('Update');
 
-				$data = new DeliveryData;
+				$data = new DeliveryValues;
 				$data->carrierId = $delivery->carrier->id;
 				$data->paymentId = $delivery->payment->id;
 				$form->setDefaults($data);
@@ -86,11 +86,11 @@ class DeliveryControl extends BaseControl
 	{
 		$form = new Form;
 		$carrierItems = $this->carrierRepository->getOnlyIds();
-		$form->addRadioList(DeliveryData::CarrierId, 'Carrier', $carrierItems)
+		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $carrierItems)
 			->setRequired('Please select a carrier.');
 
 		$paymentItems = $this->paymentRepository->getOnlyIds();
-		$form->addRadioList(DeliveryData::PaymentId, 'Payment', $paymentItems)
+		$form->addRadioList(DeliveryValues::PaymentId, 'Payment', $paymentItems)
 			->setRequired('Please select a payment method.');
 
 		$form->addSubmit('send', 'Continue');
@@ -106,7 +106,7 @@ class DeliveryControl extends BaseControl
 	 * @throws Exception
 	 * @throws BadRequestException
 	 */
-	public function success(Form $form, DeliveryData $data): void
+	public function success(Form $form, DeliveryValues $data): void
 	{
 		$carrierEntity = $this->carrierRepository->getOne($data->carrierId);
 		$paymentEntity = $this->paymentRepository->getOne($data->paymentId);

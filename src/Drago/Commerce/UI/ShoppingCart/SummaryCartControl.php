@@ -22,7 +22,7 @@ use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\Factory;
-use Drago\Commerce\UI\FactoryData;
+use Drago\Commerce\UI\FactoryValues;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -110,7 +110,7 @@ class SummaryCartControl extends BaseControl
 	 * @throws UnknownCurrencyException
 	 * @throws BadRequestException
 	 */
-	public function changeQuantity(Form $form, FactoryData $data): void
+	public function changeQuantity(Form $form, FactoryValues $data): void
 	{
 		$productEntity = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
 		$product = $this->productMapper->map($productEntity);

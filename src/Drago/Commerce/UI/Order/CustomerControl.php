@@ -81,7 +81,7 @@ class CustomerControl extends BaseControl
 	 *
 	 * @throws AbortException
 	 */
-	public function success(Form $form, CustomerData $data): void
+	public function success(Form $form, CustomerValues $data): void
 	{
 		try {
 			$postCode  = $this->commerce->getPostCodeOnRegionPhone()

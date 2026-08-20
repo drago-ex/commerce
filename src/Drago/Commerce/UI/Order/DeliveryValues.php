@@ -15,7 +15,7 @@ use Nette\Utils\ArrayHash;
 /**
  * Data container for delivery form data.
  */
-class DeliveryData extends ArrayHash
+class DeliveryValues extends ArrayHash
 {
 	public const string
 		CarrierId = 'carrierId',

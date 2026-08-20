@@ -15,7 +15,7 @@ use Nette\Utils\ArrayHash;
 /**
  * Represents form data for product operations.
  */
-class FactoryData extends ArrayHash
+class FactoryValues extends ArrayHash
 {
 	public const string
 		ProductId = 'productId',

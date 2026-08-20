@@ -5,3 +5,5 @@ parameters:
     level: 8
     paths:
         - src
+    ignoreErrors:
+        - '#Trait Drago\\Commerce\\UI\\CommerceControl is used zero times and is not analysed\.#'

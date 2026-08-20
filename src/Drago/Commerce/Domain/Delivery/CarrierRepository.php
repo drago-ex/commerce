@@ -17,9 +17,10 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-#[Table(CarrierEntity::Table, CarrierEntity::PrimaryKey)]
+#[Table(CarrierEntity::Table, CarrierEntity::PrimaryKey, entity: CarrierEntity::class)]
 class CarrierRepository
 {
+	/** @use Database<CarrierEntity> */
 	use Database;
 
 	public function __construct(
@@ -30,6 +31,7 @@ class CarrierRepository
 
 
 	/**
+	 * @return array<int|string, int|string>
 	 * @throws AttributeDetectionException
 	 */
 	public function getOnlyIds(): array
@@ -43,29 +45,27 @@ class CarrierRepository
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
-	public function getOne(int $id): array|CarrierEntity|null
+	public function getOne(int $id): ?CarrierEntity
 	{
-		return $this->get($id)->execute()
-			->setRowClass(CarrierEntity::class)
-			->fetch();
+		return $this->get($id)
+			->record();
 	}
 
 
 	/**
-	 * @return CarrierEntity[]
+	 * @return list<CarrierEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getAll(): array
 	{
-		return $this->read('*')->execute()
-			->setRowClass(CarrierEntity::class)
-			->fetchAll();
+		return $this->read('*')
+			->recordAll();
 	}
 
 
 	/**
-	 * @return CarrierMapper[]
+	 * @return list<Carrier>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException

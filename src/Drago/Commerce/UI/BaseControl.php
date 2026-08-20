@@ -52,6 +52,8 @@ class BaseControl extends ExtraControl
 
 	/**
 	 * Sets the list of all navigation steps.
+	 *
+	 * @param array<string, string> $steps
 	 */
 	public function setSteps(array $steps): void
 	{
@@ -70,6 +72,8 @@ class BaseControl extends ExtraControl
 
 	/**
 	 * Sets the list of completed steps identifiers.
+	 *
+	 * @param string[] $completedSteps
 	 */
 	public function setCompletedSteps(array $completedSteps): void
 	{

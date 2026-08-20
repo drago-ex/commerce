@@ -19,6 +19,7 @@ use Drago\Database\Database;
 #[Table(ProductEntity::Table, ProductEntity::PrimaryKey, class: ProductEntity::class)]
 class ProductRepository
 {
+	/** @use Database<ProductEntity> */
 	use Database;
 
 	public function __construct(
@@ -31,7 +32,7 @@ class ProductRepository
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	public function getOne(int $id): ProductEntity|null
+	public function getOne(int $id): ?ProductEntity
 	{
 		return $this->get($id)
 			->record();
@@ -39,7 +40,7 @@ class ProductRepository
 
 
 	/**
-	 * @return ProductEntity[]
+	 * @return list<ProductEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

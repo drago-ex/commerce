@@ -18,6 +18,10 @@ namespace Drago\Commerce\UI;
  */
 class Breadcrumbs
 {
+	/**
+	 * @param array<string, string> $steps
+	 * @param string[] $completedSteps
+	 */
 	public function __construct(
 		public array $steps,
 		public array $completedSteps,

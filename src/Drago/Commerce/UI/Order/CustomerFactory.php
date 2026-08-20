@@ -44,9 +44,12 @@ class CustomerFactory
 		$countryIsoCode = $this->readerGeoLite->getCountryIsoCode();
 
 		if ($defaultRegionCode) {
-			is_array($defaultRegionCode) && in_array('autoDetect', $defaultRegionCode, true)
-				? $phone->setDefaultRegionCode($countryIsoCode ?? $defaultRegionCode[1])
-				: $phone->setDefaultRegionCode($defaultRegionCode);
+			if (is_array($defaultRegionCode) && in_array('autoDetect', $defaultRegionCode, true)) {
+				$fallback = isset($defaultRegionCode[1]) && is_string($defaultRegionCode[1]) ? $defaultRegionCode[1] : null;
+				$phone->setDefaultRegionCode($countryIsoCode ?? $fallback);
+			} elseif (is_string($defaultRegionCode)) {
+				$phone->setDefaultRegionCode($defaultRegionCode);
+			}
 		}
 
 		$allowedPhoneNumber = $this->commerce->getAllowedRegionPhoneNumber();

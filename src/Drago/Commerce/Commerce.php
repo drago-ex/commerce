@@ -20,9 +20,13 @@ class Commerce
 	public static string $moneySymbol;
 	public static int $moneyFractionDigits;
 
+	/** @var array<string, mixed> */
 	private array $config;
 
 
+	/**
+	 * @param array<string, mixed> $config
+	 */
 	public function __construct(array $config)
 	{
 		$this->config = $config;
@@ -49,6 +53,9 @@ class Commerce
 	}
 
 
+	/**
+	 * @return array<int|string, mixed>|string|false
+	 */
 	public function getDefaultRegionCode(): array|string|false
 	{
 		return $this->config['defaultRegionCode'] ?? false;
@@ -61,6 +68,9 @@ class Commerce
 	}
 
 
+	/**
+	 * @return array<int|string, mixed>|string
+	 */
 	public function getAllowedRegionPhoneNumber(): array|string
 	{
 		return $this->config['allowedRegionPhoneNumber'] ?? [];

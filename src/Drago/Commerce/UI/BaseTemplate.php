@@ -23,7 +23,7 @@ use NumberFormatter;
 class BaseTemplate extends ExtraTemplate
 {
 	/**
-	 * Items in the shopping cart
+	 * @var array<int|string, mixed> Items in the shopping cart
 	 */
 	public array $shoppingCart;
 
@@ -58,16 +58,14 @@ class BaseTemplate extends ExtraTemplate
 			);
 		}
 
-		if (Commerce::$moneyFractionDigits !== null) {
-			$formatter->setAttribute(
-				NumberFormatter::MIN_FRACTION_DIGITS,
-				Commerce::$moneyFractionDigits,
-			);
-			$formatter->setAttribute(
-				NumberFormatter::MAX_FRACTION_DIGITS,
-				Commerce::$moneyFractionDigits,
-			);
-		}
+		$formatter->setAttribute(
+			NumberFormatter::MIN_FRACTION_DIGITS,
+			Commerce::$moneyFractionDigits,
+		);
+		$formatter->setAttribute(
+			NumberFormatter::MAX_FRACTION_DIGITS,
+			Commerce::$moneyFractionDigits,
+		);
 
 		return $money->formatWith($formatter);
 	}

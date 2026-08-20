@@ -59,8 +59,6 @@ class OrderSession
 
 	/**
 	 * Loads all order items from session.
-	 *
-	 * @return OrderState<Carrier|null, Payment|null, Customer|null>
 	 */
 	public function getItems(): OrderState
 	{

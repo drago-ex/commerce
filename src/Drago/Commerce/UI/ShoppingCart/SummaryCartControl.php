@@ -21,6 +21,7 @@ use Drago\Commerce\Event\CartItemRemoved;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
 use Drago\Commerce\UI\FactoryValues;
 use Nette\Application\AbortException;
@@ -52,11 +53,11 @@ class SummaryCartControl extends BaseControl
 	public function render(): void
 	{
 		// Set default values for addToBasket forms based on basket items
+		/** @var Multiplier<BaseForm> $multiplier */
+		$multiplier = $this->getComponent('changeQuantity');
 		foreach ($this->shoppingCart->getItems() as $item) {
-			$form = $this['changeQuantity'][$item->product->id] ?? null;
-			if ($form instanceof Form) {
-				$form->setDefaults($item);
-			}
+			$form = $multiplier->getComponent((string) $item->product->id);
+			$form->setDefaults((array) $item);
 		}
 
 		$template = $this->template;
@@ -73,6 +74,8 @@ class SummaryCartControl extends BaseControl
 
 	/**
 	 * Component for adding an item with amount to the cart.
+	 *
+	 * @return Multiplier<BaseForm>
 	 */
 	protected function createComponentChangeQuantity(): Multiplier
 	{

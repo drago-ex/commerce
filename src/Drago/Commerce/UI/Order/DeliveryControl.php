@@ -66,7 +66,9 @@ class DeliveryControl extends BaseControl
 			if (!$form->isSubmitted()) {
 
 				$buttonSend = $this->getFormComponent($form, 'send');
-				$buttonSend->setCaption('Update');
+				if ($buttonSend !== null) {
+					$buttonSend->setCaption('Update');
+				}
 
 				$data = new DeliveryValues;
 				$data->carrierId = $delivery->carrier->id;

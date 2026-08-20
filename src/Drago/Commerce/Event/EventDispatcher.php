@@ -11,7 +11,7 @@ namespace Drago\Commerce\Event;
  */
 class EventDispatcher
 {
-	/** @var array<string, callable|object[]> Listeners by event class */
+	/** @var array<string, list<callable|object>> Listeners by event class */
 	private array $listeners = [];
 
 
@@ -31,7 +31,9 @@ class EventDispatcher
 	{
 		$eventClass = $event::class;
 		foreach ($this->listeners[$eventClass] ?? [] as $listener) {
-			$listener($event);
+			if (is_callable($listener)) {
+				$listener($event);
+			}
 		}
 	}
 }

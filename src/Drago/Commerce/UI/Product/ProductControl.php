@@ -22,6 +22,7 @@ use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
@@ -59,6 +60,8 @@ class ProductControl extends BaseControl
 
 	/**
 	 * Create add-to-cart forms for each product using Nette Multiplier
+	 *
+	 * @return Multiplier<BaseForm>
 	 */
 	protected function createComponentAddToCart(): Multiplier
 	{
@@ -83,6 +86,10 @@ class ProductControl extends BaseControl
 	{
 		$entity = $this->productRepository->getOne($data->productId);
 		$this->validateProduct($entity);
+
+		if ($entity === null) {
+			return;
+		}
 
 		// Create domain model Product with original price
 		$product = $this->createProductEntity($entity, $this->commerce->moneyOf($entity->price));

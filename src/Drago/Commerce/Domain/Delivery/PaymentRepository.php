@@ -20,6 +20,7 @@ use Drago\Database\Database;
 #[Table(PaymentEntity::Table, PaymentEntity::PrimaryKey, class: PaymentEntity::class)]
 class PaymentRepository
 {
+	/** @use Database<PaymentEntity> */
 	use Database;
 
 	public function __construct(
@@ -30,6 +31,7 @@ class PaymentRepository
 
 
 	/**
+	 * @return array<int|string, int|string>
 	 * @throws AttributeDetectionException
 	 */
 	public function getOnlyIds(): array
@@ -43,7 +45,7 @@ class PaymentRepository
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
-	public function getOne(int $id): PaymentEntity|null
+	public function getOne(int $id): ?PaymentEntity
 	{
 		return $this->get($id)
 			->record();
@@ -51,7 +53,7 @@ class PaymentRepository
 
 
 	/**
-	 * @return PaymentEntity[]
+	 * @return list<PaymentEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -63,7 +65,7 @@ class PaymentRepository
 
 
 	/**
-	 * @return PaymentEntity[]
+	 * @return list<Payment>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException

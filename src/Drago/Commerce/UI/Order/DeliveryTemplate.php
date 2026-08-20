@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
-use Drago\Commerce\Domain\Delivery\CarrierMapper;
-use Drago\Commerce\Domain\Delivery\PaymentMapper;
+use Drago\Commerce\Domain\Delivery\Carrier;
+use Drago\Commerce\Domain\Delivery\Payment;
 use Drago\Commerce\UI\BaseTemplate;
 
 
@@ -19,9 +19,9 @@ use Drago\Commerce\UI\BaseTemplate;
  */
 class DeliveryTemplate extends BaseTemplate
 {
-	/** @var CarrierMapper[] */
+	/** @var Carrier[] */
 	public array $carrier = [];
 
-	/** @var PaymentMapper[] */
+	/** @var Payment[] */
 	public array $payment = [];
 }

@@ -34,10 +34,13 @@ final class CheckoutSteps
 	/** Route for the order confirmation step */
 	public string $orderDone;
 
-	/** List of visible steps in the checkout */
+	/** @var array<string, string> List of visible steps in the checkout */
 	public array $steps;
 
 
+	/**
+	 * @param array<string, mixed> $customSteps
+	 */
 	public function __construct(array $customSteps = [])
 	{
 		$this->products = 'default';

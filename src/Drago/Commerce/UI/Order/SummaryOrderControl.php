@@ -106,18 +106,34 @@ class SummaryOrderControl extends BaseControl
 	 * @throws DriverException
 	 * @throws \Exception
 	 */
+	/**
+	 * @throws MoneyMismatchException
+	 * @throws DriverException
+	 * @throws \Exception
+	 */
 	public function processOrder(Form $form): void
 	{
 		$order = $this->orderSession->getItems();
 		$customer = $order->customer;
+		$carrier = $order->carrier;
+		$payment = $order->payment;
+
+		if ($customer === null || $carrier === null || $payment === null) {
+			$form->addError('Order details are incomplete.');
+			return;
+		}
 
 		try {
 			$this->orderRepository->getConnection()->begin();
 
 			// Save the customer.
+			$phoneStr = $customer->phone instanceof \Brick\PhoneNumber\PhoneNumber
+				? $customer->phone->format(PhoneNumberFormat::INTERNATIONAL)
+				: (string) $customer->phone;
+
 			$customerData = new Customer(
 				email: $customer->email,
-				phone: $customer->phone->format(PhoneNumberFormat::INTERNATIONAL),
+				phone: $phoneStr,
 				name: $customer->name,
 				surname: $customer->surname,
 				street: $customer->street,
@@ -131,10 +147,10 @@ class SummaryOrderControl extends BaseControl
 			// Save order.
 			$orderData = new OrderSummary(
 				customer_id: $this->customerRepository->getInsertId(),
-				carrier_id: $order->carrier->id,
-				payment_id: $order->payment->id,
-				carrier_price: $this->getAmountPrice($order->carrier->price),
-				payment_price: $this->getAmountPrice($order->payment->price),
+				carrier_id: $carrier->id,
+				payment_id: $payment->id,
+				carrier_price: $this->getAmountPrice($carrier->price),
+				payment_price: $this->getAmountPrice($payment->price),
 				total_price: $this->getAmountPrice($this->getTotalPrice()),
 				created_at: new DateTimeImmutable,
 			);
@@ -144,6 +160,9 @@ class SummaryOrderControl extends BaseControl
 			$orderId = $this->orderRepository->getInsertId();
 			foreach ($this->shoppingCartSession->getItems() as $item) {
 				$product = $this->productRepository->getOne($item->product->id);
+				if ($product === null) {
+					throw new \Exception("Product with ID {$item->product->id} not found.");
+				}
 
 				if ($product->stock < $item->amount->toInt()) {
 					throw new \Exception("The product '{$product->name}' is not in stock in the requested quantity.");
@@ -171,8 +190,8 @@ class SummaryOrderControl extends BaseControl
 					orderId: $orderId,
 					orderSummary: $orderData,
 					customer: $customer,
-					carrier: $order->carrier,
-					payment: $order->payment,
+					carrier: $carrier,
+					payment: $payment,
 					shoppingCartSession: $this->shoppingCartSession,
 				),
 			);

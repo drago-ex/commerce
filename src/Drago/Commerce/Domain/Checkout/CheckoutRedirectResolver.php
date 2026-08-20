@@ -46,15 +46,13 @@ final readonly class CheckoutRedirectResolver
 				: null,
 
 			$step->customer => match (true) {
-				$carrier === null && $hasItems => $step->delivery,
-				$carrier === null && !$hasItems => $step->products,
+				$carrier === null => $hasItems ? $step->delivery : $step->products,
 				default => null,
 			},
 
 			$step->summary => match (true) {
-				$carrier === null && $hasItems => $step->delivery,
-				$carrier === null && !$hasItems => $step->products,
-				$customer === null && $carrier !== null => $step->customer,
+				$carrier === null => $hasItems ? $step->delivery : $step->products,
+				$customer === null => $step->customer,
 				default => null,
 			},
 

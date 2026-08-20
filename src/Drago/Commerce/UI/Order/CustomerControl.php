@@ -55,8 +55,8 @@ class CustomerControl extends BaseControl
 			$form = $this->getComponent('customer');
 			if (!$form->isSubmitted()) {
 				$buttonSend = $this->getFormComponent($form, 'send');
-				$buttonSend->setCaption('Update');
-				$form->setDefaults($customer);
+				$buttonSend?->setCaption('Update');
+				$form->setDefaults((array) $customer);
 			}
 		}
 
@@ -84,8 +84,9 @@ class CustomerControl extends BaseControl
 	public function success(Form $form, CustomerValues $data): void
 	{
 		try {
-			$postCode  = $this->commerce->getPostCodeOnRegionPhone()
-				? (new PostcodeFormatter)->format($data->phone->getRegionCode(), $data->postal_code)
+			$regionCode = $data->phone->getRegionCode();
+			$postCode = ($this->commerce->getPostCodeOnRegionPhone() && $regionCode !== null)
+				? (new PostcodeFormatter)->format($regionCode, $data->postal_code)
 				: $data->postal_code;
 
 			$customer = new Customer(

@@ -45,6 +45,6 @@ class ReaderGeoLite
 	public function getCountryIsoCode(string $ip = '94.113.197.225'): ?string
 	{
 		$city = $this->getCity($ip);
-		return $city?->country?->isoCode ?? null;
+		return $city?->country->isoCode ?? null;
 	}
 }

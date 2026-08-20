@@ -53,7 +53,7 @@ class PaymentRepository
 
 
 	/**
-	 * @return list<PaymentEntity>
+	 * @return array<PaymentEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -65,7 +65,7 @@ class PaymentRepository
 
 
 	/**
-	 * @return list<Payment>
+	 * @return array<Payment>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException

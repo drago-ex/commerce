@@ -40,7 +40,7 @@ class ProductRepository
 
 
 	/**
-	 * @return list<ProductEntity>
+	 * @return array<ProductEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

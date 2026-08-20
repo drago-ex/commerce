@@ -53,7 +53,7 @@ class CarrierRepository
 
 
 	/**
-	 * @return list<CarrierEntity>
+	 * @return array<CarrierEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -65,7 +65,7 @@ class CarrierRepository
 
 
 	/**
-	 * @return list<Carrier>
+	 * @return array<Carrier>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException

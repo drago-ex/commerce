@@ -118,6 +118,14 @@ public function actionSummary(): void
 }
 ```
 
+## Register Services
+Register the core services in `config.neon`:
+```neon
+services:
+    - Drago\Commerce\Domain\Checkout\CheckoutProcess
+    - Drago\Commerce\Domain\Checkout\CheckoutSteps
+```
+
 ## Customize Checkout Steps (Optional)
 If you want to rename the default checkout steps or add custom ones, you can configure your own instance of `CheckoutSteps` via the service container and pass it to `CheckoutProcess`. This gives you full control over step naming (e.g. for localization, branding, or structural changes).
 

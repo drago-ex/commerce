@@ -58,7 +58,7 @@ class Commerce
 
 
 	/**
-	 * Returns the default region code for phone number formatting.
+	 * Returns the default region code for phone number formatting or false when unset.
 	 *
 	 * @return array<int|string, mixed>|string|false
 	 */
@@ -78,7 +78,9 @@ class Commerce
 
 
 	/**
-	 * Returns the allowed region codes for phone number validation.
+	 * Returns allowed region codes for phone number validation.
+	 *
+	 * May return an array of region codes or a single region code string.
 	 *
 	 * @return array<int|string, mixed>|string
 	 */

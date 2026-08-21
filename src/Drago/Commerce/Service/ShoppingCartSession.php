@@ -84,9 +84,7 @@ class ShoppingCartSession
 	/**
 	 * Adds product(s) to the basket.
 	 *
-	 * @param Product $product Product to add.
-	 * @param int $amount Quantity to add (default 1).
-	 * @param bool $dontCount If true, sets amount instead of adding.
+	 * $amount must be >= 1. If $dontCount is true, sets the item's quantity to $amount; otherwise adds the amount.
 	 */
 	public function addItem(Product $product, int $amount = 1, bool $dontCount = false): void
 	{
@@ -114,8 +112,6 @@ class ShoppingCartSession
 
 	/**
 	 * Removes a product from the basket.
-	 *
-	 * @param Product $product Product to remove.
 	 */
 	public function removeItem(Product $product): void
 	{

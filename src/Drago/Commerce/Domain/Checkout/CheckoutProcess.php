@@ -37,6 +37,8 @@ final class CheckoutProcess
 
 
 	/**
+	 * Returns a map of step identifiers to display labels.
+	 *
 	 * @return array<string, string>
 	 */
 	public function getSteps(): array
@@ -46,6 +48,8 @@ final class CheckoutProcess
 
 
 	/**
+	 * Returns identifiers of completed checkout steps.
+	 *
 	 * @return list<string>
 	 */
 	public function getCompletedSteps(): array

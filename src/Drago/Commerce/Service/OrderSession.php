@@ -72,8 +72,6 @@ class OrderSession
 
 	/**
 	 * Saves carrier information into session.
-	 *
-	 * @param Carrier $carrier Carrier object.
 	 */
 	public function setCarrier(Carrier $carrier): void
 	{
@@ -85,7 +83,6 @@ class OrderSession
 	 * Calculates carrier price.
 	 *
 	 * @throws MoneyMismatchException When currency types mismatch.
-	 * @return Money Price for carrier.
 	 */
 	public function getCarrierPrice(): Money
 	{
@@ -102,8 +99,6 @@ class OrderSession
 
 	/**
 	 * Saves payment information into session.
-	 *
-	 * @param Payment $payment Payment object.
 	 */
 	public function setPayment(Payment $payment): void
 	{
@@ -115,7 +110,6 @@ class OrderSession
 	 * Calculates payment price.
 	 *
 	 * @throws MoneyMismatchException When currency types mismatch.
-	 * @return Money Price for payment.
 	 */
 	public function getPaymentPrice(): Money
 	{
@@ -132,8 +126,6 @@ class OrderSession
 
 	/**
 	 * Saves customer information into session.
-	 *
-	 * @param Customer $customer Customer object.
 	 */
 	public function setCustomer(Customer $customer): void
 	{

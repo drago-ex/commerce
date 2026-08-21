@@ -40,7 +40,7 @@ class BaseControl extends ExtraControl
 	/**
 	 * List of identifiers for completed steps.
 	 *
-	 * @var string[]
+	 * @var list<string>
 	 */
 	protected array $completedSteps = [];
 
@@ -68,7 +68,7 @@ class BaseControl extends ExtraControl
 	/**
 	 * Sets the list of completed steps identifiers.
 	 *
-	 * @param string[] $completedSteps
+	 * @param list<string> $completedSteps
 	 */
 	public function setCompletedSteps(array $completedSteps): void
 	{

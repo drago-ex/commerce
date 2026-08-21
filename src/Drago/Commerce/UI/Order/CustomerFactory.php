@@ -38,7 +38,7 @@ class CustomerFactory
 			->addRule($form::Email);
 
 		$phone = $form->addPhoneNumber(CustomerValues::Phone, 'Phone')
-			->setHtmlAttribute('autocomplete', Autocomplete::Tel)
+			->setHtmlAttribute('autocomplete', Autocomplete::Tel->value)
 			->setHtmlAttribute('placeholder', 'Please enter a phone number')
 			->setHtmlAttribute('pattern', null)
 			->setRequired();

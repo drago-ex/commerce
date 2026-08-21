@@ -18,9 +18,6 @@ services:
 	- Drago\Commerce\Domain\Order\OrderRepository
 	- Drago\Commerce\Domain\Order\OrderProductRepository
 
-	- Drago\Commerce\Domain\Checkout\CheckoutProcess
-	- Drago\Commerce\Domain\Checkout\CheckoutSteps
-
 	- Drago\Commerce\UI\ShoppingCart\SummaryCartControl
 	- Drago\Commerce\UI\ShoppingCart\MiniCartControl
 

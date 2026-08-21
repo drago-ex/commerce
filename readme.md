@@ -35,14 +35,6 @@ commerce:
     postCodeOnRegionPhone: true
 ```
 
-## Register Services
-Register the core services in `config.neon`:
-```neon
-services:
-    - Drago\Commerce\Domain\Checkout\CheckoutProcess
-    - Drago\Commerce\Domain\Checkout\CheckoutSteps
-```
-
 ## Use Commerce Trait in Your Presenter
 Add the `CommerceControl` trait to your presenter for easy integration of commerce components:
 ```php

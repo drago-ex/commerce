@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Drago Extension
- * Package built on Nette Framework
- */
-
 declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Delivery;
@@ -53,7 +48,7 @@ class CarrierRepository
 
 
 	/**
-	 * @return array<CarrierEntity>
+	 * @return list<CarrierEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -65,7 +60,7 @@ class CarrierRepository
 
 
 	/**
-	 * @return array<Carrier>
+	 * @return list<Carrier>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException

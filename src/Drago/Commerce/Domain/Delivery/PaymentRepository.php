@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Drago Extension
- * Package built on Nette Framework
- */
-
 declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Delivery;
@@ -53,7 +48,7 @@ class PaymentRepository
 
 
 	/**
-	 * @return array<PaymentEntity>
+	 * @return list<PaymentEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -65,7 +60,7 @@ class PaymentRepository
 
 
 	/**
-	 * @return array<Payment>
+	 * @return list<Payment>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException

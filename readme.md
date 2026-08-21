@@ -119,12 +119,17 @@ public function actionSummary(): void
 ```
 
 ## Register Services
-Register the core services in `config.neon`:
+Register the checkout services so Nette DI can create and wire the checkout flow.
+
+The minimal registration below is enough when you keep the default step names and templates; Nette will autowire required dependencies (ShoppingCartSession, OrderSession) into CheckoutProcess.
+
 ```neon
 services:
     - Drago\Commerce\Domain\Checkout\CheckoutProcess
     - Drago\Commerce\Domain\Checkout\CheckoutSteps
 ```
+
+If you want to override step names or provide a custom CheckoutSteps instance (for localization, branding, or per-step template mapping), use the explicit service configuration shown in the "Customize Checkout Steps (Optional)" section.
 
 ## Customize Checkout Steps (Optional)
 If you want to rename the default checkout steps or add custom ones, you can configure your own instance of `CheckoutSteps` via the service container and pass it to `CheckoutProcess`. This gives you full control over step naming (e.g. for localization, branding, or structural changes).

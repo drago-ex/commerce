@@ -17,9 +17,7 @@ use NumberFormatter;
  */
 class BaseTemplate extends ExtraTemplate
 {
-	/**
-	 * @var array<int|string, mixed> Items in the shopping cart
-	 */
+	/** @var array<int|string, mixed> Items in the shopping cart */
 	public array $shoppingCart;
 
 	/**
@@ -38,6 +36,9 @@ class BaseTemplate extends ExtraTemplate
 	public Breadcrumbs $breadcrumbs;
 
 
+	/**
+	 * Formats a Money object to a localized currency string.
+	 */
 	#[TemplateFilter]
 	public function money(Money $money): string
 	{
@@ -67,6 +68,8 @@ class BaseTemplate extends ExtraTemplate
 
 
 	/**
+	 * Converts a numeric amount to a formatted currency string.
+	 *
 	 * @throws UnknownCurrencyException
 	 */
 	#[TemplateFilter]

@@ -18,6 +18,9 @@ readonly class Factory
 	}
 
 
+	/**
+	 * Creates a new form with translator configured.
+	 */
 	public function create(): BaseForm
 	{
 		$form = new BaseForm;
@@ -26,6 +29,9 @@ readonly class Factory
 	}
 
 
+	/**
+	 * Creates a form with a hidden product ID field.
+	 */
 	public function addHiddenProductId(string $productId): BaseForm
 	{
 		$form = $this->create();
@@ -36,6 +42,9 @@ readonly class Factory
 	}
 
 
+	/**
+	 * Creates a form for changing the quantity of a cart item.
+	 */
 	public function addChangeAmountInCart(string $productId): BaseForm
 	{
 		$form = $this->addHiddenProductId($productId);

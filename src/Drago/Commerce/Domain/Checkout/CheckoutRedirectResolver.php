@@ -9,8 +9,7 @@ use Drago\Commerce\Service\ShoppingCartSession;
 
 
 /**
- * Determines if a redirect is needed during checkout,
- * based on the current step and order/cart state.
+ * Determines which checkout step to redirect to based on the current order state.
  */
 final readonly class CheckoutRedirectResolver
 {
@@ -22,10 +21,6 @@ final readonly class CheckoutRedirectResolver
 	}
 
 
-	/**
-	 * Returns the key of the step to redirect to if the current action is not allowed,
-	 * or null if no redirect is needed.
-	 */
 	public function getRedirectTargetForAction(string $action): ?string
 	{
 		$orderDraft = $this->orderSession->getItems();

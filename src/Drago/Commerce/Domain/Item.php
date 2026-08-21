@@ -7,6 +7,9 @@ namespace Drago\Commerce\Domain;
 use Brick\Money\Money;
 
 
+/**
+ * Base class for all purchasable items (products, carriers, payments).
+ */
 abstract class Item
 {
 	public function __construct(

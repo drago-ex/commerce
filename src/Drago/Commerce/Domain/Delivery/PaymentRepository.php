@@ -12,6 +12,9 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/**
+ * Repository for reading payment method data from the database.
+ */
 #[Table(PaymentEntity::Table, PaymentEntity::PrimaryKey, class: PaymentEntity::class)]
 class PaymentRepository
 {
@@ -26,6 +29,8 @@ class PaymentRepository
 
 
 	/**
+	 * Returns a map of payment IDs to themselves.
+	 *
 	 * @return array<int|string, int|string>
 	 * @throws AttributeDetectionException
 	 */
@@ -37,6 +42,8 @@ class PaymentRepository
 
 
 	/**
+	 * Returns a single payment entity by its ID, or null if not found.
+	 *
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -48,6 +55,8 @@ class PaymentRepository
 
 
 	/**
+	 * Returns all payment entities.
+	 *
 	 * @return list<PaymentEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
@@ -60,6 +69,8 @@ class PaymentRepository
 
 
 	/**
+	 * Returns all payment methods mapped to domain Payment objects.
+	 *
 	 * @return list<Payment>
 	 * @throws AttributeDetectionException
 	 * @throws Exception

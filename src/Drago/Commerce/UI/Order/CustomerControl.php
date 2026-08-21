@@ -35,6 +35,9 @@ class CustomerControl extends BaseControl
 	}
 
 
+	/**
+	 * Renders the customer form, pre-filling it with session data if available.
+	 */
 	public function render(): void
 	{
 		$template = $this->template;

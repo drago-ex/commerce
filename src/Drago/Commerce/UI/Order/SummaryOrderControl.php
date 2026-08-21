@@ -6,6 +6,7 @@ namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
+use Brick\PhoneNumber\PhoneNumber;
 use Brick\PhoneNumber\PhoneNumberFormat;
 use DateTimeImmutable;
 use Dibi\DriverException;
@@ -101,6 +102,8 @@ class SummaryOrderControl extends BaseControl
 	 * @throws DriverException
 	 * @throws \Exception
 	 */
+
+
 	/**
 	 * @throws MoneyMismatchException
 	 * @throws DriverException
@@ -122,7 +125,7 @@ class SummaryOrderControl extends BaseControl
 			$this->orderRepository->getConnection()->begin();
 
 			// Save the customer.
-			$phoneStr = $customer->phone instanceof \Brick\PhoneNumber\PhoneNumber
+			$phoneStr = $customer->phone instanceof PhoneNumber
 				? $customer->phone->format(PhoneNumberFormat::INTERNATIONAL)
 				: (string) $customer->phone;
 

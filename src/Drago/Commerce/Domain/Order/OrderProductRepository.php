@@ -10,6 +10,9 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/**
+ * Repository for persisting order-product relations.
+ */
 #[Table('orders_products', 'id')]
 class OrderProductRepository
 {

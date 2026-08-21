@@ -8,6 +8,10 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 
 
+/**
+ * Central configuration class for the Commerce module.
+ * Holds global currency and money formatting settings used throughout the package.
+ */
 class Commerce
 {
 	public static string $currency;
@@ -33,6 +37,9 @@ class Commerce
 	}
 
 
+	/**
+	 * Returns a zero-value Money object in the configured currency.
+	 */
 	public function moneyZero(): Money
 	{
 		return Money::zero(self::$currency);
@@ -40,6 +47,8 @@ class Commerce
 
 
 	/**
+	 * Creates a Money object from a float amount in the configured currency.
+	 *
 	 * @throws UnknownCurrencyException
 	 */
 	public function moneyOf(float $amount): Money
@@ -49,6 +58,8 @@ class Commerce
 
 
 	/**
+	 * Returns the default region code for phone number formatting.
+	 *
 	 * @return array<int|string, mixed>|string|false
 	 */
 	public function getDefaultRegionCode(): array|string|false
@@ -57,6 +68,9 @@ class Commerce
 	}
 
 
+	/**
+	 * Returns whether the postal code should be validated against the phone region.
+	 */
 	public function getPostCodeOnRegionPhone(): bool
 	{
 		return (bool) ($this->config['postCodeOnRegionPhone'] ?? false);
@@ -64,6 +78,8 @@ class Commerce
 
 
 	/**
+	 * Returns the allowed region codes for phone number validation.
+	 *
 	 * @return array<int|string, mixed>|string
 	 */
 	public function getAllowedRegionPhoneNumber(): array|string

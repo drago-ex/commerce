@@ -6,30 +6,19 @@ namespace Drago\Commerce\Domain\Checkout;
 
 
 /**
- * Defines route keys for each step in the checkout process.
- * Allows optional overriding of default step routes.
+ * Defines the checkout step identifiers and their display labels.
+ * Supports custom step name overrides via the constructor.
  */
 final class CheckoutSteps
 {
-	/** Route for the product step (usually homepage) */
 	public string $products;
-
-	/** Route for the delivery step */
 	public string $delivery;
-
-	/** Route for the customer step */
 	public string $customer;
-
-	/** Route for the summary step */
 	public string $summary;
-
-	/** Route for the shopping cart step */
 	public string $shoppingCart;
-
-	/** Route for the order confirmation step */
 	public string $orderDone;
 
-	/** @var array<string, string> List of visible steps in the checkout */
+	/** @var array<string, string> */
 	public array $steps;
 
 

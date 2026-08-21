@@ -14,6 +14,9 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
 
 
+/**
+ * Factory for building the customer information form with phone and address fields.
+ */
 class CustomerFactory
 {
 	public function __construct(

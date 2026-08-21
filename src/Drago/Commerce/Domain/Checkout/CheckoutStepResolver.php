@@ -9,8 +9,7 @@ use Drago\Commerce\Service\ShoppingCartSession;
 
 
 /**
- * Determines which checkout steps have been completed
- * based on shopping cart and order draft data.
+ * Determines which checkout steps have been completed based on the current session state.
  */
 final readonly class CheckoutStepResolver
 {
@@ -23,9 +22,7 @@ final readonly class CheckoutStepResolver
 
 
 	/**
-	 * Returns a list of completed checkout steps based on session and order data.
-	 *
-	 * @return string[] Array of completed step keys (e.g., 'shoppingCart', 'delivery')
+	 * @return list<string>
 	 */
 	public function getCompletedSteps(): array
 	{

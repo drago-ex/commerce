@@ -10,6 +10,9 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/**
+ * Repository for persisting customer data.
+ */
 #[Table('customers', 'id')]
 class CustomerRepository
 {

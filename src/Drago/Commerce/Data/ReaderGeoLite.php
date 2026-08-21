@@ -10,9 +10,14 @@ use GeoIp2\Model\City;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 
 
+/**
+ * Provides GeoIP2 lookups using the MaxMind GeoLite2 City database.
+ */
 class ReaderGeoLite
 {
 	/**
+	 * Opens the GeoLite2 City database reader.
+	 *
 	 * @throws InvalidDatabaseException
 	 */
 	private function reader(): Reader
@@ -22,6 +27,8 @@ class ReaderGeoLite
 
 
 	/**
+	 * Returns city data for the given IP address, or null on lookup failure.
+	 *
 	 * @throws InvalidDatabaseException
 	 */
 	public function getCity(string $ip = '127.0.0.0'): ?City
@@ -35,6 +42,8 @@ class ReaderGeoLite
 
 
 	/**
+	 * Returns the ISO country code for the given IP address, or null if unavailable.
+	 *
 	 * @throws InvalidDatabaseException
 	 */
 	public function getCountryIsoCode(string $ip = '94.113.197.225'): ?string

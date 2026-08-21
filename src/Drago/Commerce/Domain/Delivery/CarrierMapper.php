@@ -9,7 +9,7 @@ use Drago\Commerce\Commerce;
 
 
 /**
- * Service class for converting CarrierEntity to domain Carrier object.
+ * Converts a CarrierEntity to a domain Carrier object.
  */
 readonly class CarrierMapper
 {
@@ -20,9 +20,7 @@ readonly class CarrierMapper
 
 
 	/**
-	 * Converts CarrierEntity to a domain Carrier model.
-	 *
-	 * @throws UnknownCurrencyException When currency conversion fails.
+	 * @throws UnknownCurrencyException
 	 */
 	public function map(CarrierEntity $entity): Carrier
 	{

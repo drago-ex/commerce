@@ -9,10 +9,7 @@ use Drago\Commerce\Service\ShoppingCartSession;
 
 
 /**
- * Main class managing the checkout process logic.
- *
- * It combines the step resolver and redirect resolver,
- * and provides access to check out steps and their statuses.
+ * Orchestrates the checkout flow by delegating step resolution and redirect logic.
  */
 final class CheckoutProcess
 {
@@ -40,9 +37,7 @@ final class CheckoutProcess
 
 
 	/**
-	 * Returns all checkout steps with their labels.
-	 *
-	 * @return array<string, string> Associative array of step keys to step names.
+	 * @return array<string, string>
 	 */
 	public function getSteps(): array
 	{
@@ -51,9 +46,7 @@ final class CheckoutProcess
 
 
 	/**
-	 * Returns the list of completed checkout steps.
-	 *
-	 * @return string[] List of completed step keys.
+	 * @return list<string>
 	 */
 	public function getCompletedSteps(): array
 	{
@@ -61,18 +54,12 @@ final class CheckoutProcess
 	}
 
 
-	/**
-	 * Determines if a redirect is needed for the given action step.
-	 */
 	public function getRedirectTargetForAction(string $action): ?string
 	{
 		return $this->redirectResolver->getRedirectTargetForAction($action);
 	}
 
 
-	/**
-	 * Returns the CheckoutSteps instance.
-	 */
 	public function steps(): CheckoutSteps
 	{
 		return $this->checkoutSteps;

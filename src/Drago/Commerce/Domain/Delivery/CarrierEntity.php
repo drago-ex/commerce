@@ -8,7 +8,7 @@ use Drago\Database\Entity;
 
 
 /**
- * Entity representation of a Carrier in the database.
+ * Entity class representing a shipping carrier stored in the database.
  */
 class CarrierEntity extends Entity
 {

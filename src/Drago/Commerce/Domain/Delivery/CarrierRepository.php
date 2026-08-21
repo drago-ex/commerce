@@ -12,6 +12,9 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/**
+ * Repository for reading carrier data from the database.
+ */
 #[Table(CarrierEntity::Table, CarrierEntity::PrimaryKey, entity: CarrierEntity::class)]
 class CarrierRepository
 {
@@ -26,6 +29,8 @@ class CarrierRepository
 
 
 	/**
+	 * Returns a map of carrier IDs to themselves.
+	 *
 	 * @return array<int|string, int|string>
 	 * @throws AttributeDetectionException
 	 */
@@ -37,6 +42,8 @@ class CarrierRepository
 
 
 	/**
+	 * Returns a single carrier entity by its ID, or null if not found.
+	 *
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -48,6 +55,8 @@ class CarrierRepository
 
 
 	/**
+	 * Returns all carrier entities.
+	 *
 	 * @return list<CarrierEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception
@@ -60,6 +69,8 @@ class CarrierRepository
 
 
 	/**
+	 * Returns all carriers mapped to domain Carrier objects.
+	 *
 	 * @return list<Carrier>
 	 * @throws AttributeDetectionException
 	 * @throws Exception

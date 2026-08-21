@@ -11,6 +11,9 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
+/**
+ * Repository for reading product data from the database.
+ */
 #[Table(ProductEntity::Table, ProductEntity::PrimaryKey, class: ProductEntity::class)]
 class ProductRepository
 {
@@ -24,6 +27,8 @@ class ProductRepository
 
 
 	/**
+	 * Returns a single product entity by its ID, or null if not found.
+	 *
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
@@ -35,6 +40,8 @@ class ProductRepository
 
 
 	/**
+	 * Returns all active products.
+	 *
 	 * @return array<ProductEntity>
 	 * @throws AttributeDetectionException
 	 * @throws Exception

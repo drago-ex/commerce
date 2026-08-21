@@ -89,6 +89,11 @@ class BaseControl extends ExtraControl
 	}
 
 
+	/**
+	 * Sets the link to redirect to after a successful action.
+	 *
+	 * @throws \InvalidArgumentException if the link is empty
+	 */
 	public function setLinkRedirectTarget(string $link): void
 	{
 		if (empty($link)) {

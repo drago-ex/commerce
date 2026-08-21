@@ -9,7 +9,7 @@ use Drago\Commerce\Domain\Item;
 
 
 /**
- * Order carrier method.
+ * Represents a shipping carrier with an optional discount.
  */
 class Carrier extends Item
 {

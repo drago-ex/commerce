@@ -8,6 +8,9 @@ use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\UI\BaseTemplate;
 
 
+/**
+ * Template variables for the product listing control.
+ */
 class ProductTemplate extends BaseTemplate
 {
 	/** @var ProductEntity[] */

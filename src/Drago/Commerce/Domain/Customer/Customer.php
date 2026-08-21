@@ -9,7 +9,7 @@ use DateTimeImmutable;
 
 
 /**
- * Details about the customer.
+ * Represents a customer placing an order, including contact and address details.
  */
 class Customer
 {

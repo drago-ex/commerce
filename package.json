@@ -1,0 +1,20 @@
+{
+	"name": "drago-commerce",
+	"version": "1.0.0",
+	"type": "module",
+	"files": [
+		"src/Drago/Commerce/assets"
+	],
+	"exports": {
+		".": "./src/Drago/Commerce/assets/index.js",
+		"./shopping-cart": "./src/Drago/Commerce/assets/shopping.cart.js",
+		"./spinner": "./src/Drago/Commerce/assets/spinner.js",
+		"./styles": "./src/Drago/Commerce/assets/commerce.scss"
+	},
+	"sideEffects": [
+		"**/*.scss"
+	],
+	"peerDependencies": {
+		"naja": ">=3.0.0"
+	}
+}

@@ -14,6 +14,39 @@ Simple shopping cart.
 composer require drago-ex/commerce
 ```
 
+## Frontend Assets
+The Commerce assets are distributed as a standard npm package and do not require `drago-tools`.
+
+Add the Composer package as a local npm dependency:
+
+```json
+{
+	"type": "module",
+	"dependencies": {
+		"drago-commerce": "file:vendor/drago-ex/commerce"
+	}
+}
+```
+
+Install JavaScript dependencies:
+
+```bash
+npm install
+```
+
+Import the Commerce behavior and styles in your Vite entry point:
+
+```js
+import naja from 'naja';
+import Commerce from 'drago-commerce';
+import 'drago-commerce/styles';
+
+naja.initialize();
+new Commerce().initialize(naja);
+```
+
+The default integration submits cart quantity changes through Naja and shows a loading spinner during AJAX requests.
+
 ## Extension Registration
 In your `config.neon` file, register the extension:
 ```neon

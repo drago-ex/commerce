@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Product;
 
-use App\Commerce\Domain\Discount;
+use Drago\Commerce\Domain\Discount;
 use Drago\Commerce\Domain\Item;
 
 

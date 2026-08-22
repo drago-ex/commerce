@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Commerce\Domain;
+namespace Drago\Commerce\Domain;
 
 
 /**

@@ -40,7 +40,7 @@ Add the `CommerceControl` trait to your presenter for easy integration of commer
 ```php
 use Drago\Commerce\UI\CommerceControl;
 
-class CheckoutPresenter extends Nette\Application\UI\Presenter
+class CommercePresenter extends Nette\Application\UI\Presenter
 {
     use CommerceControl;
 

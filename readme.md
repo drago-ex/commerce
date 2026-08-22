@@ -102,15 +102,18 @@ private function redirectIfNecessary(): void
     }
 }
 
+
 public function actionDelivery(): void
 {
     $this->redirectIfNecessary();
 }
 
+
 public function actionCustomer(): void
 {
     $this->redirectIfNecessary();
 }
+
 
 public function actionSummary(): void
 {

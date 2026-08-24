@@ -15,8 +15,6 @@ composer require drago-ex/commerce
 ```
 
 ## Frontend Assets
-The Commerce assets are distributed as a standard npm package and do not require `drago-tools`.
-
 Add the Composer package as a local npm dependency:
 
 ```json

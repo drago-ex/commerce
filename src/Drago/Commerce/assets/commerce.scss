@@ -6,6 +6,8 @@
 	overflow-x: auto;
 	padding: 0.25rem 0 0.5rem;
 	max-width: 720px;
+	margin-left: 0;
+	margin-right: auto;
 	width: 100%;
 }
 
@@ -14,7 +16,7 @@
 	list-style: none;
 	margin: 0;
 	min-width: 45rem;
-	padding: 0;
+	padding: 0 !important;
 	width: 45rem;
 }
 
@@ -22,6 +24,7 @@
 	display: flex;
 	flex: 0 0 11.25rem;
 	position: relative;
+	text-align: left;
 }
 
 .commerce-checkout-step:not(:last-child)::after {
@@ -61,10 +64,10 @@
 	border: 0.1rem solid var(--bs-border-color);
 	color: var(--bs-secondary-color);
 	display: flex;
-	height: 2.5rem;
+	height: 2.25rem;
 	justify-content: center;
 	margin-bottom: 0.5rem;
-	width: 2.5rem;
+	width: 2.25rem;
 }
 
 .commerce-checkout-step.is-completed .commerce-checkout-step__icon,

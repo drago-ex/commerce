@@ -12,13 +12,13 @@
 	/>
 {/define}
 
-<h1 class="display-6 mt-2">Products</h1>
+<h1 class="display-6 mt-2">{_'Products'}</h1>
 <div class="row g-3">
 
 	{* Loop through each product and render its card *}
 	{foreach $products as $product}
 		<div class="col-6 col-sm-4 col-md-3 col-lg-2">
-			<div class="card h-100 border-0 shadow-sm hover-shadow" role="region" aria-label="Product {$product->name}">
+			<div class="card h-100 border-0 shadow-sm hover-shadow" role="region" aria-label="{_'Product'} {$product->name}">
 
 				{* Include product image block with alt text *}
 				{var $imageSrc = "https://placehold.co/200x150?text=No+Image&font=roboto&fontSize=14&bg=eeeeee&color=888888"}
@@ -41,8 +41,8 @@
 						{* Show discount badge and prices if discount applies *}
 						{if $product->hasDiscount()}
 
-							<span class="badge bg-danger text-white mb-1" title="Discount {$product->getDiscountPercent()}%">
-								Discount {$product->getDiscountPercent()}%
+							<span class="badge bg-danger text-white mb-1" title="{_'Discount'} {$product->getDiscountPercent()}%">
+								{_'Discount'} {$product->getDiscountPercent()}%
 							</span>
 
 							<div class="mb-2">
@@ -68,15 +68,15 @@
 
 						{if $product->getStock() > 5}
 							<p class="small text-body-secondary mb-2">
-								In stock &gt; 5 pcs
+								{_'In stock > 5 pcs'}
 							</p>
 						{elseif $product->getStock() > 0}
 							<p class="small text-body-secondary mb-2">
-								In stock: {$product->getStock()} pcs
+								{_'In stock'}: {$product->getStock()} {_'pcs'}
 							</p>
 						{else}
 							<p class="small mb-2 text-danger">
-								Out of stock
+								{_'Out of stock'}
 							</p>
 						{/if}
 
@@ -84,7 +84,7 @@
 
 							{* Add to cart form button with accessible label *}
 							<form n:name="addToCart-{$product->id}">
-								{input add, class: "btn btn-secondary btn-sm", aria-label => "Add {$product->name} to cart"}
+								{input add, class: "btn btn-secondary btn-sm", aria-label => "{_'Add'} {$product->name} {_'to cart'}"}
 							</form>
 						{/if}
 

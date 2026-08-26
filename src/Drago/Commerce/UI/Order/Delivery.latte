@@ -8,11 +8,11 @@
 	{* Includes the breadcrumbs component to render the navigation steps. *}
 	{include breadcrumbs, $breadcrumbs}
 
-	<h2 class="mb-4 fw-normal fs-4">Information for delivery of goods</h2>
+	<h2 class="mb-4 fw-normal fs-4">{_'Information for delivery of goods'}</h2>
 	<form n:name="delivery" n:if="count($carrier) && count($payment)" class="mb-4">
 
 		{* Section: Choose a carrier (shipping method) *}
-		<p class="fw-semibold mb-2">Select a transport</p>
+		<p class="fw-semibold mb-2">{_'Select a transport'}</p>
 		<div class="mb-4">
 			{foreach $form[carrierId]->items as $key => $val}
 				<div class="form-check">
@@ -29,7 +29,7 @@
 		</div>
 
 		{* Section: Choose a payment method *}
-		<p class="fw-semibold mb-2">Select a payment</p>
+		<p class="fw-semibold mb-2">{_'Select a payment'}</p>
 		<div class="mb-4">
 			{foreach $form[paymentId]->items as $key => $val}
 				<div class="form-check">
@@ -54,5 +54,5 @@
 
 {else}
 	{* Show empty cart message if no products are in the cart *}
-	<p>Your shopping cart is empty.</p>
+	<p>{_'Your shopping cart is empty.'}</p>
 {/if}

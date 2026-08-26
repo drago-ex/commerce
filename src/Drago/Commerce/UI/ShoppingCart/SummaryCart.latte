@@ -8,17 +8,17 @@
 	{include breadcrumbs, $breadcrumbs}
 
 	{* Page heading *}
-	<h2 class="mb-4 fw-normal fs-4">Your shopping cart</h2>
+	<h2 class="mb-4 fw-normal fs-4">{_'Your shopping cart'}</h2>
 
 	{* Responsive product table *}
 	<div class="table-responsive">
 		<table class="table table-hover table-sm align-middle table-borderless">
 			<thead>
 			<tr>
-				<th scope="col"><small>Product name</small></th>
-				<th scope="col"><small>Price</small></th>
-				<th scope="col"><small>Amount</small></th>
-				<th scope="col">Discount</th>
+				<th scope="col"><small>{_'Product name'}</small></th>
+				<th scope="col"><small>{_'Price'}</small></th>
+				<th scope="col"><small>{_'Amount'}</small></th>
+				<th scope="col">{_'Discount'}</th>
 				<th scope="col"></th>
 			</tr>
 			</thead>
@@ -56,18 +56,18 @@
 					]}
 
 					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">
-						Remove
+						{_'Remove'}
 					</a>
 				</td>
 			</tr>
 
 			{if $discountCode && !$discountAmount->isZero()}
 				<tr>
-					<td>Subtotal:</td>
+					<td>{_'Subtotal'}:</td>
 					<td colspan="3" class="text-end">{$subtotalPrice|money}</td>
 				</tr>
 				<tr>
-					<td class="text-success fw-semibold">Discount ({$discountCode}):</td>
+					<td class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
 					<td colspan="3" class="text-success fw-semibold text-end">
 						-{$discountAmount|money}
 					</td>
@@ -76,7 +76,7 @@
 
 			{* Total price row *}
 			<tr>
-				<td class="text-danger fw-semibold">Total to pay:</td>
+				<td class="text-danger fw-semibold">{_'Total to pay'}:</td>
 				<td colspan="3" class="fw-semibold text-danger text-end">
 					{$totalPrice|money}
 				</td>
@@ -89,7 +89,7 @@
 		<div class="card bg-body-tertiary border-0 p-3">
 			<form n:name="discountCode" class="ajax">
 				<label n:name="code" class="form-label fw-semibold mb-2">
-					Have a discount code?
+					{_'Have a discount code?'}
 				</label>
 				<div class="d-flex align-items-start gap-2">
 					<div class="flex-grow-1">
@@ -102,7 +102,7 @@
 				</div>
 			</form>
 			<p n:if="$discountCode" class="small text-success mt-2 mb-0">
-				Discount code <strong>{$discountCode}</strong> applied.
+				{_'Discount code'} <strong>{$discountCode}</strong> {_'applied.'}
 			</p>
 		</div>
 	</div>
@@ -110,13 +110,13 @@
 	{* Continue to order button *}
 	<p class="text-end">
 		<a href="{$linkOrderDelivery}" class="btn btn-sm btn-primary">
-			Continue with order
+			{_'Continue with order'}
 		</a>
 	</p>
 
 {else}
 
 	{* Message for empty cart *}
-	<p class="mt-2">Your shopping cart is empty.</p>
+	<p class="mt-2">	{_'Your shopping cart is empty.'}</p>
 
 {/if}

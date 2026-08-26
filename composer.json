@@ -31,6 +31,9 @@
 	"autoload": {
 		"classmap": ["src/"]
 	},
+	"suggest": {
+		"drago-ex/translator": "Configures Latte translation support for bundled templates using translation macros."
+	},
 	"scripts": {
 		"phpstan": "phpstan analyse",
 		"tester": "tester tests -s"

@@ -64,7 +64,9 @@ readonly class Factory
 		$form = $this->create();
 		$form->addTextInput(FactoryValues::Code, 'Discount code')
 			->setRequired('Please enter a discount code.')
-			->setHtmlAttribute('autocomplete', 'off');
+			->setHtmlAttribute('autocomplete', 'off')
+			->setHtmlAttribute('placeholder', 'Enter discount code')
+			->setHtmlAttribute('aria-label', 'Discount code');
 		$form->addSubmit('apply', 'Apply');
 
 		return $form;

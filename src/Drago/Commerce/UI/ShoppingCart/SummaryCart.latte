@@ -61,6 +61,19 @@
 				</td>
 			</tr>
 
+			{if $discountCode && !$discountAmount->isZero()}
+				<tr>
+					<td>Subtotal:</td>
+					<td colspan="3" class="text-end">{$subtotalPrice|money}</td>
+				</tr>
+				<tr>
+					<td class="text-success fw-semibold">Discount ({$discountCode}):</td>
+					<td colspan="3" class="text-success fw-semibold text-end">
+						-{$discountAmount|money}
+					</td>
+				</tr>
+			{/if}
+
 			{* Total price row *}
 			<tr>
 				<td class="text-danger fw-semibold">Total to pay:</td>
@@ -72,15 +85,18 @@
 		</table>
 	</div>
 
-			<div class="mb-3">
-				<form n:name="discountCode" class="ajax d-flex gap-2">
-					<input n:name="code" class="form-control form-control-sm" />
-					<input n:name="apply" class="btn btn-sm btn-outline-primary" />
-				</form>
-				<p n:if="$discountCode" class="small text-success mt-2">
-					Discount code {$discountCode} applied.
-				</p>
+	<div class="mb-3">
+		<form n:name="discountCode" class="ajax">
+			<div class="input-group">
+				<label n:name="code" class="input-group-text">Discount code</label>
+				<input n:name="code" class="form-control form-control-sm" />
+				<input n:name="apply" class="btn btn-sm btn-outline-primary" />
 			</div>
+		</form>
+		<p n:if="$discountCode" class="small text-success mt-2 mb-0">
+			Discount code {$discountCode} applied.
+		</p>
+	</div>
 
 	{* Continue to order button *}
 	<p class="text-end">

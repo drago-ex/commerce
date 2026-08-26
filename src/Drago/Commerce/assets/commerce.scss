@@ -2,13 +2,11 @@
 @import './spinner';
 
 .commerce-checkout-steps {
-	margin: 1.5rem 0 2rem;
-	overflow: visible;
-	padding: 0.25rem 0 0.5rem;
-	max-width: 720px;
-	margin-left: 0;
-	margin-right: auto;
-	width: 100%;
+  overflow: visible;
+  padding: 0.25rem 0 0.5rem;
+  max-width: 720px;
+  margin: 1.5rem auto 2rem 0;
+  width: 100%;
 }
 
 .commerce-checkout-steps ol {

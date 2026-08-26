@@ -2,6 +2,8 @@
 @import './spinner';
 
 .commerce-checkout-steps {
+	--commerce-step-green: #00a86b;
+	--commerce-step-muted: #c7cbd0;
 	margin: 1.5rem 0 2rem;
 	overflow-x: auto;
 	padding: 0.25rem 0 0.5rem;
@@ -24,9 +26,8 @@
 }
 
 .commerce-checkout-step:not(:last-child)::after {
-	background-color: var(--bs-border-color);
+	border-top: 0.15rem dashed var(--commerce-step-muted);
 	content: "";
-	height: 0.15rem;
 	left: calc(50% + 1.65rem);
 	position: absolute;
 	right: calc(-50% + 1.65rem);
@@ -35,7 +36,8 @@
 }
 
 .commerce-checkout-step.is-completed:not(:last-child)::after {
-	background-color: var(--bs-success);
+	border-top-style: solid;
+	border-top-color: var(--commerce-step-green);
 }
 
 .commerce-checkout-step > a,
@@ -69,12 +71,12 @@
 
 .commerce-checkout-step.is-completed .commerce-checkout-step__icon,
 .commerce-checkout-step.is-current .commerce-checkout-step__icon {
-	border-color: var(--bs-success);
-	color: var(--bs-success);
+	border-color: var(--commerce-step-green);
+	color: var(--commerce-step-green);
 }
 
 .commerce-checkout-step.is-current .commerce-checkout-step__icon {
-	background-color: var(--bs-success);
+	background-color: var(--commerce-step-green);
 	color: var(--bs-white);
 }
 

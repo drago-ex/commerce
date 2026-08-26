@@ -86,16 +86,25 @@
 	</div>
 
 	<div class="mb-3">
-		<form n:name="discountCode" class="ajax">
-			<div class="input-group">
-				<label n:name="code" class="input-group-text">Discount code</label>
-				<input n:name="code" class="form-control form-control-sm" />
-				<input n:name="apply" class="btn btn-sm btn-outline-primary" />
-			</div>
-		</form>
-		<p n:if="$discountCode" class="small text-success mt-2 mb-0">
-			Discount code {$discountCode} applied.
-		</p>
+		<div class="card bg-body-tertiary border-0 p-3">
+			<form n:name="discountCode" class="ajax">
+				<label n:name="code" class="form-label fw-semibold mb-2">
+					Have a discount code?
+				</label>
+				<div class="d-flex align-items-start gap-2">
+					<div class="flex-grow-1">
+						<input n:name="code" class="form-control form-control-sm" />
+						<div n:if="$form[code]->errors" class="text-danger small mt-2">
+							<div n:foreach="$form[code]->errors as $error">{$error}</div>
+						</div>
+					</div>
+					<input n:name="apply" class="btn btn-sm btn-primary px-3 flex-shrink-0" />
+				</div>
+			</form>
+			<p n:if="$discountCode" class="small text-success mt-2 mb-0">
+				Discount code <strong>{$discountCode}</strong> applied.
+			</p>
+		</div>
 	</div>
 
 	{* Continue to order button *}

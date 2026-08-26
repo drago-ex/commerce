@@ -21,6 +21,7 @@ use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Service\OrderSession;
+use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Nette\Application\UI\Form;
@@ -40,6 +41,7 @@ class SummaryOrderControl extends BaseControl
 		private readonly CustomerRepository $customerRepository,
 		private readonly ProductRepository $productRepository,
 		private readonly EventDispatcher $eventDispatcher,
+		private readonly DiscountCodeService $discountCodeService,
 	) {
 	}
 
@@ -182,6 +184,7 @@ class SummaryOrderControl extends BaseControl
 				$this->orderProductsRepository->save((array) $orderProduct);
 			}
 
+			$this->discountCodeService->consume();
 			$this->orderRepository->getConnection()->commit();
 			$this->eventDispatcher->dispatch(
 				new OrderPlaced(
@@ -195,6 +198,7 @@ class SummaryOrderControl extends BaseControl
 			);
 
 			$this->shoppingCartSession->remove();
+			$this->discountCodeService->remove();
 			$this->orderSession->remove();
 			$this->getPresenter()->redirect($this->linkRedirectTarget);
 

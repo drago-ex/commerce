@@ -57,4 +57,16 @@ readonly class Factory
 
 		return $form;
 	}
+
+
+	public function addDiscountCode(): BaseForm
+	{
+		$form = $this->create();
+		$form->addTextInput(FactoryValues::Code, 'Discount code')
+			->setRequired('Please enter a discount code.')
+			->setHtmlAttribute('autocomplete', 'off');
+		$form->addSubmit('apply', 'Apply');
+
+		return $form;
+	}
 }

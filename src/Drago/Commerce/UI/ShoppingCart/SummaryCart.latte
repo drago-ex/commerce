@@ -72,6 +72,16 @@
 		</table>
 	</div>
 
+			<div class="mb-3">
+				<form n:name="discountCode" class="ajax d-flex gap-2">
+					<input n:name="code" class="form-control form-control-sm" />
+					<input n:name="apply" class="btn btn-sm btn-outline-primary" />
+				</form>
+				<p n:if="$discountCode" class="small text-success mt-2">
+					Discount code {$discountCode} applied.
+				</p>
+			</div>
+
 	{* Continue to order button *}
 	<p class="text-end">
 		<a href="{$linkOrderDelivery}" class="btn btn-sm btn-primary">

@@ -194,3 +194,12 @@ services:
 
 ## Summary
 This way you have a fully configured commerce module ready for extension and use in your Nette application.
+
+## Discount codes
+Run `migrations/003_discount_codes.sql` after the commerce migration. The migration
+creates the `discount_codes` table with support for percentage and fixed-value
+discounts, validity dates, activation, usage limits, and a minimum order amount.
+
+`SummaryCartControl` provides an AJAX form for applying a code. The active code
+is stored in the shopping-cart session and is revalidated on every price
+calculation, including the mini cart and the order summary.

@@ -14,6 +14,7 @@ use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Event\CartItemChanged;
 use Drago\Commerce\Event\CartItemRemoved;
 use Drago\Commerce\Event\EventDispatcher;
+use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
@@ -37,6 +38,7 @@ class SummaryCartControl extends BaseControl
 		private readonly ProductMapper $productMapper,
 		private readonly Factory $factory,
 		private readonly EventDispatcher $eventDispatcher,
+		private readonly DiscountCodeService $discountCodeService,
 	) {
 	}
 
@@ -44,6 +46,7 @@ class SummaryCartControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 * @throws InvalidLinkException
+	 * @throws Exception
 	 */
 	public function render(): void
 	{
@@ -59,6 +62,7 @@ class SummaryCartControl extends BaseControl
 		$template->setFile($this->templateControl ?: __DIR__ . '/SummaryCart.latte');
 		$template->setTranslator($this->translator);
 		$template->totalPrice = $this->shoppingCart->getTotalPrice();
+		$template->discountCode = $this->discountCodeService->getCode()?->code;
 		$template->amountItems = $this->shoppingCart->getAmountItems();
 		$template->shoppingCart = $this->shoppingCart->getItems();
 		$template->linkOrderDelivery = $this->getPresenter()->link($this->linkRedirectTarget);
@@ -80,6 +84,29 @@ class SummaryCartControl extends BaseControl
 			$form->onSuccess[] = $this->changeQuantity(...);
 			return $form;
 		});
+	}
+
+
+	protected function createComponentDiscountCode(): BaseForm
+	{
+		$form = $this->factory->addDiscountCode();
+		$form->onSuccess[] = $this->applyDiscountCode(...);
+		return $form;
+	}
+
+
+	/**
+	 * @throws AbortException
+	 * @throws Exception
+	 */
+	public function applyDiscountCode(Form $form, FactoryValues $data): void
+	{
+		if (!$this->discountCodeService->apply($data->code)) {
+			$this->getPresenter()->flashMessage('The discount code is invalid or expired.', Alert::Danger);
+			$this->getPresenter()->redrawControl('message');
+		}
+
+		$this->redrawShoppingCart();
 	}
 
 

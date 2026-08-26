@@ -14,8 +14,10 @@ class FactoryValues extends ArrayHash
 {
 	public const string
 		ProductId = 'productId',
-		Amount = 'amount';
+		Amount = 'amount',
+		Code = 'code';
 
 	public int $productId;
 	public int $amount;
+	public string $code;
 }

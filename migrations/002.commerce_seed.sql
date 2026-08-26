@@ -33,3 +33,7 @@ INSERT INTO orders_products (order_id, product_id, amount) VALUES
 (1, 2, 1),
 (2, 3, 1),
 (1, 1, 3);
+
+INSERT INTO discount_codes (code, type, value, active) VALUES
+('TEST10', 'percent', 10, 1),
+('TEST500', 'fixed', 500, 1);

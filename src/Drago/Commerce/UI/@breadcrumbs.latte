@@ -15,14 +15,19 @@
 				<li n:class="'commerce-checkout-step', $completed ? 'is-completed', $current ? 'is-current', !$completed && !$current ? 'is-upcoming'">
 					{if $completed}
 						<a href="{plink $step}" aria-label="{$label|translate}">
-					{else}
-						<span n:attr="aria-current: $current ? 'step' : null">
-					{/if}
 						<span class="commerce-checkout-step__icon">
 							<i class="{$icons[$step] ?? 'fa-solid fa-circle'}" aria-hidden="true"></i>
 						</span>
 						<span class="commerce-checkout-step__label">{$label|translate}</span>
-					{if $completed}</a>{else}</span>{/if}
+						</a>
+					{else}
+						<span n:attr="aria-current: $current ? 'step' : null">
+							<span class="commerce-checkout-step__icon">
+								<i class="{$icons[$step] ?? 'fa-solid fa-circle'}" aria-hidden="true"></i>
+							</span>
+							<span class="commerce-checkout-step__label">{$label|translate}</span>
+						</span>
+					{/if}
 				</li>
 			{/foreach}
 		</ol>

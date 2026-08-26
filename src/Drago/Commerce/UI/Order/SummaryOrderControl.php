@@ -53,6 +53,7 @@ class SummaryOrderControl extends BaseControl
 	{
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Summary.latte');
+		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
 		$template->totalPrice = $this->getTotalPrice();

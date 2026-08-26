@@ -3,7 +3,7 @@
 
 .commerce-checkout-steps {
 	margin: 1.5rem 0 2rem;
-	overflow-x: auto;
+	overflow: visible;
 	padding: 0.25rem 0 0.5rem;
 	max-width: 720px;
 	margin-left: 0;
@@ -15,14 +15,13 @@
 	display: flex;
 	list-style: none;
 	margin: 0;
-	min-width: 45rem;
 	padding: 0 !important;
-	width: 45rem;
+	width: 100%;
 }
 
 .commerce-checkout-step {
 	display: flex;
-	flex: 0 0 11.25rem;
+	flex: 1 1 0;
 	position: relative;
 	text-align: left;
 }
@@ -30,7 +29,7 @@
 .commerce-checkout-step:not(:last-child)::after {
 	border-top: 0.15rem dashed var(--bs-border-color);
 	content: "";
-	left: 2.65rem;
+	left: 2.4rem;
 	position: absolute;
 	right: 0;
 	top: 1.2rem;

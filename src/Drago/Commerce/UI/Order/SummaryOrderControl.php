@@ -104,7 +104,10 @@ class SummaryOrderControl extends BaseControl
 
 
 	/**
+	 * @throws AttributeDetectionException
 	 * @throws DriverException
+	 * @throws Exception
+	 * @throws MoneyMismatchException
 	 */
 	public function processOrder(Form $form): void
 	{
@@ -117,6 +120,12 @@ class SummaryOrderControl extends BaseControl
 			$form->addError('Order details are incomplete.');
 			return;
 		}
+
+		// Pre-compute pricing and discount data before starting DB transaction
+		$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
+		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
+		$discountCode = $this->discountCodeService->getCode()?->code;
+		$totalPrice = $this->getTotalPrice();
 
 		try {
 			$this->orderRepository->getConnection()->begin();
@@ -138,28 +147,25 @@ class SummaryOrderControl extends BaseControl
 				note: $customer->note,
 			);
 			$this->customerRepository->save((array) $customerData);
+			$customerId = $this->customerRepository->getInsertId();
 
 			// Save order.
-			$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-			$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
-			$discountCode = $this->discountCodeService->getCode()?->code;
-
 			$orderData = new OrderSummary(
-				customer_id: $this->customerRepository->getInsertId(),
+				customer_id: $customerId,
 				carrier_id: $carrier->id,
 				payment_id: $payment->id,
 				carrier_price: $this->getAmountPrice($carrier->price),
 				payment_price: $this->getAmountPrice($payment->price),
 				subtotal_price: $this->getAmountPrice($subtotalPrice),
-				total_price: $this->getAmountPrice($this->getTotalPrice()),
+				total_price: $this->getAmountPrice($totalPrice),
 				discount_code: $discountCode,
 				discount_amount: $this->getAmountPrice($discountAmount),
 				created_at: new DateTimeImmutable,
 			);
 
 			$this->orderRepository->save((array) $orderData);
-
 			$orderId = $this->orderRepository->getInsertId();
+
 			foreach ($this->shoppingCartSession->getItems() as $item) {
 				$product = $this->productRepository->getOne($item->product->id);
 				if ($product === null) {

@@ -150,7 +150,8 @@ class SummaryOrderControl extends BaseControl
 				created_at: new DateTimeImmutable,
 			);
 
-			$this->orderRepository->insert((array) $orderData)->execute();
+			$this->orderRepository->save((array) $orderData);
+
 			$orderId = $this->orderRepository->getInsertId();
 			foreach ($this->shoppingCartSession->getItems() as $item) {
 				$product = $this->productRepository->getOne($item->product->id);
@@ -172,7 +173,7 @@ class SummaryOrderControl extends BaseControl
 					product_id: $item->product->id,
 					amount: $amount,
 				);
-				$this->orderProductsRepository->save((array) $orderProduct);
+				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}
 
 			if (!$this->discountCodeService->consume()) {

@@ -24,7 +24,7 @@
 				<th scope="col" class="text-center">
 					<small>{_'Amount'}</small>
 				</th>
-				<th scope="col" class="text-center">
+				<th scope="col" class="text-end">
 					<small>{_'Discount'}</small>
 				</th>
 				<th scope="col" class="text-end"></th>
@@ -41,9 +41,9 @@
 					{$cart->product->name}
 				</td>
 
-				{* Product price *}
+				{* Product price: the price actually charged per unit (already reflects any discount) *}
 				<td class="text-end text-nowrap">
-					{$cart->product->price|money}
+					{$cart->product->getDiscountedPrice()|money}
 				</td>
 
 				{* Quantity change form *}
@@ -65,15 +65,13 @@
 					</form>
 				</td>
 
-				{* Discount *}
-				<td class="text-center">
-					{var $discount = $cart->product->discount ?? null}
-
+				{* Discount: percentage badge only — the Kč amount is shown once, in the summary below *}
+				<td class="text-end text-nowrap">
 					<span
-                            n:if="$discount"
+                            n:if="$cart->product->hasDiscount()"
                             class="badge border border-danger-subtle text-danger"
 					>
-                            {$discount}%
+                            -{$cart->product->discount}%
                         </span>
 				</td>
 
@@ -95,107 +93,141 @@
 				</td>
 			</tr>
 
-
-			{* Discount summary *}
-			{if $discountCode && !$discountAmount->isZero()}
-
-				{* Subtotal *}
-				<tr class="border-top">
-					<td colspan="4" class="fw-semibold">
-						{_'Subtotal'}:
-					</td>
-
-					<td class="text-end fw-semibold text-nowrap">
-						{$subtotalPrice|money}
-					</td>
-				</tr>
-
-				{* Discount amount *}
-				<tr>
-					<td colspan="4" class="text-success fw-semibold">
-						{_'Discount'} ({$discountCode}):
-					</td>
-
-					<td class="text-success fw-semibold text-end text-nowrap">
-						-{$discountAmount|money}
-					</td>
-				</tr>
-
-			{/if}
-
-
-			{* Total price row *}
-			<tr class="border-top">
-				<td colspan="4" class="text-danger fw-semibold">
-					{_'Total to pay'}:
-				</td>
-
-				<td class="fw-semibold text-danger text-end text-nowrap">
-					{$totalPrice|money}
-				</td>
-			</tr>
-
 			</tbody>
 		</table>
 	</div>
 
 
-	{* Discount code form *}
-	<div class="mb-3">
-		<div class="card bg-body-tertiary border-0 p-3">
+	{* Discount code entry and the price summary sit side by side: you enter/see the code
+	   on the left, and its effect on the total is right next to it on the right — instead
+	   of the code form appearing below a total that already includes it. *}
+	<div class="row g-3">
 
-			<form n:name="discountCode" class="ajax">
+		{* Discount code form *}
+		<div class="col-md-6">
+			<div class="card bg-body-tertiary border-0 p-3 h-100">
 
-				<label n:name="code" class="form-label fw-semibold mb-2">
-					{_'Have a discount code?'}
-				</label>
+				<form n:name="discountCode" class="ajax">
 
-				<div class="d-flex align-items-start gap-2">
+					<label n:name="code" class="form-label fw-semibold mb-2">
+						{_'Have a discount code?'}
+					</label>
 
-					<div class="flex-grow-1">
-						<input
-								n:name="code"
-								class="form-control form-control-sm"
-						/>
+					<div class="d-flex align-items-start gap-2">
 
-						<div
-								n:if="$form->errors"
-								class="text-danger small mt-2"
-						>
-							<div n:foreach="$form->errors as $error">
-								{$error}
+						<div class="flex-grow-1">
+							<input
+									n:name="code"
+									class="form-control form-control-sm"
+							/>
+
+							<div
+									n:if="$form->errors"
+									class="text-danger small mt-2"
+							>
+								<div n:foreach="$form->errors as $error">
+									{$error}
+								</div>
 							</div>
 						</div>
+
+						<input
+								n:name="apply"
+								class="btn btn-sm btn-primary px-3 flex-shrink-0"
+						/>
+
 					</div>
 
-					<input
-							n:name="apply"
-							class="btn btn-sm btn-primary px-3 flex-shrink-0"
-					/>
+				</form>
 
-				</div>
+				<p n:if="$discountCode" class="small text-success mt-2 mb-0">
+					{_'Discount code'}
+					<strong>{$discountCode}</strong>
+					{_'applied.'}
+				</p>
 
-			</form>
-
-			<p n:if="$discountCode" class="small text-success mt-2 mb-0">
-				{_'Discount code'}
-				<strong>{$discountCode}</strong>
-				{_'applied.'}
-			</p>
-
+			</div>
 		</div>
+
+		{* Price summary *}
+		<div class="col-md-6">
+			<div class="card bg-body-tertiary border-0 p-3">
+
+				<table class="table table-sm table-borderless mb-0">
+					<tbody>
+
+					{* Price without any product discounts *}
+					<tr n:if="!$productDiscountAmount->isZero()">
+						<td>
+							{_'Price without discount'}:
+						</td>
+
+						<td class="text-end text-nowrap">
+							{$originalPrice|money}
+						</td>
+					</tr>
+
+					{* Savings from product-level discounts *}
+					<tr n:if="!$productDiscountAmount->isZero()">
+						<td class="text-success">
+							{_'Product discounts'}:
+						</td>
+
+						<td class="text-success text-end text-nowrap">
+							-{$productDiscountAmount|money}
+						</td>
+					</tr>
+
+					{* Subtotal, i.e. price after product discounts, before a voucher *}
+					<tr n:if="!$productDiscountAmount->isZero() || ($discountCode && !$discountAmount->isZero())" class="border-top">
+						<td class="fw-semibold">
+							{_'Subtotal'}:
+						</td>
+
+						<td class="text-end fw-semibold text-nowrap">
+							{$subtotalPrice|money}
+						</td>
+					</tr>
+
+					{* Discount code amount *}
+					<tr n:if="$discountCode && !$discountAmount->isZero()">
+						<td class="text-success fw-semibold">
+							{_'Discount'} ({$discountCode}):
+						</td>
+
+						<td class="text-success fw-semibold text-end text-nowrap">
+							-{$discountAmount|money}
+						</td>
+					</tr>
+
+					{* Total price row *}
+					<tr class="border-top">
+						<td class="text-danger fw-semibold">
+							{_'Total to pay'}:
+						</td>
+
+						<td class="fw-semibold text-danger text-end text-nowrap">
+							{$totalPrice|money}
+						</td>
+					</tr>
+
+					</tbody>
+				</table>
+
+				{* Continue to order button *}
+				<p class="text-end mb-0 mt-2">
+					<a
+							href="{$linkOrderDelivery}"
+							class="btn btn-sm btn-primary"
+					>
+						{_'Continue with order'}
+					</a>
+				</p>
+
+			</div>
+		</div>
+
 	</div>
-
-
-	{* Continue to order button *}
-	<p class="text-end">
-		<a
-				href="{$linkOrderDelivery}"
-				class="btn btn-sm btn-primary"
-		>
-			{_'Continue with order'}
-		</a>
-	</p>
 
 
 {else}

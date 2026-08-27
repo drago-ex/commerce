@@ -35,7 +35,7 @@ class OrderLoggerListener
 			'Items' => array_map(static fn($item): array => [
 				'product'    => $item->product->name,
 				'amount'     => $item->amount->toInt(),
-				'unit_price' => $item->product->price->getAmount()->toFloat(),
+				'unit_price' => $item->product->getDiscountedPrice()->getAmount()->toFloat(),
 			], $event->shoppingCartSession->getItems()),
 			'Subtotal'        => $event->orderSummary->subtotal_price,
 			'Discount code'   => $event->orderSummary->discount_code,

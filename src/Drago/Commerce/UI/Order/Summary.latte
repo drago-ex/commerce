@@ -18,7 +18,7 @@
 				<th scope="col"><small>{_'Product name'}</small></th>
 				<th scope="col" class="text-end"><small>{_'Price'}</small></th>
 				<th scope="col" class="text-center"><small>{_'Amount'}</small></th>
-				<th scope="col" class="text-center"><small>{_'Discount'}</small></th>
+				<th scope="col" class="text-end"><small>{_'Discount'}</small></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -26,26 +26,38 @@
 			{* Loop through cart products  *}
 			<tr n:foreach="$shoppingCart as $cart">
 				<td>{$cart->product->name}</td>
-				<td class="text-end">{$cart->product->price|money}</td>
+				<td class="text-end text-nowrap">{$cart->product->getDiscountedPrice()|money}</td>
 				<td class="text-center">{$cart->amount}</td>
-				<td class="text-center">
-					{var $discount = $cart->product->discount ?? null}
-					<span n:if="$discount" class="badge border border-danger-subtle text-danger">
-						{$discount}%
+				<td class="text-end text-nowrap">
+					<span n:if="$cart->product->hasDiscount()" class="badge border border-danger-subtle text-danger">
+						-{$cart->product->discount}%
 					</span>
 				</td>
 			</tr>
 
-			{* Subtotal and discount code, shown only when a code is actually applied *}
-			{if $discountCode && !$discountAmount->isZero()}
+			{* Price breakdown, shown once anything actually needs explaining *}
+			{if !$productDiscountAmount->isZero() || ($discountCode && !$discountAmount->isZero())}
+
+				<tr n:if="!$productDiscountAmount->isZero()" class="border-top">
+					<td colspan="3">{_'Price without discount'}:</td>
+					<td class="text-end text-nowrap">{$originalPrice|money}</td>
+				</tr>
+
+				<tr n:if="!$productDiscountAmount->isZero()">
+					<td colspan="3" class="text-success">{_'Product discounts'}:</td>
+					<td class="text-success text-end text-nowrap">-{$productDiscountAmount|money}</td>
+				</tr>
+
 				<tr class="border-top">
 					<td colspan="3" class="fw-semibold">{_'Subtotal'}:</td>
-					<td class="text-end fw-semibold">{$subtotalPrice|money}</td>
+					<td class="text-end fw-semibold text-nowrap">{$subtotalPrice|money}</td>
 				</tr>
-				<tr>
+
+				<tr n:if="$discountCode && !$discountAmount->isZero()">
 					<td colspan="3" class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
-					<td class="text-success fw-semibold text-end">-{$discountAmount|money}</td>
+					<td class="text-success fw-semibold text-end text-nowrap">-{$discountAmount|money}</td>
 				</tr>
+
 			{/if}
 
 			<tr>

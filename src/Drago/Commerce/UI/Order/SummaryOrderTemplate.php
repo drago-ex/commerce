@@ -21,7 +21,17 @@ class SummaryOrderTemplate extends BaseTemplate
 	public ?Carrier $carrier = null;
 
 	/**
-	 * Sum of cart item prices before the discount code is applied.
+	 * Sum of cart item prices at full, undiscounted unit prices.
+	 */
+	public Money $originalPrice;
+
+	/**
+	 * Amount saved thanks to per-product discounts (originalPrice minus subtotalPrice).
+	 */
+	public Money $productDiscountAmount;
+
+	/**
+	 * Sum of cart item prices after per-product discounts, before the discount code is applied.
 	 */
 	public Money $subtotalPrice;
 

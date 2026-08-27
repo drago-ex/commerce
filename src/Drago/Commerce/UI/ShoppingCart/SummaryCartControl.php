@@ -62,8 +62,10 @@ class SummaryCartControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/SummaryCart.latte');
 		$template->setTranslator($this->translator);
+		$template->originalPrice = $this->shoppingCart->getOriginalPrice();
 		$template->subtotalPrice = $this->shoppingCart->getSubtotalPrice();
 		$template->totalPrice = $this->shoppingCart->getTotalPrice();
+		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
 		$template->discountAmount = $template->subtotalPrice->minus($template->totalPrice);
 		$template->discountCode = $this->discountCodeService->getCode()?->code;
 		$template->amountItems = $this->shoppingCart->getAmountItems();

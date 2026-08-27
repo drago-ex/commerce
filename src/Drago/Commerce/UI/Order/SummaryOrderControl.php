@@ -16,7 +16,6 @@ use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
-use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
@@ -44,11 +43,6 @@ class SummaryOrderControl extends BaseControl
 		private readonly DiscountCodeService $discountCodeService,
 	) {
 	}
-
-
-	/**
-	 * @throws MoneyMismatchException
-	 */
 
 
 	/**
@@ -167,27 +161,27 @@ class SummaryOrderControl extends BaseControl
 					throw new \Exception("Product with ID {$item->product->id} not found.");
 				}
 
-				if ($product->stock < $item->amount->toInt()) {
+				// Atomically check-and-deduct inventory in a single SQL
+				// statement, so two concurrent orders can never both
+				// succeed for the same last unit of stock.
+				$amount = $item->amount->toInt();
+				if (!$this->productRepository->decrementStock($product->id, $amount)) {
 					throw new \Exception("The product '{$product->name}' is not in stock in the requested quantity.");
 				}
-
-				// Deduct inventory.
-				$newStock = $product->stock - $item->amount->toInt();
-				$productEntity = new ProductEntity;
-				$productEntity->id = $product->id;
-				$productEntity->stock = $newStock;
-				$this->productRepository->save($productEntity);
 
 				//Save order products.
 				$orderProduct = new OrderProduct(
 					order_id: $orderId,
 					product_id: $item->product->id,
-					amount: $item->amount->toInt(),
+					amount: $amount,
 				);
 				$this->orderProductsRepository->save((array) $orderProduct);
 			}
 
-			$this->discountCodeService->consume();
+			if (!$this->discountCodeService->consume()) {
+				throw new \Exception('The discount code has just reached its usage limit, please try again without the code.');
+			}
+
 			$this->orderRepository->getConnection()->commit();
 			$this->eventDispatcher->dispatch(
 				new OrderPlaced(
@@ -205,7 +199,7 @@ class SummaryOrderControl extends BaseControl
 			$this->orderSession->remove();
 			$this->getPresenter()->redirect($this->linkRedirectTarget);
 
-		} catch (Exception | AttributeDetectionException $e) {
+		} catch (\Exception $e) {
 			$this->orderRepository->getConnection()->rollback();
 			Debugger::barDump($e);
 		}

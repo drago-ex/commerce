@@ -58,15 +58,25 @@ class DiscountCodeService
 
 
 	/**
+	 * Marks the currently applied discount code (if any) as used.
+	 *
+	 * Returns true when there was nothing to consume, or the usage was
+	 * recorded successfully. Returns false only when a code was applied
+	 * but a concurrent request has just exhausted its usage limit in the
+	 * meantime — the caller should treat this as a failed checkout
+	 * attempt (e.g. roll back the order) rather than silently ignoring it.
+	 *
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	public function consume(): void
+	public function consume(): bool
 	{
 		$discountCode = $this->getCode();
-		if ($discountCode !== null) {
-			$this->repository->incrementUsage($discountCode->id);
+		if ($discountCode === null) {
+			return true;
 		}
+
+		return $this->repository->incrementUsage($discountCode->id);
 	}
 
 

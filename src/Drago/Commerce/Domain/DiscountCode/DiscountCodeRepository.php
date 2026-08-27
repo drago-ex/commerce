@@ -46,12 +46,27 @@ class DiscountCodeRepository
 	}
 
 
-	public function incrementUsage(int $id): void
+	/**
+	 * Atomically increments the usage counter, but only while the usage
+	 * limit (if any) has not yet been reached. The limit check and the
+	 * increment happen in a single SQL statement, so two concurrent
+	 * requests using the same limited code cannot both succeed once the
+	 * limit is exhausted.
+	 *
+	 * Returns true when the usage was recorded, false when the limit had
+	 * already been reached in the meantime by another concurrent request.
+	 *
+	 * @throws Exception
+	 */
+	public function incrementUsage(int $id): bool
 	{
 		$this->connection->query(
-			'UPDATE %n SET used_count = used_count + 1 WHERE id = %i',
+			'UPDATE %n SET used_count = used_count + 1
+			WHERE id = %i AND (usage_limit IS NULL OR used_count < usage_limit)',
 			DiscountCodeEntity::Table,
 			$id,
 		);
+
+		return $this->connection->getAffectedRows() > 0;
 	}
 }

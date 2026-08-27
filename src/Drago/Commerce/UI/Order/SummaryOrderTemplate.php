@@ -16,9 +16,9 @@ use Drago\Commerce\UI\BaseTemplate;
  */
 class SummaryOrderTemplate extends BaseTemplate
 {
-	public Customer $customer;
-	public Payment $payment;
-	public Carrier $carrier;
+	public ?Customer $customer = null;
+	public ?Payment $payment = null;
+	public ?Carrier $carrier = null;
 
 	/**
 	 * Sum of cart item prices before the discount code is applied.

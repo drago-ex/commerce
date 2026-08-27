@@ -7,7 +7,6 @@ namespace Drago\Commerce\UI\ShoppingCart;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
-use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
@@ -47,6 +46,7 @@ class SummaryCartControl extends BaseControl
 	 * @throws MoneyMismatchException
 	 * @throws InvalidLinkException
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function render(): void
 	{
@@ -92,6 +92,7 @@ class SummaryCartControl extends BaseControl
 	protected function createComponentDiscountCode(): BaseForm
 	{
 		$form = $this->factory->addDiscountCode();
+		$form->setTranslator($this->translator);
 		$form->onSuccess[] = $this->applyDiscountCode(...);
 		return $form;
 	}
@@ -104,8 +105,7 @@ class SummaryCartControl extends BaseControl
 	public function applyDiscountCode(Form $form, FactoryValues $data): void
 	{
 		if (!$this->discountCodeService->apply($data->code)) {
-			$this->getPresenter()->flashMessage('The discount code is invalid or expired.', Alert::Danger);
-			$this->getPresenter()->redrawControl('message');
+			$form->addError('The discount code is invalid or expired.');
 		}
 
 		$this->redrawShoppingCart();

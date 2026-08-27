@@ -94,8 +94,8 @@
 				<div class="d-flex align-items-start gap-2">
 					<div class="flex-grow-1">
 						<input n:name="code" class="form-control form-control-sm" />
-						<div n:if="$form[code]->errors" class="text-danger small mt-2">
-							<div n:foreach="$form[code]->errors as $error">{$error}</div>
+						<div n:if="$form->errors" class="text-danger small mt-2">
+							<div n:foreach="$form->errors as $error">{$error}</div>
 						</div>
 					</div>
 					<input n:name="apply" class="btn btn-sm btn-primary px-3 flex-shrink-0" />

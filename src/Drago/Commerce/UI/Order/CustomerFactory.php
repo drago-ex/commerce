@@ -12,6 +12,7 @@ use Drago\Commerce\UI\Factory;
 use Drago\Form\Autocomplete;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
+use Nette\Http\Request;
 
 
 /**
@@ -23,6 +24,7 @@ class CustomerFactory
 		public Factory $factory,
 		public Commerce $commerce,
 		public ReaderGeoLite $readerGeoLite,
+		public Request $httpRequest,
 	) {
 	}
 
@@ -44,7 +46,11 @@ class CustomerFactory
 			->setRequired();
 
 		$defaultRegionCode = $this->commerce->getDefaultRegionCode();
-		$countryIsoCode = $this->readerGeoLite->getCountryIsoCode();
+
+		$clientIp = $this->httpRequest->getRemoteAddress();
+		$countryIsoCode = $clientIp !== null
+			? $this->readerGeoLite->getCountryIsoCode($clientIp)
+			: null;
 
 		if ($defaultRegionCode) {
 			if (is_array($defaultRegionCode) && in_array('autoDetect', $defaultRegionCode, true)) {

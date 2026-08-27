@@ -1,4 +1,4 @@
-import ShoppingCartItems from './shopping.cart.js';
+import ShoppingCartItems from './shopping-cart.js';
 import SpinnerExtension from './spinner.js';
 
 

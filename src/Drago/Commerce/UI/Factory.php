@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
 
+use Drago\Form\Autocomplete;
 use Nette\Localization\Translator;
 
 
@@ -48,10 +49,10 @@ readonly class Factory
 	public function addChangeAmountInCart(string $productId): BaseForm
 	{
 		$form = $this->addHiddenProductId($productId);
-		$form->addInteger(FactoryValues::Amount)
+		$form->addIntegerInput(FactoryValues::Amount)
+			->setAutocomplete(Autocomplete::Off)
 			->setDefaultValue(1)
-			->setHtmlAttribute('autocomplete', 'off')
-			->addRule($form::Min, arg: 1)
+			->setMin(1)
 			->addRule($form::Integer)
 			->setRequired();
 
@@ -64,8 +65,8 @@ readonly class Factory
 		$form = $this->create();
 		$form->addTextInput(FactoryValues::Code, 'Discount code')
 			->setRequired('Please enter a discount code.')
-			->setHtmlAttribute('autocomplete', 'off')
-			->setHtmlAttribute('placeholder', 'Enter discount code')
+			->setAutocomplete(Autocomplete::Off)
+			->setPlaceholder('Enter discount code')
 			->setHtmlAttribute('aria-label', 'Discount code');
 		$form->addSubmit('apply', 'Apply');
 

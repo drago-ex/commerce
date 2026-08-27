@@ -7,19 +7,13 @@
 
 <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
 
-	{* Shop name on the left linking to homepage *}
-	<a href="/" class="text-decoration-none text-body-emphasis fw-semibold fs-3 ps-0">
-		Drago Commerce
-	</a>
-
 	{* Mini cart on the right *}
 	{var $linkAttrs = [
 		'href' => $linkShoppingCart,
-		'class' => "d-flex align-items-center text-decoration-none text-body-emphasis pe-3",
-		'aria-label' => "{_'Go to shopping cart'}: $amountItems {_'items'}, {_'total price'} $formattedTotalPrice"
+		'class' => "d-flex align-items-center text-decoration-none text-body-emphasis pe-3"
 	]}
 
-	<a n:attr="$linkAttrs">
+	<a n:attr="$linkAttrs" aria-label="{_'Go to shopping cart'}: {$amountItems} {_'items'}, {_'total price'} {$formattedTotalPrice}">
 
 		<div class="position-relative" style="width: 1.5rem; height: 1.5rem;">
 			<i class="fa fa-shopping-cart" style="font-size: 1.5rem;"></i>

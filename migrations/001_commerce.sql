@@ -82,7 +82,10 @@ CREATE TABLE orders (
     payment_id INT UNSIGNED NOT NULL,
     carrier_price DECIMAL(10, 2) NOT NULL,
     payment_price DECIMAL(10, 2) NOT NULL,
+    subtotal_price DECIMAL(10, 2) NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
+    discount_code VARCHAR(64) NULL,
+    discount_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
 
@@ -110,6 +113,7 @@ CREATE TABLE orders_products (
     order_id INT UNSIGNED NOT NULL,
     product_id INT UNSIGNED NOT NULL,
     amount INT UNSIGNED NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
 
     PRIMARY KEY (order_id, product_id),
 

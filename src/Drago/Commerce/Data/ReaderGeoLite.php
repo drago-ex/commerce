@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drago\Commerce\Data;
 
 use GeoIp2\Database\Reader;
-use GeoIp2\Exception\GeoIp2Exception;
 use GeoIp2\Model\City;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 
@@ -28,14 +27,12 @@ class ReaderGeoLite
 
 	/**
 	 * Returns city data for the given IP address, or null on lookup failure.
-	 *
-	 * @throws InvalidDatabaseException
 	 */
 	public function getCity(string $ip): ?City
 	{
 		try {
 			return $this->reader()->city($ip);
-		} catch (GeoIp2Exception $e) {
+		} catch (\Throwable $e) {
 			return null;
 		}
 	}

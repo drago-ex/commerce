@@ -2,7 +2,7 @@ export default class ShoppingCartItems {
 	initialize(naja) {
 		const shoppingCartItems = (doc) => {
 			const itemCount = doc.querySelectorAll('[data-items-cart]');
-			if (itemCount) {
+			if (itemCount.length) {
 				for(let item of itemCount) {
 					item.addEventListener('change', (e) => {
 						naja.uiHandler.submitForm(e.target.form).then();

@@ -85,7 +85,6 @@ class SummaryOrderControl extends BaseControl
 
 	private function getAmountPrice(Money $money): float
 	{
-		$money->isZero();
 		return $money->getAmount()
 			->toFloat();
 	}
@@ -98,13 +97,6 @@ class SummaryOrderControl extends BaseControl
 		$form->onSuccess[] = $this->processOrder(...);
 		return $form;
 	}
-
-
-	/**
-	 * @throws MoneyMismatchException
-	 * @throws DriverException
-	 * @throws \Exception
-	 */
 
 
 	/**

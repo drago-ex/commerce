@@ -31,7 +31,7 @@ class ReaderGeoLite
 	 *
 	 * @throws InvalidDatabaseException
 	 */
-	public function getCity(string $ip = '127.0.0.0'): ?City
+	public function getCity(string $ip): ?City
 	{
 		try {
 			return $this->reader()->city($ip);
@@ -46,7 +46,7 @@ class ReaderGeoLite
 	 *
 	 * @throws InvalidDatabaseException
 	 */
-	public function getCountryIsoCode(string $ip = '94.113.197.225'): ?string
+	public function getCountryIsoCode(string $ip): ?string
 	{
 		$city = $this->getCity($ip);
 		return $city?->country->isoCode ?? null;

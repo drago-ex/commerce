@@ -33,11 +33,15 @@ class OrderLoggerListener
 				'price' => $event->orderSummary->payment_price,
 			],
 			'Items' => array_map(static fn($item): array => [
-				'product' => $item->product->name,
-				'amount'  => $item->amount->toInt(),
+				'product'    => $item->product->name,
+				'amount'     => $item->amount->toInt(),
+				'unit_price' => $item->product->price->getAmount()->toFloat(),
 			], $event->shoppingCartSession->getItems()),
-			'Total' => $event->orderSummary->total_price,
-			'Created at' => $event->orderSummary->created_at->format('Y-m-d H:i:s'),
+			'Subtotal'        => $event->orderSummary->subtotal_price,
+			'Discount code'   => $event->orderSummary->discount_code,
+			'Discount amount' => $event->orderSummary->discount_amount,
+			'Total'           => $event->orderSummary->total_price,
+			'Created at'      => $event->orderSummary->created_at->format('Y-m-d H:i:s'),
 		];
 
 		Debugger::log($orderLog, 'order.log');

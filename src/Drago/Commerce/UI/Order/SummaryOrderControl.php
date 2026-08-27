@@ -140,13 +140,20 @@ class SummaryOrderControl extends BaseControl
 			$this->customerRepository->save((array) $customerData);
 
 			// Save order.
+			$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
+			$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
+			$discountCode = $this->discountCodeService->getCode()?->code;
+
 			$orderData = new OrderSummary(
 				customer_id: $this->customerRepository->getInsertId(),
 				carrier_id: $carrier->id,
 				payment_id: $payment->id,
 				carrier_price: $this->getAmountPrice($carrier->price),
 				payment_price: $this->getAmountPrice($payment->price),
+				subtotal_price: $this->getAmountPrice($subtotalPrice),
 				total_price: $this->getAmountPrice($this->getTotalPrice()),
+				discount_code: $discountCode,
+				discount_amount: $this->getAmountPrice($discountAmount),
 				created_at: new DateTimeImmutable,
 			);
 
@@ -172,6 +179,7 @@ class SummaryOrderControl extends BaseControl
 					order_id: $orderId,
 					product_id: $item->product->id,
 					amount: $amount,
+					unit_price: $this->getAmountPrice($item->product->price),
 				);
 				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}

@@ -14,6 +14,7 @@ class OrderProduct
 		public int $order_id,
 		public int $product_id,
 		public int $amount,
+		public float $unit_price,
 	) {
 	}
 }

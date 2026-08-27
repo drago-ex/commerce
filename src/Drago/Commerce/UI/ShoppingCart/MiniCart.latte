@@ -15,12 +15,20 @@
 
 	<a n:attr="$linkAttrs" aria-label="{_'Go to shopping cart'}: {$amountItems} {_'items'}, {_'total price'} {$formattedTotalPrice}">
 
-		<div class="commerce-mini-cart-icon position-relative">
-			<i class="fa fa-shopping-cart"></i>
+		<div class="position-relative" style="width: 1.5rem; height: 1.5rem;">
+			<i class="fa fa-shopping-cart" style="font-size: 1.5rem;"></i>
 
 			{* Show badge only if cart has items *}
 			{if $amountItems > 0}
-				<span class="commerce-mini-cart-badge position-absolute start-100 translate-middle badge rounded-pill bg-danger border border-white"
+				<span class="position-absolute start-100 translate-middle badge rounded-pill bg-danger border border-white"
+					  style="
+							top: 0.25rem;
+							font-size: 0.75rem;
+							min-width: 1.125rem;
+							height: 1.125rem;
+							line-height: 1.125rem;
+							padding: 0;
+							box-sizing: content-box;"
 					  aria-live="polite">
 					{$amountItems}
 				</span>

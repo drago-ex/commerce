@@ -8,80 +8,201 @@
 	{include breadcrumbs, $breadcrumbs}
 
 	{* Page heading *}
-	<h2 class="mb-4 fw-normal fs-4">Your shopping cart</h2>
+	<h2 class="mb-4 fw-normal fs-4">{_'Your shopping cart'}</h2>
 
 	{* Responsive product table *}
 	<div class="table-responsive">
 		<table class="table table-hover table-sm align-middle table-borderless">
 			<thead>
 			<tr>
-				<th scope="col"><small>Product name</small></th>
-				<th scope="col"><small>Price</small></th>
-				<th scope="col"><small>Amount</small></th>
-				<th scope="col">Discount</th>
-				<th scope="col"></th>
+				<th scope="col">
+					<small>{_'Product name'}</small>
+				</th>
+				<th scope="col" class="text-end">
+					<small>{_'Price'}</small>
+				</th>
+				<th scope="col" class="text-center">
+					<small>{_'Amount'}</small>
+				</th>
+				<th scope="col" class="text-center">
+					<small>{_'Discount'}</small>
+				</th>
+				<th scope="col" class="text-end"></th>
 			</tr>
 			</thead>
+
 			<tbody>
 
 			{* Loop through cart items *}
 			<tr n:foreach="$shoppingCart as $cart">
-				<td>{$cart->product->name}</td>
 
-				{* Product price, right-aligned *}
-				<td class="text-end">{$cart->product->price|money}</td>
+				{* Product name *}
+				<td>
+					{$cart->product->name}
+				</td>
+
+				{* Product price *}
+				<td class="text-end text-nowrap">
+					{$cart->product->price|money}
+				</td>
 
 				{* Quantity change form *}
-				<td>
-					<form n:name="changeQuantity-{$cart->product->id}" class="ajax d-flex" data-items-cart data-naja-history="replace">
-						<label n:name="amount" class="w-25">
-							<input n:name="amount" value="{$cart->amount}" class="form-control form-control-sm" />
+				<td class="text-center">
+					<form
+							n:name="changeQuantity-{$cart->product->id}"
+							class="ajax d-flex justify-content-center"
+							data-items-cart
+							data-naja-history="replace"
+					>
+						<label n:name="amount" class="m-0">
+							<input
+									n:name="amount"
+									value="{$cart->amount}"
+									class="form-control form-control-sm"
+									style="width: 90px;"
+							/>
 						</label>
 					</form>
 				</td>
 
 				{* Discount *}
-				<td>
+				<td class="text-center">
 					{var $discount = $cart->product->discount ?? null}
-					<span n:if="$discount" class="badge border border-danger-subtle text-danger">{$discount}%</span>
+
+					<span
+                            n:if="$discount"
+                            class="badge border border-danger-subtle text-danger"
+					>
+                            {$discount}%
+                        </span>
 				</td>
 
 				{* Remove item link *}
-				<td>
+				<td class="text-end text-nowrap">
 					{var $linkAttrs = [
-						'role' => "button",
-						'class' => "ajax btn btn-sm btn-outline-danger",
-						'aria-label' => "Remove {$cart->product->name} from cart",
-						'data-naja-history' => "off"
+					'role' => 'button',
+					'class' => 'ajax btn btn-sm btn-outline-danger',
+					'aria-label' => "Remove {$cart->product->name} from cart",
+					'data-naja-history' => 'off'
 					]}
 
-					<a n:attr="$linkAttrs" n:href="removeItem!, productId: $cart->product->id">
-						Remove
+					<a
+							n:attr="$linkAttrs"
+							n:href="removeItem!, productId: $cart->product->id"
+					>
+						{_'Remove'}
 					</a>
 				</td>
 			</tr>
 
+
+			{* Discount summary *}
+			{if $discountCode && !$discountAmount->isZero()}
+
+				{* Subtotal *}
+				<tr class="border-top">
+					<td colspan="4" class="fw-semibold">
+						{_'Subtotal'}:
+					</td>
+
+					<td class="text-end fw-semibold text-nowrap">
+						{$subtotalPrice|money}
+					</td>
+				</tr>
+
+				{* Discount amount *}
+				<tr>
+					<td colspan="4" class="text-success fw-semibold">
+						{_'Discount'} ({$discountCode}):
+					</td>
+
+					<td class="text-success fw-semibold text-end text-nowrap">
+						-{$discountAmount|money}
+					</td>
+				</tr>
+
+			{/if}
+
+
 			{* Total price row *}
-			<tr>
-				<td class="text-danger fw-semibold">Total to pay:</td>
-				<td colspan="3" class="fw-semibold text-danger text-end">
+			<tr class="border-top">
+				<td colspan="4" class="text-danger fw-semibold">
+					{_'Total to pay'}:
+				</td>
+
+				<td class="fw-semibold text-danger text-end text-nowrap">
 					{$totalPrice|money}
 				</td>
 			</tr>
+
 			</tbody>
 		</table>
 	</div>
 
+
+	{* Discount code form *}
+	<div class="mb-3">
+		<div class="card bg-body-tertiary border-0 p-3">
+
+			<form n:name="discountCode" class="ajax">
+
+				<label n:name="code" class="form-label fw-semibold mb-2">
+					{_'Have a discount code?'}
+				</label>
+
+				<div class="d-flex align-items-start gap-2">
+
+					<div class="flex-grow-1">
+						<input
+								n:name="code"
+								class="form-control form-control-sm"
+						/>
+
+						<div
+								n:if="$form->errors"
+								class="text-danger small mt-2"
+						>
+							<div n:foreach="$form->errors as $error">
+								{$error}
+							</div>
+						</div>
+					</div>
+
+					<input
+							n:name="apply"
+							class="btn btn-sm btn-primary px-3 flex-shrink-0"
+					/>
+
+				</div>
+
+			</form>
+
+			<p n:if="$discountCode" class="small text-success mt-2 mb-0">
+				{_'Discount code'}
+				<strong>{$discountCode}</strong>
+				{_'applied.'}
+			</p>
+
+		</div>
+	</div>
+
+
 	{* Continue to order button *}
 	<p class="text-end">
-		<a href="{$linkOrderDelivery}" class="btn btn-sm btn-primary">
-			Continue with order
+		<a
+				href="{$linkOrderDelivery}"
+				class="btn btn-sm btn-primary"
+		>
+			{_'Continue with order'}
 		</a>
 	</p>
+
 
 {else}
 
 	{* Message for empty cart *}
-	<p class="mt-2">Your shopping cart is empty.</p>
+	<p class="mt-2">
+		{_'Your shopping cart is empty.'}
+	</p>
 
 {/if}

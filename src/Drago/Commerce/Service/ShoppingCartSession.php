@@ -29,6 +29,7 @@ class ShoppingCartSession
 	public function __construct(
 		private readonly Session $session,
 		private readonly Commerce $commerce,
+		private readonly DiscountCodeService $discountCodeService,
 	) {
 		$this->sessionSection = $this->session
 			->getSection(self::class)
@@ -53,6 +54,23 @@ class ShoppingCartSession
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
 	 */
 	public function getTotalPrice(): Money
+	{
+		$totalPrice = $this->commerce->moneyZero();
+
+		foreach ($this->getItems() as $item) {
+			$totalPrice = $totalPrice->plus(
+				$item->product->price->multipliedBy($item->amount),
+			);
+		}
+
+		return $this->discountCodeService->applyTo($totalPrice);
+	}
+
+
+	/**
+	 * Returns the cart total before applying a discount code.
+	 */
+	public function getSubtotalPrice(): Money
 	{
 		$totalPrice = $this->commerce->moneyZero();
 

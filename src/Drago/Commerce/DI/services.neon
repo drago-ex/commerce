@@ -1,12 +1,14 @@
 services:
 	- Drago\Commerce\Service\OrderSession
 	- Drago\Commerce\Service\ShoppingCartSession
+	- Drago\Commerce\Service\DiscountCodeService
 
 	- Drago\Commerce\Data\ReaderGeoLite
 	- Drago\Commerce\UI\Factory
 
 	- Drago\Commerce\Domain\Product\ProductMapper
 	- Drago\Commerce\Domain\Product\ProductRepository
+	- Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository
 
 	- Drago\Commerce\Domain\Delivery\CarrierMapper
 	- Drago\Commerce\Domain\Delivery\CarrierRepository

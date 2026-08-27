@@ -8,16 +8,16 @@
 	{include breadcrumbs, $breadcrumbs}
 
 	{* Pre-shipment summary heading *}
-	<h2 class="mb-4 fw-normal fs-4">Pre-shipment summary</h2>
+	<h2 class="mb-4 fw-normal fs-4">{_'Pre-shipment summary'}</h2>
 
 	{* Products and costs summary table *}
 	<div class="table-responsive mb-4">
 		<table class="table table-borderless table-hover align-middle">
 			<thead>
 			<tr>
-				<th scope="col"><small>Product name</small></th>
-				<th scope="col" class="text-end"><small>Price</small></th>
-				<th scope="col" class="text-center"><small>Amount</small></th>
+				<th scope="col"><small>{_'Product name'}</small></th>
+				<th scope="col" class="text-end"><small>{_'Price'}</small></th>
+				<th scope="col" class="text-center"><small>{_'Amount'}</small></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -46,32 +46,32 @@
 
 	{* Total price to pay outside the table for better emphasis *}
 	<p class="text-end text-danger fw-semibold fs-5 mb-4">
-		Total to pay: {$totalPrice|money}
+		{_'Total to pay'}: {$totalPrice|money}
 	</p>
 
 	{* Customer information summary *}
-	<h2 class="mb-4 fw-normal fs-4 pb-2 border-bottom">Customer Information</h2>
+	<h2 class="mb-4 fw-normal fs-4 pb-2 border-bottom">{_'Customer information'}</h2>
 	<div class="mb-4">
 		<p class="mb-2">
-			<strong class="fw-semibold">Name and surname:</strong><br>
+			<strong class="fw-semibold">{_'Name and surname'}:</strong><br>
 			{$customer->name} {$customer->surname}
 		</p>
 		<p class="mb-2">
-			<strong class="fw-semibold">Email:</strong><br>
+			<strong class="fw-semibold">{_'Email'}:</strong><br>
 			{$customer->email}
 		</p>
 		<p class="mb-2">
-			<strong class="fw-semibold">Telephone:</strong><br>
+			<strong class="fw-semibold">{_'Telephone'}:</strong><br>
 			{$customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
 		</p>
 		<p class="mb-2">
-			<strong class="fw-semibold">Delivery address:</strong><br>
+			<strong class="fw-semibold">{_'Delivery address'}:</strong><br>
 			{$customer->street}<br>
 			{$customer->postal_code} {$customer->city}<br>
 			{$customer->country}
 		</p>
 		{if $customer->note}
-			<p class="mb-0"><strong class="fw-semibold">Order note:</strong><br>
+			<p class="mb-0"><strong class="fw-semibold">{_'Order note'}:</strong><br>
 				{$customer->note ?? null}
 			</p>
 		{/if}
@@ -80,10 +80,10 @@
 	{* Confirm purchase button with accessibility label *}
 	<div class="text-end mt-3">
 		<form n:name="sendOrder" n:if="$customer !== null && $carrier !== null">
-			<input n:name="send" class="btn btn-sm btn-success" aria-label="Confirm your order and complete the purchase">
+			<input n:name="send" class="btn btn-sm btn-success" aria-label="{_'Confirm your order and complete the purchase'}">
 		</form>
 	</div>
 
 {else}
-	<p>Your shopping cart is empty.</p>
+	<p>{_'Your shopping cart is empty.'}</p>
 {/if}

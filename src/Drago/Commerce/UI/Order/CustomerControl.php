@@ -42,6 +42,7 @@ class CustomerControl extends BaseControl
 	{
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Customer.latte');
+		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
 

@@ -6,7 +6,7 @@
 	{* Includes the breadcrumbs component to render the navigation steps. *}
 	{include breadcrumbs, $breadcrumbs}
 
-	<h2 class="mb-4 fw-normal fs-4">Information for delivery of goods</h2>
+	<h2 class="mb-4 fw-normal fs-4">{_'Customer information'}</h2>
 	<form n:name="customer">
 
 		{* Display validation errors *}
@@ -19,7 +19,7 @@
 
 			{* Contact information section with light blue background *}
 			<div class="col-6 bg-primary bg-opacity-10 rounded p-3">
-				<p class="fw-semibold text-end">Contact information</p>
+				<p class="fw-semibold text-end">{_'Contact information'}</p>
 				<div class="mb-3">
 					<label n:name="email" class="form-label" />
 					<input n:name="email" type="email" class="form-control" required />
@@ -49,7 +49,7 @@
 
 			{* Billing information section with light gray background *}
 			<div class="col-6 bg-body-tertiary rounded p-3">
-				<p class="fw-semibold text-end">Billing information</p>
+				<p class="fw-semibold text-end">{_'Billing information'}</p>
 				<div class="mb-3">
 					<label n:name="street" class="form-label" />
 					<input n:name="street" type="text" class="form-control" required />
@@ -78,7 +78,7 @@
 			</div>
 		</div>
 
-		<p class="fw-semibold text-end mt-4">Order information</p>
+		<p class="fw-semibold text-end mt-4">{_'Order information'}</p>
 		<div class="mb-3">
 			<label n:name="note" class="form-label" />
 			<textarea n:name="note" class="form-control" rows="3"></textarea>
@@ -91,5 +91,5 @@
 	</form>
 
 {else}
-	<p>Your shopping cart is empty.</p>
+	<p>{_'Your shopping cart is empty.'}</p>
 {/if}

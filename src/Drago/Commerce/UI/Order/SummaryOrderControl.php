@@ -49,6 +49,13 @@ class SummaryOrderControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 */
+
+
+	/**
+	 * @throws MoneyMismatchException
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
 	public function render(): void
 	{
 		$template = $this->template;
@@ -56,6 +63,9 @@ class SummaryOrderControl extends BaseControl
 		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
+		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
+		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
+		$template->discountCode = $this->discountCodeService->getCode()?->code;
 		$template->totalPrice = $this->getTotalPrice();
 		$template->carrier = $this->getOrderItem('carrier');
 		$template->customer = $this->getOrderItem('customer');

@@ -64,11 +64,11 @@
 			{if $discountCode && !$discountAmount->isZero()}
 				<tr>
 					<td>{_'Subtotal'}:</td>
-					<td colspan="3" class="text-end">{$subtotalPrice|money}</td>
+					<td colspan="4" class="text-end">{$subtotalPrice|money}</td>
 				</tr>
 				<tr>
 					<td class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
-					<td colspan="3" class="text-success fw-semibold text-end">
+					<td colspan="4" class="text-success fw-semibold text-end">
 						-{$discountAmount|money}
 					</td>
 				</tr>
@@ -77,7 +77,7 @@
 			{* Total price row *}
 			<tr>
 				<td class="text-danger fw-semibold">{_'Total to pay'}:</td>
-				<td colspan="3" class="fw-semibold text-danger text-end">
+				<td colspan="4" class="fw-semibold text-danger text-end">
 					{$totalPrice|money}
 				</td>
 			</tr>

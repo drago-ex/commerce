@@ -199,7 +199,7 @@ class SummaryOrderControl extends BaseControl
 			$this->orderSession->remove();
 			$this->getPresenter()->redirect($this->linkRedirectTarget);
 
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$this->orderRepository->getConnection()->rollback();
 			Debugger::barDump($e);
 		}

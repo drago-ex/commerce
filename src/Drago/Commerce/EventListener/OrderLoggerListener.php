@@ -44,6 +44,6 @@ class OrderLoggerListener
 			'Created at'      => $event->orderSummary->created_at->format('Y-m-d H:i:s'),
 		];
 
-		Debugger::log($orderLog, 'order.log');
+		Debugger::log($orderLog, 'order');
 	}
 }

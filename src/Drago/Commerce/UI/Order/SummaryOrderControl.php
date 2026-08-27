@@ -23,7 +23,6 @@ use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
-use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
 use Tracy\Debugger;
 

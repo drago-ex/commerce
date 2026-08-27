@@ -7,6 +7,7 @@ namespace Drago\Commerce\UI\ShoppingCart;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
+use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
@@ -101,6 +102,7 @@ class SummaryCartControl extends BaseControl
 	/**
 	 * @throws AbortException
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function applyDiscountCode(Form $form, FactoryValues $data): void
 	{

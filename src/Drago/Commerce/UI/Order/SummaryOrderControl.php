@@ -23,6 +23,7 @@ use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
 use Tracy\Debugger;
 
@@ -104,9 +105,7 @@ class SummaryOrderControl extends BaseControl
 
 
 	/**
-	 * @throws MoneyMismatchException
 	 * @throws DriverException
-	 * @throws \Exception
 	 */
 	public function processOrder(Form $form): void
 	{
@@ -166,7 +165,7 @@ class SummaryOrderControl extends BaseControl
 				// succeed for the same last unit of stock.
 				$amount = $item->amount->toInt();
 				if (!$this->productRepository->decrementStock($product->id, $amount)) {
-					throw new \Exception("The product '{$product->name}' is not in stock in the requested quantity.");
+					throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
 				}
 
 				//Save order products.
@@ -175,7 +174,7 @@ class SummaryOrderControl extends BaseControl
 					product_id: $item->product->id,
 					amount: $amount,
 				);
-				$this->orderProductsRepository->save((array) $orderProduct);
+				$this->orderProductsRepository->insert((array) $orderProduct);
 			}
 
 			if (!$this->discountCodeService->consume()) {
@@ -183,25 +182,28 @@ class SummaryOrderControl extends BaseControl
 			}
 
 			$this->orderRepository->getConnection()->commit();
-			$this->eventDispatcher->dispatch(
-				new OrderPlaced(
-					orderId: $orderId,
-					orderSummary: $orderData,
-					customer: $customer,
-					carrier: $carrier,
-					payment: $payment,
-					shoppingCartSession: $this->shoppingCartSession,
-				),
-			);
-
-			$this->shoppingCartSession->remove();
-			$this->discountCodeService->remove();
-			$this->orderSession->remove();
-			$this->getPresenter()->redirect($this->linkRedirectTarget);
 
 		} catch (\Throwable $e) {
 			$this->orderRepository->getConnection()->rollback();
 			Debugger::barDump($e);
+			$form->addError('An error occurred while processing your order: ' . $e->getMessage());
+			return;
 		}
+
+		$this->eventDispatcher->dispatch(
+			new OrderPlaced(
+				orderId: $orderId,
+				orderSummary: $orderData,
+				customer: $customer,
+				carrier: $carrier,
+				payment: $payment,
+				shoppingCartSession: $this->shoppingCartSession,
+			),
+		);
+
+		$this->shoppingCartSession->remove();
+		$this->discountCodeService->remove();
+		$this->orderSession->remove();
+		$this->getPresenter()->redirect($this->linkRedirectTarget);
 	}
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\EventListener;
 
+use Brick\Math\RoundingMode;
 use Brick\Money\Exception\MoneyMismatchException;
 use Drago\Commerce\Event\ProductAddedToCart;
 
@@ -26,7 +27,7 @@ class DiscountListener
 
 		if ($discount > 0) {
 			$price = $event->getPrice();
-			$discountAmount = $price->multipliedBy($discount)->dividedBy(100);
+			$discountAmount = $price->multipliedBy($discount)->dividedBy(100, RoundingMode::HALF_UP);
 			$discounted = $price->minus($discountAmount);
 			$event->setPrice($discounted);
 		}

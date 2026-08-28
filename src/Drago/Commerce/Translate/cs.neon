@@ -3,6 +3,8 @@
 "Price": "Cena"
 "Amount": "Množství"
 "Discount": "Sleva"
+"Price without discount": "Cena bez slevy"
+"Product discounts": "Sleva na produktech"
 "Subtotal": "Mezisoučet"
 "Total to pay": "Celkem k úhradě"
 "Have a discount code?": "Máte slevový kód?"

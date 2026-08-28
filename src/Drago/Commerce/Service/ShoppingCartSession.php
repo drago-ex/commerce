@@ -49,28 +49,44 @@ class ShoppingCartSession
 
 
 	/**
-	 * Calculates total price of all items in the basket.
+	 * Calculates total price of all items in the basket, after per-product
+	 * discounts and after the discount code (voucher), if any is applied.
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
 	 */
 	public function getTotalPrice(): Money
 	{
-		$totalPrice = $this->commerce->moneyZero();
-
-		foreach ($this->getItems() as $item) {
-			$totalPrice = $totalPrice->plus(
-				$item->product->price->multipliedBy($item->amount),
-			);
-		}
-
-		return $this->discountCodeService->applyTo($totalPrice);
+		return $this->discountCodeService->applyTo($this->getSubtotalPrice());
 	}
 
 
 	/**
-	 * Returns the cart total before applying a discount code.
+	 * Returns the cart total after per-product discounts but before applying a discount code.
+	 *
+	 * @throws MoneyMismatchException If currencies don't match during calculation.
 	 */
 	public function getSubtotalPrice(): Money
+	{
+		$totalPrice = $this->commerce->moneyZero();
+
+		foreach ($this->getItems() as $item) {
+			$totalPrice = $totalPrice->plus(
+				$item->product->getDiscountedPrice()->multipliedBy($item->amount),
+			);
+		}
+
+		return $totalPrice;
+	}
+
+
+	/**
+	 * Returns the cart total at full (undiscounted) unit prices, ignoring both
+	 * per-product discounts and any discount code. Used to show how much the
+	 * per-product discounts are saving the customer.
+	 *
+	 * @throws MoneyMismatchException If currencies don't match during calculation.
+	 */
+	public function getOriginalPrice(): Money
 	{
 		$totalPrice = $this->commerce->moneyZero();
 

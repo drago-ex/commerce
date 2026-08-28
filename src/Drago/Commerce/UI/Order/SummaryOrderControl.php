@@ -57,7 +57,9 @@ class SummaryOrderControl extends BaseControl
 		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
+		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
 		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
+		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
 		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
 		$template->discountCode = $this->discountCodeService->getCode()?->code;
 		$template->totalPrice = $this->getTotalPrice();
@@ -185,7 +187,7 @@ class SummaryOrderControl extends BaseControl
 					order_id: $orderId,
 					product_id: $item->product->id,
 					amount: $amount,
-					unit_price: $this->getAmountPrice($item->product->price),
+					unit_price: $this->getAmountPrice($item->product->getDiscountedPrice()),
 				);
 				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}

@@ -25,6 +25,7 @@ class CommerceExtension extends CompilerExtension
 			'defaultRegionCode' => Expect::type('array|string|false'),
 			'allowedRegionPhoneNumber' => Expect::type('array|string'),
 			'postCodeOnRegionPhone' => Expect::bool(),
+			'geoLite2Path' => Expect::string()->nullable()->default(null),
 		]);
 	}
 

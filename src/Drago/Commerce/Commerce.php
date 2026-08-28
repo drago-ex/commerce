@@ -88,4 +88,16 @@ class Commerce
 	{
 		return $this->config['allowedRegionPhoneNumber'] ?? [];
 	}
+
+
+	/**
+	 * Returns the absolute path to a MaxMind GeoLite2 City database, or null
+	 * when none is configured. GeoIP-based features (e.g. auto-detecting the
+	 * phone region from the visitor's IP) are simply skipped when this is null —
+	 * the database is not bundled with this package, see the readme.
+	 */
+	public function getGeoLite2Path(): ?string
+	{
+		return $this->config['geoLite2Path'] ?? null;
+	}
 }

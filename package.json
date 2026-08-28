@@ -7,13 +7,16 @@
 	],
 	"exports": {
 		".": "./src/Drago/Commerce/assets/index.js",
-		"./shopping-cart": "./src/Drago/Commerce/assets/shopping.cart.js",
+		"./shopping-cart": "./src/Drago/Commerce/assets/shopping-cart.js",
 		"./spinner": "./src/Drago/Commerce/assets/spinner.js",
 		"./styles": "./src/Drago/Commerce/assets/commerce.scss"
 	},
 	"sideEffects": [
 		"**/*.scss"
 	],
+	"dependencies": {
+		"@fortawesome/fontawesome-free": "^6.5.0"
+	},
 	"peerDependencies": {
 		"naja": ">=3.0.0"
 	}

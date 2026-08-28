@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Product;
 
+use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
@@ -76,6 +77,7 @@ class ProductControl extends BaseControl
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
+	 * @throws MoneyMismatchException
 	 */
 	public function success(Form $form, ProductData $data): void
 	{
@@ -123,6 +125,8 @@ class ProductControl extends BaseControl
 
 	/**
 	 * Create a Product domain object from entity and given price
+	 *
+	 * @throws MoneyMismatchException
 	 */
 	private function createProductEntity(ProductEntity $entity, Money $price): Product
 	{
@@ -132,7 +136,13 @@ class ProductControl extends BaseControl
 			price: $price,
 		);
 
-		$product->setDiscount($entity->discount);
+		// Only apply the standard % discount when nothing else already produced
+		// a custom final price via the ProductAddedToCart event — otherwise
+		// getDiscountedPrice() would discount an already-final price again.
+		if ($price->isEqualTo($this->commerce->moneyOf($entity->price))) {
+			$product->setDiscount($entity->discount);
+		}
+
 		return $product;
 	}
 }

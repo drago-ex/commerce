@@ -20,19 +20,20 @@
 		"drago-ex/form": "^2.0",
 		"brick/money": "^0.5",
 		"brick/postcode": "^0.2",
-		"nepada/phone-number-input": "^1.0",
-		"geoip2/geoip2": "^2.12"
+		"nepada/phone-number-input": "^1.0"
 	},
 	"require-dev": {
 		"nette/tester": "^2.3",
 		"tracy/tracy": "^2.7",
-		"phpstan/phpstan-nette": "^2.0"
+		"phpstan/phpstan-nette": "^2.0",
+		"geoip2/geoip2": "^2.12"
 	},
 	"autoload": {
 		"classmap": ["src/"]
 	},
 	"suggest": {
-		"drago-ex/translator": "Configures Latte translation support for bundled templates using translation macros."
+		"drago-ex/translator": "Configures Latte translation support for bundled templates using translation macros.",
+		"geoip2/geoip2": "Enables automatic phone-region detection from the visitor's IP via a MaxMind GeoLite2 City database you provide yourself (see README, 'geoLite2Path' config option)."
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",

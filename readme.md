@@ -64,6 +64,8 @@ commerce:
     defaultRegionCode: ['autoDetect', 'CZ']
     allowedRegionPhoneNumber: CZ
     postCodeOnRegionPhone: true
+    
+    # geoLite2Path: %appDir%/../data/GeoLite2-City.mmdb
 ```
 
 ## Use Commerce Trait in Your Presenter

@@ -14,7 +14,7 @@ use Nette\Localization\Translator;
 readonly class Factory
 {
 	public function __construct(
-		private Translator $translator,
+		private ?Translator $translator = null,
 	) {
 	}
 
@@ -25,7 +25,9 @@ readonly class Factory
 	public function create(): BaseForm
 	{
 		$form = new BaseForm;
-		$form->setTranslator($this->translator);
+		if ($this->translator !== null) {
+			$form->setTranslator($this->translator);
+		}
 		return $form;
 	}
 

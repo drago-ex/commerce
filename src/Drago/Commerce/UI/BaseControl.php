@@ -35,7 +35,7 @@ class BaseControl extends ExtraControl
 	/**
 	 * Identifier of the currently active step.
 	 */
-	protected string $currentStep;
+	protected string $currentStep = '';
 
 	/**
 	 * List of identifiers for completed steps.

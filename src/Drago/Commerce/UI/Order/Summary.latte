@@ -93,7 +93,11 @@
 		</p>
 		<p class="mb-2">
 			<strong class="fw-semibold">{_'Telephone'}:</strong><br>
-			{$customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
+			{if $customer->phone instanceof \Brick\PhoneNumber\PhoneNumber}
+				{$customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
+			{else}
+				{$customer->phone}
+			{/if}
 		</p>
 		<p class="mb-2">
 			<strong class="fw-semibold">{_'Delivery address'}:</strong><br>

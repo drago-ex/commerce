@@ -178,4 +178,16 @@ class SummaryCartControl extends BaseControl
 		$this->eventDispatcher->dispatch(new CartItemRemoved($product));
 		$this->redrawShoppingCart();
 	}
+
+
+	/**
+	 * Handles removing the applied discount code from the cart session.
+	 *
+	 * @throws AbortException
+	 */
+	public function handleRemoveDiscountCode(): void
+	{
+		$this->discountCodeService->remove();
+		$this->redrawShoppingCart();
+	}
 }

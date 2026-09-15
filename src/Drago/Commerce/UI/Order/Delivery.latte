@@ -11,6 +11,11 @@
 	<h2 class="mb-4 fw-normal fs-4">{_'Information for delivery of goods'}</h2>
 	<form n:name="delivery" n:if="count($carrier) && count($payment)" class="mb-4">
 
+		{* Display validation errors *}
+		<ul n:if="$form->hasErrors()" class="errors text-danger small list-unstyled mb-3">
+			<li n:foreach="$form->errors as $error">{$error}</li>
+		</ul>
+
 		{* Section: Choose a carrier (shipping method) *}
 		<p class="fw-semibold mb-2">{_'Select a transport'}</p>
 		<div class="mb-4">

@@ -34,17 +34,17 @@ final class CheckoutSteps
 		$this->shoppingCart = 'shoppingCart';
 		$this->orderDone = 'done';
 
+		foreach ($customSteps as $key => $value) {
+			if (property_exists($this, $key)) {
+				$this->$key = $value;
+			}
+		}
+
 		$this->steps = [
 			$this->shoppingCart => 'Shopping Cart',
 			$this->delivery => 'Delivery',
 			$this->customer => 'Customer Info',
 			$this->summary => 'Summary',
 		];
-
-		foreach ($customSteps as $key => $value) {
-			if (property_exists($this, $key)) {
-				$this->$key = $value;
-			}
-		}
 	}
 }

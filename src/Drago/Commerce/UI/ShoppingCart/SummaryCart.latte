@@ -140,10 +140,21 @@
 
 				</form>
 
-				<p n:if="$discountCode" class="small text-success mt-2 mb-0">
-					{_'Discount code'}
-					<strong>{$discountCode}</strong>
-					{_'applied.'}
+				<p n:if="$discountCode" class="small text-success mt-2 mb-0 d-flex align-items-center">
+					<span>
+						{_'Discount code'}
+						<strong>{$discountCode}</strong>
+						{_'applied.'}
+					</span>
+					<a
+							n:href="removeDiscountCode!"
+							class="ajax btn btn-sm btn-link text-danger p-0 ms-2 text-decoration-none"
+							aria-label="{_'Remove discount code'}"
+							title="{_'Remove'}"
+							data-naja-history="off"
+					>
+						&times; {_'Remove'}
+					</a>
 				</p>
 
 			</div>

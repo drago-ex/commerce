@@ -157,6 +157,67 @@ public function actionSummary(): void
 }
 ```
 
+## Latte Templates
+
+### 1. Layout (`@layout.latte`)
+Include the mini cart widget in your navbar / header:
+
+```latte
+{snippet cart}
+    {control miniCart}
+{/snippet}
+```
+
+### 2. Product Catalog (`default.latte`)
+```latte
+{block content}
+    {control product}
+{/block}
+```
+
+### 3. Shopping Cart (`shoppingCart.latte`)
+```latte
+{block content}
+    {snippet shoppingCart}
+        {control shoppingCart}
+    {/snippet}
+{/block}
+```
+
+### 4. Shipping & Payment (`delivery.latte`)
+```latte
+{block content}
+    {snippet delivery}
+        {control delivery}
+    {/snippet}
+{/block}
+```
+
+### 5. Customer Details (`customer.latte`)
+```latte
+{block content}
+    {control customer}
+{/block}
+```
+
+### 6. Order Summary (`summary.latte`)
+```latte
+{block content}
+    {snippet summaryOrder}
+        {control summaryOrder}
+    {/snippet}
+{/block}
+```
+
+### 7. Order Confirmation (`done.latte`)
+```latte
+{block content}
+    <h1>{_'Order completed'}</h1>
+    <p class="alert alert-success">{_'Thank you, your order has been successfully submitted.'}</p>
+    <a n:href="default" class="btn btn-primary">{_'Back to the menu'}</a>
+{/block}
+```
+
 ## Register Services
 Register the checkout services so Nette DI can create and wire the checkout flow.
 

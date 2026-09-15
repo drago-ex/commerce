@@ -12,8 +12,9 @@ use Drago\Commerce\Domain\Checkout\CheckoutSteps;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
-use Drago\Commerce\Domain\Product\Product;
+use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
+use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
@@ -37,8 +38,13 @@ $commerce = new Commerce([
 
 // Create mock/dummy repository for DiscountCodeService
 $discountRepo = (new class extends DiscountCodeRepository {
-	public function __construct() {}
-	public function findValid(string $code): ?\Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity {
+	public function __construct()
+	{
+	}
+
+
+	public function findValid(string $code): ?DiscountCodeEntity
+	{
 		return null;
 	}
 });

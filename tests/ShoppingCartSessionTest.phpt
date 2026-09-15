@@ -6,9 +6,9 @@ namespace Drago\Commerce\Tests;
 
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
-use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
+use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Nette\Http\Request;
@@ -34,9 +34,14 @@ $discountRepo = (new class extends DiscountCodeRepository {
 	/** @var array<string, DiscountCodeEntity> */
 	public array $codes = [];
 
-	public function __construct() {}
 
-	public function findValid(string $code): ?DiscountCodeEntity {
+	public function __construct()
+	{
+	}
+
+
+	public function findValid(string $code): ?DiscountCodeEntity
+	{
 		return $this->codes[strtoupper($code)] ?? null;
 	}
 });

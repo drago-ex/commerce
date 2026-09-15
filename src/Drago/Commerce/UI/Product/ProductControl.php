@@ -100,8 +100,13 @@ class ProductControl extends BaseControl
 
 		$this->shoppingCartSession->addItem($item);
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
-		$this->getPresenter()->redrawControl('message');
-		$this->getPresenter()->redrawControl('cart');
+
+		if ($this->isAjax()) {
+			$this->getPresenter()->redrawControl('message');
+			$this->getPresenter()->redrawControl('cart');
+		} else {
+			$this->getPresenter()->redirect('this');
+		}
 	}
 
 

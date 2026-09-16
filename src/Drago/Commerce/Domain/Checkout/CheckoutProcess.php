@@ -6,6 +6,7 @@ namespace Drago\Commerce\Domain\Checkout;
 
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Drago\Commerce\UI\BaseControl;
 
 
 /**
@@ -61,6 +62,41 @@ final class CheckoutProcess
 	public function getRedirectTargetForAction(string $action): ?string
 	{
 		return $this->redirectResolver->getRedirectTargetForAction($action);
+	}
+
+
+	/**
+	 * Returns the step that follows the given one in the checkout flow, or
+	 * null when there isn't one (e.g. the given step is the last, or unknown).
+	 */
+	public function getNextStep(string $step): ?string
+	{
+		return $this->checkoutSteps->next($step);
+	}
+
+
+	/**
+	 * Fully configures a step control for its place in the checkout flow:
+	 * the step map (for breadcrumbs), which steps are already completed,
+	 * which one is current, and where to send the customer next.
+	 *
+	 * Used by CommerceControl to wire each control up once, at injection
+	 * time — a control's step is fixed by what it is (DeliveryControl is
+	 * always the delivery step), so there's nothing presenter-specific
+	 * about this and no reason to repeat it in every presenter.
+	 */
+	public function configureStep(BaseControl $control, string $step): BaseControl
+	{
+		$control->setSteps($this->getSteps());
+		$control->setCompletedSteps($this->getCompletedSteps());
+		$control->setCurrentStep($step);
+
+		$next = $this->getNextStep($step);
+		if ($next !== null) {
+			$control->setLinkRedirectTarget($next);
+		}
+
+		return $control;
 	}
 
 

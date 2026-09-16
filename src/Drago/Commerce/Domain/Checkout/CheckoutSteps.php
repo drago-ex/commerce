@@ -21,6 +21,16 @@ final class CheckoutSteps
 	/** @var array<string, string> */
 	public array $steps;
 
+	/**
+	 * Full step sequence, including orderDone (unlike $steps, which only
+	 * holds the labeled steps shown in the breadcrumbs). Built from the
+	 * properties above, so a renamed step (via $customSteps) is reflected
+	 * here automatically — this never needs editing on its own.
+	 *
+	 * @var list<string>
+	 */
+	private array $flow;
+
 
 	/**
 	 * @param array<string, mixed> $customSteps
@@ -46,5 +56,24 @@ final class CheckoutSteps
 			$this->customer => 'Customer Info',
 			$this->summary => 'Summary',
 		];
+
+		$this->flow = [
+			$this->shoppingCart,
+			$this->delivery,
+			$this->customer,
+			$this->summary,
+			$this->orderDone,
+		];
+	}
+
+
+	/**
+	 * Returns the step that follows the given one in the checkout flow,
+	 * or null when $step is the last one (or not recognized).
+	 */
+	public function next(string $step): ?string
+	{
+		$index = array_search($step, $this->flow, true);
+		return $index !== false ? ($this->flow[$index + 1] ?? null) : null;
 	}
 }

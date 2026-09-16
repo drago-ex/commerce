@@ -67,6 +67,7 @@ commerce:
     defaultRegionCode: ['autoDetect', 'CZ']
     allowedRegionPhoneNumber: CZ
     postCodeOnRegionPhone: true
+
     # geoLite2Path: %appDir%/../data/GeoLite2-City.mmdb
 ```
 
@@ -83,6 +84,8 @@ class CommercePresenter extends Nette\Application\UI\Presenter
 }
 ```
 
+The trait injects the six commerce controls (`$this->deliveryControl`, `$this->customerControl`, `$this->summaryOrderControl`, `$this->shoppingCartControl`, `$this->miniCartControl`, `$this->productControl`) and configures each checkout-step control for its place in the flow: the step map, completed steps, current step, and the redirect target for the next step. Each control always represents the same fixed step — a `DeliveryControl` is always the delivery step — so this configuration doesn't need repeating per presenter; a presenter only sets what genuinely varies per use, such as the translator. See "Example Presenter" below.
+
 ## Inject CheckoutProcess Service
 ```php
 public function __construct(
@@ -92,13 +95,11 @@ public function __construct(
 }
 ```
 
+`CheckoutProcess` is used directly in the presenter for the `startup()` guard shown below (see "Example Presenter").
+
 ## Example Presenter
 
-`CommerceControl` injects one property per component (`$this->deliveryControl`,
-`$this->customerControl`, …) — the presenter's job is just to configure each one
-with the current checkout state before returning it. This is a complete presenter
-covering the whole flow (`Product` → `SummaryCart` → `Delivery` → `Customer` →
-`SummaryOrder`):
+A presenter using the full checkout flow looks like this:
 
 ```php
 <?php
@@ -131,82 +132,12 @@ final class CommercePresenter extends BasePresenter
 
 	// Guards every action in this presenter against being opened directly
 	// (e.g. from a bookmark or back button) when its prerequisites aren't
-	// met — startup() runs before every action, so this needs no per-action
-	// wiring. getAction() is already set at this point (initGlobalParameters()
-	// runs before startup()).
+	// met. startup() runs before every action, so one override covers the
+	// whole flow.
 	public function startup(): void
 	{
 		parent::startup();
 		$this->redirectIfNecessary();
-	}
-
-
-	// Cart icon/count shown in the layout (e.g. navbar), independent of
-	// the current step — that's why it doesn't call setSteps()/setCurrentStep().
-	protected function createComponentMiniCart(): MiniCartControl
-	{
-		$control = $this->miniCartControl;
-		$control->setLinkRedirectTarget($this->checkoutProcess->steps()->shoppingCart);
-		$control->translator = $this->getTranslator();
-		return $control;
-	}
-
-	// Product listing. No checkout state needed — this is where the flow starts.
-	protected function createComponentProduct(): ProductControl
-	{
-		return $this->productControl;
-	}
-
-	// Cart contents + discount code form. setLinkRedirectTarget() points to
-	// the *next* step (delivery) — every step control needs this so its
-	// "Continue" button/redirect knows where to go.
-	protected function createComponentShoppingCart(): SummaryCartControl
-	{
-		$control = $this->shoppingCartControl;
-		$control->setSteps($this->checkoutProcess->getSteps());
-		$control->setCompletedSteps($this->checkoutProcess->getCompletedSteps());
-		$control->setCurrentStep($this->checkoutProcess->steps()->shoppingCart);
-		$control->setLinkRedirectTarget($this->checkoutProcess->steps()->delivery);
-		$control->translator = $this->getTranslator();
-		return $control;
-	}
-
-	// Carrier + payment method selection. Same four calls as above, just
-	// one step further along — setCurrentStep() is what highlights this
-	// step in the breadcrumbs, setLinkRedirectTarget() points to Customer.
-	protected function createComponentDelivery(): DeliveryControl
-	{
-		$control = $this->deliveryControl;
-		$control->setSteps($this->checkoutProcess->getSteps());
-		$control->setCompletedSteps($this->checkoutProcess->getCompletedSteps());
-		$control->setCurrentStep($this->checkoutProcess->steps()->delivery);
-		$control->setLinkRedirectTarget($this->checkoutProcess->steps()->customer);
-		$control->translator = $this->getTranslator();
-		return $control;
-	}
-
-	// Contact + billing form.
-	protected function createComponentCustomer(): CustomerControl
-	{
-		$control = $this->customerControl;
-		$control->setSteps($this->checkoutProcess->getSteps());
-		$control->setCompletedSteps($this->checkoutProcess->getCompletedSteps());
-		$control->setCurrentStep($this->checkoutProcess->steps()->customer);
-		$control->setLinkRedirectTarget($this->checkoutProcess->steps()->summary);
-		$control->translator = $this->getTranslator();
-		return $control;
-	}
-
-	// Final review + "place order" button. Redirects to orderDone on success.
-	protected function createComponentSummaryOrder(): SummaryOrderControl
-	{
-		$control = $this->summaryOrderControl;
-		$control->setSteps($this->checkoutProcess->getSteps());
-		$control->setCompletedSteps($this->checkoutProcess->getCompletedSteps());
-		$control->setCurrentStep($this->checkoutProcess->steps()->summary);
-		$control->setLinkRedirectTarget($this->checkoutProcess->steps()->orderDone);
-		$control->translator = $this->getTranslator();
-		return $control;
 	}
 
 
@@ -217,38 +148,93 @@ final class CommercePresenter extends BasePresenter
 			$this->redirect($target);
 		}
 	}
+
+
+	// Cart icon/count shown in the layout (e.g. navbar).
+	protected function createComponentMiniCart(): MiniCartControl
+	{
+		$control = $this->miniCartControl;
+		$control->translator = $this->getTranslator();
+		return $control;
+	}
+
+
+	// Product listing — the entry point of the flow.
+	protected function createComponentProduct(): ProductControl
+	{
+		return $this->productControl;
+	}
+
+
+	// Cart contents + discount code form.
+	protected function createComponentShoppingCart(): SummaryCartControl
+	{
+		$control = $this->shoppingCartControl;
+		$control->translator = $this->getTranslator();
+		return $control;
+	}
+
+
+	// Carrier + payment method selection.
+	protected function createComponentDelivery(): DeliveryControl
+	{
+		$control = $this->deliveryControl;
+		$control->translator = $this->getTranslator();
+		return $control;
+	}
+
+
+	// Contact + billing form.
+	protected function createComponentCustomer(): CustomerControl
+	{
+		$control = $this->customerControl;
+		$control->translator = $this->getTranslator();
+		return $control;
+	}
+
+
+	// Final review + "place order" button.
+	protected function createComponentSummaryOrder(): SummaryOrderControl
+	{
+		$control = $this->summaryOrderControl;
+		$control->translator = $this->getTranslator();
+		return $control;
+	}
 }
 ```
 
-### What each part actually does
+`translator` is optional — set it if you're using `drago-ex/translator` (or your own `Translator` implementation) so the bundled templates render translated labels instead of the English defaults.
 
-| Method | Purpose |
-|---|---|
-| `setSteps()` | Gives the control the full step map (`CheckoutSteps::$steps`) so it can render the breadcrumbs. |
-| `setCompletedSteps()` | List of steps already finished — the breadcrumbs mark these as done/clickable instead of upcoming. |
-| `setCurrentStep()` | Which step to highlight as active right now. |
-| `setLinkRedirectTarget()` | Where the control should send the customer after a successful action on *this* step — i.e. the next step in the flow. Required; throws if left empty. |
-| `translator` | Optional — set it if you're using `drago-ex/translator` (or your own `Translator` implementation) so the bundled templates render translated labels instead of the English defaults. |
+### How a checkout-step control gets configured
 
-`createComponentMiniCart()` and `createComponentProduct()` are the two exceptions:
-the mini-cart is shown outside the step flow (typically in the layout), so it only
-needs a redirect target, not the full step/breadcrumb setup; the product listing
-is the entry point, so it needs neither.
+`CommerceControl::injectCommerceControl()` configures each checkout-step control via `CheckoutProcess::configureStep()`:
+
+```php
+public function configureStep(BaseControl $control, string $step): BaseControl
+{
+	$control->setSteps($this->getSteps());
+	$control->setCompletedSteps($this->getCompletedSteps());
+	$control->setCurrentStep($step);
+
+	if ($next = $this->getNextStep($step)) {
+		$control->setLinkRedirectTarget($next);
+	}
+
+	return $control;
+}
+```
+
+`getNextStep()` reads the checkout flow's order from `CheckoutSteps`, so renaming a step via the `customSteps` constructor argument (see "Customize Checkout Steps" below) is reflected automatically.
+
+This runs in `injectCommerceControl()`, which Nette calls right after the presenter is constructed, before `startup()`. `getCompletedSteps()` only reads session state (cart contents, the in-progress order) and never the current action, so this is safe regardless of which action is being handled.
+
+If a control needs to represent a different step than its default (e.g. reusing `DeliveryControl` in a custom flow), call `$this->checkoutProcess->configureStep($this->deliveryControl, 'yourStep')` in your own presenter — it's a plain method call, safe to call again.
 
 ### Why the `startup()` guard exists
 
-`CheckoutProcess::getRedirectTargetForAction()` checks the *actual* session state
-(cart contents, chosen carrier, filled-in customer) against the step being
-requested, and returns where to send the visitor instead — e.g. someone opening
-`/customer` directly with an empty cart gets redirected back to the product
-listing rather than seeing a broken form.
+`CheckoutProcess::getRedirectTargetForAction()` checks the actual session state (cart contents, chosen carrier, filled-in customer) against the step being requested, and returns where to send the visitor instead — e.g. someone opening `/customer` directly with an empty cart gets redirected back to the product listing rather than seeing a broken form.
 
-It's called from `startup()` rather than from each `action*()` method
-individually: `startup()` runs before *every* action in the presenter, and
-for any action other than `delivery`/`customer`/`summary` the resolver's
-`match` simply falls through to `default => null` — a safe no-op. That means
-one override covers the whole flow, and there's nothing to remember to add
-if you introduce another step later.
+Calling it from `startup()` covers every action in the presenter with one override: for any action other than `delivery`/`customer`/`summary`, the resolver's `match` falls through to `default => null` — a safe no-op — so nothing needs to be added for other actions such as the product listing or the shopping cart.
 
 ## Optional Custom Template
 Each control/component has a public property called `templateControl` that lets you specify a custom template file for rendering. Use this if you want to customize the look or layout of the component.

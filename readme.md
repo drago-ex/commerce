@@ -128,6 +128,7 @@ final class CommercePresenter extends BasePresenter
 		parent::__construct();
 	}
 
+
 	// Cart icon/count shown in the layout (e.g. navbar), independent of
 	// the current step — that's why it doesn't call setSteps()/setCurrentStep().
 	protected function createComponentMiniCart(): MiniCartControl
@@ -138,11 +139,13 @@ final class CommercePresenter extends BasePresenter
 		return $control;
 	}
 
+
 	// Product listing. No checkout state needed — this is where the flow starts.
 	protected function createComponentProduct(): ProductControl
 	{
 		return $this->productControl;
 	}
+
 
 	// Cart contents + discount code form. setLinkRedirectTarget() points to
 	// the *next* step (delivery) — every step control needs this so its
@@ -158,6 +161,7 @@ final class CommercePresenter extends BasePresenter
 		return $control;
 	}
 
+
 	// Carrier + payment method selection. Same four calls as above, just
 	// one step further along — setCurrentStep() is what highlights this
 	// step in the breadcrumbs, setLinkRedirectTarget() points to Customer.
@@ -171,6 +175,7 @@ final class CommercePresenter extends BasePresenter
 		$control->translator = $this->getTranslator();
 		return $control;
 	}
+
 
 	// Contact + billing form.
 	protected function createComponentCustomer(): CustomerControl
@@ -196,6 +201,7 @@ final class CommercePresenter extends BasePresenter
 		return $control;
 	}
 
+
 	// Guards every step action (see below) against being opened directly
 	// (e.g. from a bookmark or back button) when its prerequisites aren't met.
 	private function redirectIfNecessary(): void
@@ -206,15 +212,18 @@ final class CommercePresenter extends BasePresenter
 		}
 	}
 
+
 	public function actionDelivery(): void
 	{
 		$this->redirectIfNecessary();
 	}
 
+
 	public function actionCustomer(): void
 	{
 		$this->redirectIfNecessary();
 	}
+
 
 	public function actionSummary(): void
 	{

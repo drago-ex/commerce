@@ -129,6 +129,19 @@ final class CommercePresenter extends BasePresenter
 		parent::__construct();
 	}
 
+
+	// Guards every action in this presenter against being opened directly
+	// (e.g. from a bookmark or back button) when its prerequisites aren't
+	// met — startup() runs before every action, so this needs no per-action
+	// wiring. getAction() is already set at this point (initGlobalParameters()
+	// runs before startup()).
+	public function startup(): void
+	{
+		parent::startup();
+		$this->redirectIfNecessary();
+	}
+
+
 	// Cart icon/count shown in the layout (e.g. navbar), independent of
 	// the current step — that's why it doesn't call setSteps()/setCurrentStep().
 	protected function createComponentMiniCart(): MiniCartControl
@@ -197,29 +210,13 @@ final class CommercePresenter extends BasePresenter
 		return $control;
 	}
 
-	// Guards every step action (see below) against being opened directly
-	// (e.g. from a bookmark or back button) when its prerequisites aren't met.
+
 	private function redirectIfNecessary(): void
 	{
 		$target = $this->checkoutProcess->getRedirectTargetForAction($this->getAction());
 		if ($target !== null && $target !== $this->getAction()) {
 			$this->redirect($target);
 		}
-	}
-
-	public function actionDelivery(): void
-	{
-		$this->redirectIfNecessary();
-	}
-
-	public function actionCustomer(): void
-	{
-		$this->redirectIfNecessary();
-	}
-
-	public function actionSummary(): void
-	{
-		$this->redirectIfNecessary();
 	}
 }
 ```
@@ -239,15 +236,20 @@ the mini-cart is shown outside the step flow (typically in the layout), so it on
 needs a redirect target, not the full step/breadcrumb setup; the product listing
 is the entry point, so it needs neither.
 
-### Why `redirectIfNecessary()` exists
+### Why the `startup()` guard exists
 
 `CheckoutProcess::getRedirectTargetForAction()` checks the *actual* session state
 (cart contents, chosen carrier, filled-in customer) against the step being
 requested, and returns where to send the visitor instead — e.g. someone opening
 `/customer` directly with an empty cart gets redirected back to the product
-listing rather than seeing a broken form. `actionDelivery()`/`actionCustomer()`/
-`actionSummary()` just need to call it; `actionDefault()` (products) and
-`actionShoppingCart()` don't, since there's nothing before them to violate.
+listing rather than seeing a broken form.
+
+It's called from `startup()` rather than from each `action*()` method
+individually: `startup()` runs before *every* action in the presenter, and
+for any action other than `delivery`/`customer`/`summary` the resolver's
+`match` simply falls through to `default => null` — a safe no-op. That means
+one override covers the whole flow, and there's nothing to remember to add
+if you introduce another step later.
 
 ## Optional Custom Template
 Each control/component has a public property called `templateControl` that lets you specify a custom template file for rendering. Use this if you want to customize the look or layout of the component.

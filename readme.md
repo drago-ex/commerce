@@ -117,7 +117,7 @@ use Drago\Commerce\UI\Product\ProductControl;
 use Drago\Commerce\UI\ShoppingCart\MiniCartControl;
 use Drago\Commerce\UI\ShoppingCart\SummaryCartControl;
 
-/** @property-read HomeTemplate $template */
+
 final class CommercePresenter extends BasePresenter
 {
 	use CommerceControl;

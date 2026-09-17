@@ -67,7 +67,6 @@ commerce:
     defaultRegionCode: ['autoDetect', 'CZ']
     allowedRegionPhoneNumber: CZ
     postCodeOnRegionPhone: true
-
     # geoLite2Path: %appDir%/../data/GeoLite2-City.mmdb
 ```
 
@@ -137,12 +136,6 @@ final class CommercePresenter extends BasePresenter
 	public function startup(): void
 	{
 		parent::startup();
-		$this->redirectIfNecessary();
-	}
-
-
-	private function redirectIfNecessary(): void
-	{
 		$target = $this->checkoutProcess->getRedirectTargetForAction($this->getAction());
 		if ($target !== null && $target !== $this->getAction()) {
 			$this->redirect($target);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
+use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
@@ -42,6 +43,7 @@ class DeliveryControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
+	 * @throws MoneyMismatchException
 	 */
 	public function render(): void
 	{
@@ -52,6 +54,10 @@ class DeliveryControl extends BaseControl
 		$template->carrier = $this->carrierRepository->getCarrierItems();
 		$template->payment = $this->paymentRepository->getPaymentItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
+
+		// Cart total only — carrier/payment aren't chosen yet at this step.
+		$template->amountItems = $this->shoppingCartSession->getAmountItems();
+		$template->totalPrice = $this->shoppingCartSession->getTotalPrice();
 
 		$delivery = $this->orderSession->getItems();
 		if ($delivery->carrier !== null && $delivery->payment !== null) {

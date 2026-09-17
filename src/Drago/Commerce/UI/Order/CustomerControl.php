@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
+use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Postcode\InvalidPostcodeException;
 use Brick\Postcode\PostcodeFormatter;
 use Brick\Postcode\UnknownCountryException;
@@ -37,6 +38,8 @@ class CustomerControl extends BaseControl
 
 	/**
 	 * Renders the customer form, pre-filling it with session data if available.
+	 *
+	 * @throws MoneyMismatchException
 	 */
 	public function render(): void
 	{
@@ -45,6 +48,13 @@ class CustomerControl extends BaseControl
 		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
+
+		// By this step carrier + payment are already chosen, so this is the
+		// real grand total, not just the cart subtotal.
+		$template->amountItems = $this->shoppingCartSession->getAmountItems();
+		$template->totalPrice = $this->shoppingCartSession->getTotalPrice()
+			->plus($this->orderSession->getCarrierPrice())
+			->plus($this->orderSession->getPaymentPrice());
 
 		$customer = $this->orderSession
 			->getItems()

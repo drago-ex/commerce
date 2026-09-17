@@ -4,119 +4,150 @@
 
 {if count($shoppingCart)}
 
-	{* Includes the breadcrumbs component to render the navigation steps. *}
 	{include breadcrumbs, $breadcrumbs}
 
-	{* Pre-shipment summary heading *}
-	<h2 class="mb-4 fw-normal fs-4">{_'Pre-shipment summary'}</h2>
+	<h1 class="h4 mb-4 d-flex align-items-center gap-2">
+		<i class="fa-solid fa-clipboard-check text-body-secondary" aria-hidden="true"></i>
+		{_'Pre-shipment summary'}
+	</h1>
 
-	{* Products and costs summary table *}
-	<div class="table-responsive mb-4">
-		<table class="table table-borderless table-hover align-middle">
-			<thead>
-			<tr>
-				<th scope="col"><small>{_'Product name'}</small></th>
-				<th scope="col" class="text-end"><small>{_'Price'}</small></th>
-				<th scope="col" class="text-center"><small>{_'Amount'}</small></th>
-				<th scope="col" class="text-end"><small>{_'Discount'}</small></th>
-			</tr>
-			</thead>
-			<tbody>
+	<div class="row g-4">
 
-			{* Loop through cart products  *}
-			<tr n:foreach="$shoppingCart as $cart">
-				<td>{$cart->product->name}</td>
-				<td class="text-end text-nowrap">{$cart->product->getDiscountedPrice()|money}</td>
-				<td class="text-center">{$cart->amount}</td>
-				<td class="text-end text-nowrap">
-					<span n:if="$cart->product->hasDiscount()" class="badge border border-danger-subtle text-danger">
-						-{$cart->product->discount}%
-					</span>
-				</td>
-			</tr>
+		{* Left column: itemized review + customer info *}
+		<div class="col-lg-7">
 
-			{* Price breakdown, shown once anything actually needs explaining *}
-			{if !$productDiscountAmount->isZero() || ($discountCode && !$discountAmount->isZero())}
+			<div class="card border-0 shadow-sm mb-4">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-borderless align-middle mb-0">
+							<thead>
+							<tr>
+								<th scope="col"><small>{_'Product name'}</small></th>
+								<th scope="col" class="text-end"><small>{_'Price'}</small></th>
+								<th scope="col" class="text-center"><small>{_'Amount'}</small></th>
+								<th scope="col" class="text-end"><small>{_'Discount'}</small></th>
+							</tr>
+							</thead>
+							<tbody>
 
-				<tr n:if="!$productDiscountAmount->isZero()" class="border-top">
-					<td colspan="3">{_'Price without discount'}:</td>
-					<td class="text-end text-nowrap">{$originalPrice|money}</td>
-				</tr>
+							<tr n:foreach="$shoppingCart as $cart">
+								<td>{$cart->product->name}</td>
+								<td class="text-end text-nowrap">{$cart->product->getDiscountedPrice()|money}</td>
+								<td class="text-center">{$cart->amount}</td>
+								<td class="text-end text-nowrap">
+									<span n:if="$cart->product->hasDiscount()" class="badge border border-danger-subtle text-danger">
+										-{$cart->product->discount}%
+									</span>
+								</td>
+							</tr>
 
-				<tr n:if="!$productDiscountAmount->isZero()">
-					<td colspan="3" class="text-success">{_'Product discounts'}:</td>
-					<td class="text-success text-end text-nowrap">-{$productDiscountAmount|money}</td>
-				</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
 
-				<tr class="border-top">
-					<td colspan="3" class="fw-semibold">{_'Subtotal'}:</td>
-					<td class="text-end fw-semibold text-nowrap">{$subtotalPrice|money}</td>
-				</tr>
+			<h2 class="h5 mb-3 d-flex align-items-center gap-2">
+				<i class="fa-solid fa-address-card text-body-secondary" aria-hidden="true"></i>
+				{_'Customer information'}
+			</h2>
+			<div class="card border-0 bg-body-tertiary">
+				<div class="card-body">
+					<div class="row gy-3">
+						<div class="col-md-6">
+							<strong class="fw-semibold d-block mb-1">{_'Name and surname'}</strong>
+							{$customer->name} {$customer->surname}
+						</div>
+						<div class="col-md-6">
+							<strong class="fw-semibold d-block mb-1">{_'Email'}</strong>
+							{$customer->email}
+						</div>
+						<div class="col-md-6">
+							<strong class="fw-semibold d-block mb-1">{_'Telephone'}</strong>
+							{$customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
+						</div>
+						<div class="col-md-6">
+							<strong class="fw-semibold d-block mb-1">{_'Delivery address'}</strong>
+							{$customer->street}<br>
+							{$customer->postal_code} {$customer->city}<br>
+							{$customer->country}
+						</div>
+						<div class="col-12" n:if="$customer->note">
+							<strong class="fw-semibold d-block mb-1">{_'Order note'}</strong>
+							{$customer->note ?? null}
+						</div>
+					</div>
+				</div>
+			</div>
 
-				<tr n:if="$discountCode && !$discountAmount->isZero()">
-					<td colspan="3" class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
-					<td class="text-success fw-semibold text-end text-nowrap">-{$discountAmount|money}</td>
-				</tr>
+		</div>
 
-			{/if}
+		{* Right column: price breakdown + confirm button, stays in view *}
+		<div class="col-lg-5">
+			<div class="shop-summary-sticky">
+				<div class="card border-0 shadow-sm">
+					<div class="card-body">
 
-			<tr>
-				<td><strong class="fw-semibold">{$carrier->name}</strong></td>
-				<td colspan="3" class="text-end">{$carrier->price|money}</td>
-			</tr>
+						<table class="table table-sm table-borderless mb-0">
+							<tbody>
 
-			{* Payment method and cost  *}
-			<tr>
-				<td><strong class="fw-semibold">{$payment->name}</strong></td>
-				<td colspan="3" class="text-end">{$payment->price|money}</td>
-			</tr>
+							<tr n:if="!$productDiscountAmount->isZero()">
+								<td>{_'Price without discount'}:</td>
+								<td class="text-end text-nowrap">{$originalPrice|money}</td>
+							</tr>
 
-			</tbody>
-		</table>
-	</div>
+							<tr n:if="!$productDiscountAmount->isZero()">
+								<td class="text-success">{_'Product discounts'}:</td>
+								<td class="text-success text-end text-nowrap">-{$productDiscountAmount|money}</td>
+							</tr>
 
-	{* Total price to pay outside the table for better emphasis *}
-	<p class="text-end text-danger fw-semibold fs-5 mb-4">
-		{_'Total to pay'}: {$totalPrice|money}
-	</p>
+							<tr n:if="!$productDiscountAmount->isZero() || ($discountCode && !$discountAmount->isZero())" class="border-top">
+								<td class="fw-semibold">{_'Subtotal'}:</td>
+								<td class="text-end fw-semibold text-nowrap">{$subtotalPrice|money}</td>
+							</tr>
 
-	{* Customer information summary *}
-	<h2 class="mb-4 fw-normal fs-4 pb-2 border-bottom">{_'Customer information'}</h2>
-	<div class="mb-4">
-		<p class="mb-2">
-			<strong class="fw-semibold">{_'Name and surname'}:</strong><br>
-			{$customer->name} {$customer->surname}
-		</p>
-		<p class="mb-2">
-			<strong class="fw-semibold">{_'Email'}:</strong><br>
-			{$customer->email}
-		</p>
-		<p class="mb-2">
-			<strong class="fw-semibold">{_'Telephone'}:</strong><br>
-			{if $customer->phone instanceof \Brick\PhoneNumber\PhoneNumber}
-				{$customer->phone->format(Brick\PhoneNumber\PhoneNumberFormat::INTERNATIONAL)}
-			{else}
-				{$customer->phone}
-			{/if}
-		</p>
-		<p class="mb-2">
-			<strong class="fw-semibold">{_'Delivery address'}:</strong><br>
-			{$customer->street}<br>
-			{$customer->postal_code} {$customer->city}<br>
-			{$customer->country}
-		</p>
-		{if $customer->note}
-			<p class="mb-0"><strong class="fw-semibold">{_'Order note'}:</strong><br>
-				{$customer->note ?? null}
-			</p>
-		{/if}
-	</div>
+							<tr n:if="$discountCode && !$discountAmount->isZero()">
+								<td class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
+								<td class="text-success fw-semibold text-end text-nowrap">-{$discountAmount|money}</td>
+							</tr>
 
-	{* Confirm purchase button with accessibility label *}
-	<div class="text-end mt-3">
-		<form n:name="sendOrder" n:if="$customer !== null && $carrier !== null">
-			<input n:name="send" class="btn btn-sm btn-success" aria-label="{_'Confirm your order and complete the purchase'}">
-		</form>
+							<tr class="border-top">
+								<td class="d-flex align-items-center gap-2 pt-2">
+									<i class="fa-solid fa-truck text-body-secondary" aria-hidden="true"></i>
+									{$carrier->name}
+								</td>
+								<td class="text-end text-nowrap pt-2">{$carrier->price|money}</td>
+							</tr>
+
+							<tr>
+								<td class="d-flex align-items-center gap-2">
+									<i class="fa-solid fa-credit-card text-body-secondary" aria-hidden="true"></i>
+									{$payment->name}
+								</td>
+								<td class="text-end text-nowrap">{$payment->price|money}</td>
+							</tr>
+
+							<tr class="border-top">
+								<td class="text-shop-accent fw-bold fs-5">{_'Total to pay'}:</td>
+								<td class="fw-bold text-shop-accent text-end text-nowrap fs-5">{$totalPrice|money}</td>
+							</tr>
+
+							</tbody>
+						</table>
+
+						<form n:name="sendOrder" n:if="$customer !== null && $carrier !== null" class="mt-2">
+							<input
+									n:name="send"
+									class="btn btn-success w-100"
+									aria-label="{_'Confirm your order and complete the purchase'}"
+							>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 
 {else}

@@ -1,94 +1,120 @@
 {templateType Drago\Commerce\UI\Order\CustomerTemplate}
 {import '../@breadcrumbs.latte'}
+{import '../@orderSummarySidebar.latte'}
 
 {if count($shoppingCart)}
 
-	{* Includes the breadcrumbs component to render the navigation steps. *}
 	{include breadcrumbs, $breadcrumbs}
 
-	<h2 class="mb-4 fw-normal fs-4">{_'Customer information'}</h2>
-	<form n:name="customer">
+	<h1 class="h4 mb-4 d-flex align-items-center gap-2">
+		<i class="fa-solid fa-address-card text-body-secondary" aria-hidden="true"></i>
+		{_'Customer information'}
+	</h1>
 
-		{* Display validation errors *}
-		<ul n:if="$form->hasErrors()" class="errors">
-			<li n:foreach="$form->errors as $error">{$error}</li>
-		</ul>
+	<div class="row g-4">
 
-		{* Add gap between columns *}
-		<div class="row gx-3 gy-3">
+		<div class="col-lg-8">
+			<form n:name="customer">
 
-			{* Contact information section with light blue background *}
-			<div class="col-6 bg-primary bg-opacity-10 rounded p-3">
-				<p class="fw-semibold text-end">{_'Contact information'}</p>
-				<div class="mb-3">
-					<label n:name="email" class="form-label" />
-					<input n:name="email" type="email" class="form-control" required />
-				</div>
-				<div class="mb-3">
-					<label n:name="phone" class="form-label" />
-					<input n:name="phone" type="tel" class="form-control" />
-				</div>
+				<ul n:if="$form->hasErrors()" class="errors">
+					<li n:foreach="$form->errors as $error">{$error}</li>
+				</ul>
 
-				{* Row for name and surname side by side *}
-				<div class="row gx-2">
-					<div class="col-6">
-						<div class="mb-3">
-							<label n:name="name" class="form-label" />
-							<input n:name="name" type="text" class="form-control" required />
+				<div class="row gx-3 gy-3">
+
+					<div class="col-md-6">
+						<div class="card border-0 h-100 bg-primary bg-opacity-10">
+							<div class="card-body">
+								<p class="fw-semibold d-flex align-items-center gap-2 mb-3">
+									<i class="fa-solid fa-user text-primary" aria-hidden="true"></i>
+									{_'Contact information'}
+								</p>
+
+								<div class="mb-3">
+									<label n:name="email" class="form-label" />
+									<input n:name="email" type="email" class="form-control" required />
+								</div>
+								<div class="mb-3">
+									<label n:name="phone" class="form-label" />
+									<input n:name="phone" type="tel" class="form-control" />
+								</div>
+
+								<div class="row gx-2">
+									<div class="col-6">
+										<div class="mb-3">
+											<label n:name="name" class="form-label" />
+											<input n:name="name" type="text" class="form-control" required />
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="mb-3">
+											<label n:name="surname" class="form-label" />
+											<input n:name="surname" type="text" class="form-control" required />
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div class="col-6">
-						<div class="mb-3">
-							<label n:name="surname" class="form-label" />
-							<input n:name="surname" type="text" class="form-control" required />
+
+					<div class="col-md-6">
+						<div class="card border-0 h-100 bg-body-tertiary">
+							<div class="card-body">
+								<p class="fw-semibold d-flex align-items-center gap-2 mb-3">
+									<i class="fa-solid fa-file-invoice text-body-secondary" aria-hidden="true"></i>
+									{_'Billing information'}
+								</p>
+
+								<div class="mb-3">
+									<label n:name="street" class="form-label" />
+									<input n:name="street" type="text" class="form-control" required />
+								</div>
+
+								<div class="row gx-2">
+									<div class="col-6">
+										<div class="mb-3">
+											<label n:name="city" class="form-label" />
+											<input n:name="city" type="text" class="form-control" required />
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="mb-3">
+											<label n:name="country" class="form-label" />
+											<input n:name="country" type="text" class="form-control" required />
+										</div>
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<label n:name="postal_code" class="form-label" />
+									<input n:name="postal_code" type="text" class="form-control" required />
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 
-			</div>
-
-			{* Billing information section with light gray background *}
-			<div class="col-6 bg-body-tertiary rounded p-3">
-				<p class="fw-semibold text-end">{_'Billing information'}</p>
+				<p class="fw-semibold d-flex align-items-center gap-2 mt-4 mb-3">
+					<i class="fa-solid fa-note-sticky text-body-secondary" aria-hidden="true"></i>
+					{_'Order information'}
+				</p>
 				<div class="mb-3">
-					<label n:name="street" class="form-label" />
-					<input n:name="street" type="text" class="form-control" required />
+					<label n:name="note" class="form-label" />
+					<textarea n:name="note" class="form-control" rows="3"></textarea>
 				</div>
 
-				{* Row for city and country side by side *}
-				<div class="row gx-2">
-					<div class="col-6">
-						<div class="mb-3">
-							<label n:name="city" class="form-label" />
-							<input n:name="city" type="text" class="form-control" required />
-						</div>
-					</div>
-					<div class="col-6">
-						<div class="mb-3">
-							<label n:name="country" class="form-label" />
-							<input n:name="country" type="text" class="form-control" required />
-						</div>
-					</div>
+				<div class="text-end">
+					<input n:name="send" class="btn btn-shop-accent" />
 				</div>
 
-				<div class="mb-3">
-					<label n:name="postal_code" class="form-label" />
-					<input n:name="postal_code" type="text" class="form-control" required />
-				</div>
-			</div>
+			</form>
 		</div>
 
-		<p class="fw-semibold text-end mt-4">{_'Order information'}</p>
-		<div class="mb-3">
-			<label n:name="note" class="form-label" />
-			<textarea n:name="note" class="form-control" rows="3"></textarea>
+		<div class="col-lg-4">
+			{include orderSummarySidebar, $amountItems, $totalPrice}
 		</div>
 
-		<div class="text-end">
-			<input n:name="send" class="btn btn-sm btn-primary" />
-		</div>
-
-	</form>
+	</div>
 
 {else}
 	<p>{_'Your shopping cart is empty.'}</p>

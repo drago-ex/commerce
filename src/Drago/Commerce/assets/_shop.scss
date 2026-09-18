@@ -128,9 +128,11 @@
 }
 
 // Narrow, centered quantity input on the cart page instead of a
-// full-width form control.
+// full-width form control. !important guards against Bootstrap's
+// .form-control { width: 100% } winning on specificity/import order.
 .shop-qty-input {
-	width: 4.5rem;
+	width: 3.75rem !important;
+	max-width: 3.75rem;
 	text-align: center;
 }
 

@@ -33,13 +33,19 @@ readonly class Factory
 
 
 	/**
-	 * Creates a form with a hidden product ID field.
+	 * Creates a form with a hidden product ID field, and — when a variant
+	 * was chosen — a hidden variant ID field alongside it.
 	 */
-	public function addHiddenProductId(string $productId): BaseForm
+	public function addHiddenProductId(string $productId, ?int $variantId = null): BaseForm
 	{
 		$form = $this->create();
 		$form->addHidden(FactoryValues::ProductId, $productId)
 			->addRule($form::Integer);
+
+		if ($variantId !== null) {
+			$form->addHidden(FactoryValues::VariantId, (string) $variantId)
+				->addRule($form::Integer);
+		}
 
 		return $form;
 	}
@@ -48,9 +54,9 @@ readonly class Factory
 	/**
 	 * Creates a form for changing the quantity of a cart item.
 	 */
-	public function addChangeAmountInCart(string $productId): BaseForm
+	public function addChangeAmountInCart(string $productId, ?int $variantId = null): BaseForm
 	{
-		$form = $this->addHiddenProductId($productId);
+		$form = $this->addHiddenProductId($productId, $variantId);
 		$form->addIntegerInput(FactoryValues::Amount)
 			->setAutocomplete(Autocomplete::Off)
 			->setDefaultValue(1)

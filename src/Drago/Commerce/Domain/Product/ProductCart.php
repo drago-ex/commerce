@@ -15,6 +15,8 @@ class ProductCart
 	public function __construct(
 		public Product $product,
 		public BigInteger $amount,
+		public ?int $variantId = null,
+		public ?string $variantLabel = null,
 	) {
 	}
 }

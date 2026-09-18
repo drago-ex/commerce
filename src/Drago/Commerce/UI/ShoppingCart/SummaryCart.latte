@@ -35,6 +35,10 @@
 								<div class="col">
 									<p class="fw-semibold mb-1">{$cart->product->name}</p>
 
+									<p n:if="$cart->variantLabel" class="text-body-secondary small mb-1">
+										{$cart->variantLabel}
+									</p>
+
 									<div class="d-flex align-items-center gap-2 flex-wrap">
 										<span class="text-body-secondary small">
 											{$cart->product->getDiscountedPrice()|money} / {_'pcs'}
@@ -52,7 +56,7 @@
 
 								<div class="col-auto">
 									<form
-											n:name="changeQuantity-{$cart->product->id}"
+											n:name="changeQuantity-{\Drago\Commerce\UI\ShoppingCart\SummaryCartControl::cartItemKey($cart->product->id, $cart->variantId)}"
 											class="ajax"
 											data-items-cart
 											data-naja-history="replace"
@@ -84,7 +88,7 @@
 
 									<a
 											n:attr="$linkAttrs"
-											n:href="removeItem!, productId: $cart->product->id"
+											n:href="removeItem!, productId: $cart->product->id, variantId: $cart->variantId"
 									>
 										<i class="fa-solid fa-trash-can" aria-hidden="true"></i>
 										<span class="visually-hidden">{_'Remove'}</span>

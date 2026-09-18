@@ -1,0 +1,84 @@
+{templateType Drago\Commerce\UI\Product\ProductDetailTemplate}
+
+<nav aria-label="breadcrumb" class="mb-3">
+	<a n:href="default" class="text-decoration-none small">
+		<i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+		{_'Back to products'}
+	</a>
+</nav>
+
+<div class="row g-4">
+
+	<div class="col-md-5">
+		<div class="card border-0 shadow-sm">
+			<img
+					src="https://placehold.co/500x400?text=%20&bg=f4f6f8"
+					alt="{$product->name}"
+					class="card-img-top p-4"
+					style="object-fit: contain; max-height: 400px;"
+			/>
+		</div>
+	</div>
+
+	<div class="col-md-7">
+
+		<h1 class="h3 mb-2">{$product->name}</h1>
+
+		{if $product->hasDiscount()}
+			<div class="mb-2">
+				<span class="text-body-secondary text-decoration-line-through me-2" aria-label="Original price">
+					{$product->getPrice()|money}
+				</span>
+				<span class="fw-bold text-danger fs-4" aria-label="Discounted price">
+					{$product->getDiscountedPrice()|money}
+				</span>
+				<span class="badge bg-danger ms-1">-{$product->getDiscountPercent()}%</span>
+			</div>
+		{else}
+			<p class="fw-bold fs-4 mb-2" aria-label="Product price">
+				{$product->getPrice()|money}
+			</p>
+		{/if}
+
+		{if $product->getStock() > 5}
+			<p class="small text-success mb-3 d-flex align-items-center gap-1">
+				<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+				{_'In stock > 5 pcs'}
+			</p>
+		{elseif $product->getStock() > 0}
+			<p class="small text-warning-emphasis mb-3 d-flex align-items-center gap-1">
+				<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+				{_'In stock'}: {$product->getStock()} {_'pcs'}
+			</p>
+		{else}
+			<p class="small mb-3 text-danger d-flex align-items-center gap-1">
+				<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+				{_'Out of stock'}
+			</p>
+		{/if}
+
+		<p class="text-body-secondary mb-4">{$product->description}</p>
+
+		{if $product->getStock() > 0}
+			<form n:name="addToCart" class="card border-0 bg-body-tertiary">
+				<div class="card-body">
+
+					<div n:if="count($variants)" class="mb-3">
+						<label n:name="variantId" class="form-label fw-semibold" />
+						<select n:name="variantId" class="form-select"></select>
+					</div>
+
+					<div class="mb-3" style="max-width: 8rem;">
+						<label n:name="amount" class="form-label fw-semibold">{_'Amount'}</label>
+						<input n:name="amount" class="form-control" />
+					</div>
+
+					<input n:name="add" class="btn btn-shop-accent" />
+
+				</div>
+			</form>
+		{/if}
+
+	</div>
+
+</div>

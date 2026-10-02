@@ -33,10 +33,6 @@ trait CommerceControl
 	public CustomerControl $customerControl;
 	public SummaryOrderControl $summaryOrderControl;
 	public ProductControl $productControl;
-
-	// Not part of the checkout flow (no fixed step, no breadcrumbs), so it
-	// isn't run through configureStep() below — the presenter still needs
-	// to call setProductId() on it (see ProductDetailControl).
 	public ProductDetailControl $productDetailControl;
 
 

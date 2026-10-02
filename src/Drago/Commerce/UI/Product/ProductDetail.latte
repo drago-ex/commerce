@@ -1,4 +1,5 @@
 {templateType Drago\Commerce\UI\Product\ProductDetailTemplate}
+{varType Drago\Commerce\Domain\Product\ProductVariantOption[] $variants}
 
 <nav aria-label="breadcrumb" class="mb-3">
 	<a href="{plink default}" class="text-decoration-none small">
@@ -7,7 +8,7 @@
 	</a>
 </nav>
 
-<div class="row g-4">
+<div class="row g-4" id="shop-product-detail" data-matrix="{$variantMatrixJson}">
 
 	<div class="col-md-5">
 		<div class="card border-0 shadow-sm">
@@ -22,63 +23,269 @@
 
 	<div class="col-md-7">
 
-		<h1 class="h3 mb-2">{$product->name}</h1>
+		<h1 class="h3 mb-1">{$product->name}</h1>
 
-		{if $product->hasDiscount()}
-			<div class="mb-2">
-				<span class="text-body-secondary text-decoration-line-through me-2" aria-label="Original price">
-					{$product->getPrice()|money}
-				</span>
-				<span class="fw-bold text-danger fs-4" aria-label="Discounted price">
-					{$product->getDiscountedPrice()|money}
-				</span>
-				<span class="badge bg-danger ms-1">-{$product->getDiscountPercent()}%</span>
-			</div>
-		{else}
-			<p class="fw-bold fs-4 mb-2" aria-label="Product price">
+		<div id="shop-detail-sku-wrapper" class="text-body-secondary small mb-3 {if !$selectedVariant?->sku}d-none{/if}">
+			{_'SKU'}: <span id="shop-detail-sku">{$selectedVariant?->sku}</span>
+		</div>
+
+		{* Price block *}
+		<div class="mb-3" id="shop-detail-price-box">
+			{var $hasDiscount = $product->hasDiscount()}
+			<span id="shop-detail-orig-price" class="text-body-secondary text-decoration-line-through me-2 {if !$hasDiscount}d-none{/if}">
 				{$product->getPrice()|money}
-			</p>
-		{/if}
+			</span>
+			<span id="shop-detail-price" class="fw-bold {if $hasDiscount}text-danger{/if} fs-4">
+				{if $hasDiscount}{$product->getDiscountedPrice()|money}{else}{$product->getPrice()|money}{/if}
+			</span>
+			<span id="shop-detail-discount-badge" class="badge bg-danger ms-1 {if !$hasDiscount}d-none{/if}">
+				-{$product->getDiscountPercent()}%
+			</span>
+		</div>
 
-		{if $product->getStock() > 5}
-			<p class="small text-success mb-3 d-flex align-items-center gap-1">
-				<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-				{_'In stock > 5 pcs'}
-			</p>
-		{elseif $product->getStock() > 0}
-			<p class="small text-warning-emphasis mb-3 d-flex align-items-center gap-1">
-				<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-				{_'In stock'}: {$product->getStock()} {_'pcs'}
-			</p>
-		{else}
-			<p class="small mb-3 text-danger d-flex align-items-center gap-1">
-				<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-				{_'Out of stock'}
-			</p>
-		{/if}
+		{* Stock availability *}
+		<div id="shop-detail-stock-box" class="mb-3">
+			{var $currentStock = $selectedVariant ? $selectedVariant->stock : $product->getStock()}
+			{if $currentStock > 5}
+				<p class="small text-success mb-0 d-flex align-items-center gap-1" id="shop-stock-status">
+					<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+					<span>{_'In stock > 5 pcs'}</span>
+				</p>
+			{elseif $currentStock > 0}
+				<p class="small text-warning-emphasis mb-0 d-flex align-items-center gap-1" id="shop-stock-status">
+					<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+					<span>{_'In stock'}: {$currentStock} {_'pcs'}</span>
+				</p>
+			{else}
+				<p class="small text-danger mb-0 d-flex align-items-center gap-1" id="shop-stock-status">
+					<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+					<span>{_'Out of stock'}</span>
+				</p>
+			{/if}
+		</div>
 
 		<p class="text-body-secondary mb-4">{$product->description}</p>
 
-		{if $product->getStock() > 0}
-			<form n:name="addToCart" class="card border-0 bg-body-tertiary">
-				<div class="card-body">
-
-					<div n:if="count($variants)" class="mb-3">
-						<label n:name="variantId" class="form-label fw-semibold" />
-						<select n:name="variantId" class="form-select"></select>
+		{* Alza-style Multi-Attribute Variant Configurator *}
+		{if count($attributeGroups)}
+			<div class="card border-0 bg-light p-3 mb-4 rounded-3" id="shop-variant-configurator">
+				{foreach $attributeGroups as $group}
+					<div class="shop-variant-group" data-attribute-id="{$group['id']}">
+						<div class="shop-variant-title d-flex justify-content-between align-items-center">
+							<span>{$group['name']}</span>
+							<span class="fw-normal text-muted small active-value-label"></span>
+						</div>
+						<div class="shop-variant-options">
+							{foreach $group['values'] as $val}
+								{var $isActive = $selectedVariant && in_array($val['id'], $selectedVariant->attributeValueIds, true)}
+								<button
+										type="button"
+										class="shop-variant-pill {if $isActive}active{/if}"
+										data-attribute-id="{$group['id']}"
+										data-value-id="{$val['id']}"
+										data-value-name="{$val['value']}"
+								>
+									{$val['value']}
+								</button>
+							{/foreach}
+						</div>
 					</div>
-
-					<div class="mb-3" style="max-width: 8rem;">
-						<label n:name="amount" class="form-label fw-semibold">{_'Amount'}</label>
-						<input n:name="amount" class="form-control" />
-					</div>
-
-					<input n:name="add" class="btn btn-shop-accent" />
-
-				</div>
-			</form>
+				{/foreach}
+			</div>
 		{/if}
+
+		{* Add to cart form *}
+		<form n:name="addToCart" class="card border-0 bg-body-tertiary">
+			<div class="card-body">
+
+				<input n:name="productId" />
+				<input n:if="count($variants)" n:name="variantId" id="shop-variant-id-input" />
+
+				<div class="mb-3" style="max-width: 8rem;">
+					<label n:name="amount" class="form-label fw-semibold">{_'Amount'}</label>
+					<input n:name="amount" class="form-control" />
+				</div>
+
+				<input n:name="add" id="shop-add-to-cart-btn" class="btn btn-shop-accent" />
+
+			</div>
+		</form>
 
 	</div>
 
 </div>
+
+<script n:syntax="off">
+document.addEventListener('DOMContentLoaded', () => {
+	const container = document.getElementById('shop-product-detail');
+	if (!container) return;
+
+	const matrixData = container.dataset.matrix ? JSON.parse(container.dataset.matrix) : [];
+	if (!matrixData.length) return;
+
+	const variantInput = document.getElementById('shop-variant-id-input');
+	const priceEl = document.getElementById('shop-detail-price');
+	const origPriceEl = document.getElementById('shop-detail-orig-price');
+	const discountBadge = document.getElementById('shop-detail-discount-badge');
+	const stockBox = document.getElementById('shop-detail-stock-box');
+	const skuWrapper = document.getElementById('shop-detail-sku-wrapper');
+	const skuEl = document.getElementById('shop-detail-sku');
+	const addBtn = document.getElementById('shop-add-to-cart-btn');
+	const configurator = document.getElementById('shop-variant-configurator');
+
+	if (!configurator) return;
+
+	const groups = configurator.querySelectorAll('.shop-variant-group');
+
+	function getSelectedValueIds() {
+		const ids = [];
+		groups.forEach(group => {
+			const activePill = group.querySelector('.shop-variant-pill.active');
+			if (activePill) {
+				ids.push(parseInt(activePill.dataset.valueId, 10));
+			}
+		});
+		return ids;
+	}
+
+	function findVariant(selectedIds) {
+		return matrixData.find(variant => {
+			if (variant.attributeValueIds.length !== selectedIds.length) return false;
+			return selectedIds.every(id => variant.attributeValueIds.includes(id));
+		});
+	}
+
+	function updateGroupLabels() {
+		groups.forEach(group => {
+			const activePill = group.querySelector('.shop-variant-pill.active');
+			const label = group.querySelector('.active-value-label');
+			if (label && activePill) {
+				label.textContent = activePill.dataset.valueName;
+			}
+		});
+	}
+
+	function updateAvailability() {
+		const currentSelected = getSelectedValueIds();
+
+		groups.forEach(group => {
+			const currentGroupAttrId = parseInt(group.dataset.attributeId, 10);
+			const pills = group.querySelectorAll('.shop-variant-pill');
+
+			pills.forEach(pill => {
+				const pillValId = parseInt(pill.dataset.valueId, 10);
+				const hypothetical = currentSelected.map(id => {
+					// replace value for this group with pillValId
+					const belongsToGroup = group.querySelector(`[data-value-id="${id}"]`);
+					return belongsToGroup ? pillValId : id;
+				});
+
+				const match = findVariant(hypothetical);
+				if (!match || match.stock <= 0) {
+					pill.classList.add('disabled');
+				} else {
+					pill.classList.remove('disabled');
+				}
+			});
+		});
+	}
+
+	function updateUI() {
+		const selectedIds = getSelectedValueIds();
+		const matched = findVariant(selectedIds);
+
+		updateGroupLabels();
+		updateAvailability();
+
+		if (matched) {
+			if (variantInput) variantInput.value = matched.id;
+
+			// Update prices
+			if (priceEl) {
+				priceEl.textContent = matched.price;
+				if (matched.originalPrice) {
+					priceEl.classList.add('text-danger');
+				} else {
+					priceEl.classList.remove('text-danger');
+				}
+			}
+
+			if (origPriceEl) {
+				if (matched.originalPrice) {
+					origPriceEl.textContent = matched.originalPrice;
+					origPriceEl.classList.remove('d-none');
+				} else {
+					origPriceEl.classList.add('d-none');
+				}
+			}
+
+			if (discountBadge) {
+				if (matched.discountPercent) {
+					discountBadge.textContent = `-${matched.discountPercent}%`;
+					discountBadge.classList.remove('d-none');
+				} else {
+					discountBadge.classList.add('d-none');
+				}
+			}
+
+			// Update SKU
+			if (skuWrapper && skuEl) {
+				if (matched.sku) {
+					skuEl.textContent = matched.sku;
+					skuWrapper.classList.remove('d-none');
+				} else {
+					skuWrapper.classList.add('d-none');
+				}
+			}
+
+			// Update Stock
+			if (stockBox) {
+				if (matched.stock > 5) {
+					stockBox.innerHTML = `
+						<p class="small text-success mb-0 d-flex align-items-center gap-1">
+							<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+							<span>In stock &gt; 5 pcs</span>
+						</p>`;
+				} else if (matched.stock > 0) {
+					stockBox.innerHTML = `
+						<p class="small text-warning-emphasis mb-0 d-flex align-items-center gap-1">
+							<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+							<span>In stock: ${matched.stock} pcs</span>
+						</p>`;
+				} else {
+					stockBox.innerHTML = `
+						<p class="small text-danger mb-0 d-flex align-items-center gap-1">
+							<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+							<span>Out of stock</span>
+						</p>`;
+				}
+			}
+
+			// Update Add button
+			if (addBtn) {
+				addBtn.disabled = matched.stock <= 0;
+			}
+
+			// Update URL query parameter
+			const url = new URL(window.location.href);
+			url.searchParams.set('variant', matched.id);
+			window.history.replaceState(null, '', url.toString());
+		}
+	}
+
+	// Attach click listeners to pills
+	groups.forEach(group => {
+		const pills = group.querySelectorAll('.shop-variant-pill');
+		pills.forEach(pill => {
+			pill.addEventListener('click', () => {
+				pills.forEach(p => p.classList.remove('active'));
+				pill.classList.add('active');
+				updateUI();
+			});
+		});
+	});
+
+	// Initial render
+	updateUI();
+});
+</script>

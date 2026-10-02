@@ -36,6 +36,7 @@ class ProductVariantMapper
 			price: $this->commerce->moneyOf($entity->price ?? $fallbackPrice),
 			stock: $entity->stock,
 			labels: $this->variantRepository->getLabels($entity->id),
+			attributeValueIds: $this->variantRepository->getAttributeValueIds($entity->id),
 		);
 	}
 }

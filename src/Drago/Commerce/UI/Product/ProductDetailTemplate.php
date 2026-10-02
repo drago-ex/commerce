@@ -15,4 +15,11 @@ class ProductDetailTemplate extends BaseTemplate
 
 	/** @var list<ProductVariantOption> */
 	public array $variants = [];
+
+	/** @var list<array{id: int, name: string, values: list<array{id: int, value: string}>}> */
+	public array $attributeGroups = [];
+
+	public ?ProductVariantOption $selectedVariant = null;
+
+	public string $variantMatrixJson = '{}';
 }

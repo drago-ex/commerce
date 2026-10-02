@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Product;
 
+use Brick\Math\RoundingMode;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
@@ -23,6 +24,7 @@ use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\FactoryValues;
+use JsonException;
 use Nette\Application\UI\Form;
 use NumberFormatter;
 
@@ -33,6 +35,7 @@ use NumberFormatter;
 class ProductDetailControl extends BaseControl
 {
 	private int $productId;
+	private ?int $selectedVariantId = null;
 
 
 	public function __construct(
@@ -48,8 +51,7 @@ class ProductDetailControl extends BaseControl
 
 	/**
 	 * Which product this instance shows. Set by the presenter before render
-	 * (e.g. from an action parameter) — same pattern as setSteps()/
-	 * setCurrentStep() elsewhere in this package.
+	 * (e.g. from an action parameter).
 	 */
 	public function setProductId(int $productId): void
 	{
@@ -58,9 +60,19 @@ class ProductDetailControl extends BaseControl
 
 
 	/**
+	 * Allows pre-selecting a specific variant (e.g. from a URL parameter ?variant=123).
+	 */
+	public function setSelectedVariantId(?int $variantId): void
+	{
+		$this->selectedVariantId = $variantId;
+	}
+
+
+	/**
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
+	 * @throws JsonException
 	 */
 	public function render(): void
 	{
@@ -69,11 +81,68 @@ class ProductDetailControl extends BaseControl
 			$this->error('Product not found.');
 		}
 
+		$variants = $this->getVariantOptions($entity);
+		$attributeGroups = $this->variantRepository->getProductAttributeGroups($entity->id);
+
+		$selectedVariant = null;
+		if ($variants !== []) {
+			if ($this->selectedVariantId !== null) {
+				foreach ($variants as $v) {
+					if ($v->id === $this->selectedVariantId) {
+						$selectedVariant = $v;
+						break;
+					}
+				}
+			}
+
+			if ($selectedVariant === null) {
+				foreach ($variants as $v) {
+					if ($v->inStock()) {
+						$selectedVariant = $v;
+						break;
+					}
+				}
+				$selectedVariant ??= $variants[0];
+			}
+		}
+
+		$variantMatrix = [];
+		foreach ($variants as $variant) {
+			$variantEntity = $this->variantRepository->getOne($variant->id);
+			$hasExplicitPrice = $variantEntity !== null && $variantEntity->price !== null;
+
+			$originalPrice = null;
+			$discountPercent = null;
+			$discountedPrice = $variant->price;
+
+			if (!$hasExplicitPrice && $entity->hasDiscount() && $variant->price !== null) {
+				$discountRatio = max(0, min(100, $entity->discount ?? 0)) / 100;
+				$discountedPrice = $variant->price->multipliedBy(1 - $discountRatio, RoundingMode::HALF_UP);
+				$originalPrice = $this->formatMoney($variant->price);
+				$discountPercent = $entity->getDiscountPercent();
+			}
+
+			$variantMatrix[] = [
+				'id' => $variant->id,
+				'sku' => $variant->sku,
+				'stock' => $variant->stock,
+				'inStock' => $variant->inStock(),
+				'price' => $this->formatMoney($discountedPrice),
+				'originalPrice' => $originalPrice,
+				'discountPercent' => $discountPercent,
+				'attributeValueIds' => $variant->attributeValueIds,
+				'label' => $variant->getLabel(),
+			];
+		}
+
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/ProductDetail.latte');
 		$template->setTranslator($this->translator);
 		$template->product = $entity;
-		$template->variants = $this->getVariantOptions($entity);
+		$template->variants = $variants;
+		$template->attributeGroups = $attributeGroups;
+		$template->selectedVariant = $selectedVariant;
+		$template->variantMatrixJson = json_encode($variantMatrix, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
 		$template->render();
 	}
 
@@ -95,12 +164,14 @@ class ProductDetailControl extends BaseControl
 
 
 	/**
-	 * Formats a Money object the same way BaseTemplate::money() does, so a
-	 * price shown inside a form label (e.g. the variant select) matches
-	 * prices shown elsewhere on the page.
+	 * Formats a Money object the same way BaseTemplate::money() does.
 	 */
-	private function formatMoney(Money $money): string
+	public function formatMoney(?Money $money): string
 	{
+		if ($money === null) {
+			return '';
+		}
+
 		$formatter = new NumberFormatter(Commerce::$moneyFormat, NumberFormatter::CURRENCY);
 
 		if (Commerce::$moneySymbol) {
@@ -133,15 +204,18 @@ class ProductDetailControl extends BaseControl
 			->addRule($form::Integer);
 
 		if ($variants !== []) {
-			$items = [];
-			foreach ($variants as $variant) {
-				$suffix = $variant->inStock() ? '' : ' (sold out)';
-				$items[$variant->id] = $variant->getLabel() . ' — ' . $this->formatMoney($variant->price) . $suffix;
+			$defaultVariantId = $this->selectedVariantId;
+			if ($defaultVariantId === null) {
+				foreach ($variants as $v) {
+					if ($v->inStock()) {
+						$defaultVariantId = $v->id;
+						break;
+					}
+				}
+				$defaultVariantId ??= $variants[0]->id;
 			}
 
-			$form->addSelect(FactoryValues::VariantId, 'Variant', $items)
-				->setPrompt('Please choose a variant')
-				->setRequired('Please choose a variant.');
+			$form->addHidden(FactoryValues::VariantId, (string) $defaultVariantId);
 		}
 
 		$form->addIntegerInput(FactoryValues::Amount)
@@ -171,10 +245,6 @@ class ProductDetailControl extends BaseControl
 		$variantLabel = null;
 		$price = $this->commerce->moneyOf($entity->price);
 
-		// A variant's own price (if set) is treated as already final — it
-		// doesn't get the product's % discount layered on top of it. A
-		// variant that inherits the product's price (no override) is
-		// discounted normally, same as a product without variants.
 		$applyDiscount = true;
 
 		if ($data->variantId !== null) {
@@ -196,8 +266,6 @@ class ProductDetailControl extends BaseControl
 
 		$product = new Product(id: $entity->id, name: $entity->name, price: $price);
 
-		// Same extension point as ProductControl::success() — a listener
-		// may still override the final price via the event.
 		$event = new ProductAddedToCart($product, $product->price);
 		$this->eventDispatcher->dispatch($event);
 

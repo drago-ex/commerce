@@ -14,6 +14,7 @@ final class ProductVariantOption
 {
 	/**
 	 * @param list<string> $labels e.g. ["Barva: Modrá", "Velikost: M"]
+	 * @param list<int> $attributeValueIds e.g. [1, 6]
 	 */
 	public function __construct(
 		public int $id,
@@ -21,6 +22,7 @@ final class ProductVariantOption
 		public ?Money $price,
 		public int $stock,
 		public array $labels,
+		public array $attributeValueIds = [],
 	) {
 	}
 

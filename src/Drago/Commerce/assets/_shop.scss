@@ -230,3 +230,57 @@
 		color: inherit;
 	}
 }
+
+// Variant selector buttons (Alza-style configurator)
+.shop-variant-group {
+	margin-bottom: 1.25rem;
+}
+
+.shop-variant-title {
+	font-size: 0.875rem;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: var(--bs-body-color);
+}
+
+.shop-variant-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.shop-variant-pill {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.45rem 0.85rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-border-radius);
+	background-color: var(--bs-body-bg);
+	color: var(--bs-body-color);
+	cursor: pointer;
+	user-select: none;
+	transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+
+	&:hover:not(.disabled):not(:disabled) {
+		border-color: var(--bs-primary);
+		background-color: var(--bs-tertiary-bg);
+	}
+
+	&.active {
+		border-color: var(--bs-primary);
+		border-width: 2px;
+		padding: calc(0.45rem - 1px) calc(0.85rem - 1px);
+		background-color: var(--bs-primary-bg-subtle, rgba(var(--bs-primary-rgb), .08));
+		color: var(--bs-primary);
+		font-weight: 600;
+	}
+
+	&.disabled, &:disabled {
+		opacity: 0.45;
+		cursor: not-allowed;
+		text-decoration: line-through;
+		background-color: var(--bs-secondary-bg);
+	}
+}

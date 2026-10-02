@@ -75,10 +75,80 @@ class ProductVariantRepository
 			ORDER BY [a].[id]
 		', $variantId)->fetchAll();
 
-		return array_map(
-			static fn($row): string => $row->attribute . ': ' . $row->value,
-			$rows,
-		);
+		$labels = [];
+		foreach ($rows as $row) {
+			$labels[] = (string) $row['attribute'] . ': ' . (string) $row['value'];
+		}
+
+		return $labels;
+	}
+
+
+	/**
+	 * Returns the attribute value IDs for a variant, in stable order (by attribute ID).
+	 *
+	 * @return list<int>
+	 * @throws Exception
+	 */
+	public function getAttributeValueIds(int $variantId): array
+	{
+		$rows = $this->connection->query('
+			SELECT [vv].[attribute_value_id]
+			FROM [product_variant_values] [vv]
+			INNER JOIN [product_attribute_values] [v] ON [v].[id] = [vv].[attribute_value_id]
+			INNER JOIN [product_attributes] [a] ON [a].[id] = [v].[attribute_id]
+			WHERE [vv].[variant_id] = %i
+			ORDER BY [a].[id]
+		', $variantId)->fetchAll();
+
+		$ids = [];
+		foreach ($rows as $row) {
+			$ids[] = (int) $row['attribute_value_id'];
+		}
+
+		return $ids;
+	}
+
+
+	/**
+	 * Returns all unique attribute groups and their values available for a given product.
+	 *
+	 * @return list<array{id: int, name: string, values: list<array{id: int, value: string}>}>
+	 * @throws Exception
+	 */
+	public function getProductAttributeGroups(int $productId): array
+	{
+		$rows = $this->connection->query('
+			SELECT DISTINCT
+				[a].[id] AS attribute_id,
+				[a].[name] AS attribute_name,
+				[v].[id] AS value_id,
+				[v].[value] AS value_name
+			FROM [product_variants] [pv]
+			INNER JOIN [product_variant_values] [vv] ON [vv].[variant_id] = [pv].[id]
+			INNER JOIN [product_attribute_values] [v] ON [v].[id] = [vv].[attribute_value_id]
+			INNER JOIN [product_attributes] [a] ON [a].[id] = [v].[attribute_id]
+			WHERE [pv].[product_id] = %i AND [pv].[active] = 1
+			ORDER BY [a].[id], [v].[id]
+		', $productId)->fetchAll();
+
+		$groups = [];
+		foreach ($rows as $row) {
+			$attrId = (int) $row['attribute_id'];
+			if (!isset($groups[$attrId])) {
+				$groups[$attrId] = [
+					'id' => $attrId,
+					'name' => (string) $row['attribute_name'],
+					'values' => [],
+				];
+			}
+			$groups[$attrId]['values'][] = [
+				'id' => (int) $row['value_id'],
+				'value' => (string) $row['value_name'],
+			];
+		}
+
+		return array_values($groups);
 	}
 
 

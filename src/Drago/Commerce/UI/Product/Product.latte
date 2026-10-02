@@ -43,15 +43,15 @@
 
 						{if $product->hasDiscount()}
 							<div class="mb-2">
-								<span class="text-body-secondary text-decoration-line-through me-2 small" aria-label="Original price">
+								<span class="text-body-secondary text-decoration-line-through me-2 small" aria-label="{_'Original price'}">
 									{$product->getPrice()|money}
 								</span>
-								<span class="fw-bold text-danger d-block fs-6" aria-label="Discounted price">
+								<span class="fw-bold text-danger d-block fs-6" aria-label="{_'Discounted price'}">
 									{$product->getDiscountedPrice()|money}
 								</span>
 							</div>
 						{else}
-							<p class="mb-2 fw-bold fs-6" aria-label="Product price">
+							<p class="mb-2 fw-bold fs-6" aria-label="{_'Product price'}">
 								{$product->getPrice()|money}
 							</p>
 						{/if}

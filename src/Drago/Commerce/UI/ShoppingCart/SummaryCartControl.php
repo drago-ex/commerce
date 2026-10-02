@@ -26,6 +26,7 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\Application\UI\Multiplier;
+use function sprintf;
 
 
 /**
@@ -190,7 +191,8 @@ class SummaryCartControl extends BaseControl
 		}
 
 		if ($availableStock < $data->amount) {
-			$message = "The product $product->name is only $availableStock pcs in stock.";
+			$message = $this->translator?->translate('The product %s is only %d pcs in stock.', $product->name, $availableStock)
+				?? sprintf('The product %s is only %d pcs in stock.', $product->name, $availableStock);
 			$this->getPresenter()->flashMessage($message, Alert::Danger);
 			$this->getPresenter()->redrawControl('message');
 			$this->redrawShoppingCart();

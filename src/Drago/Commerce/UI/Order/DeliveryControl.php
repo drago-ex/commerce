@@ -88,6 +88,7 @@ class DeliveryControl extends BaseControl
 	protected function createComponentDelivery(): Form
 	{
 		$form = new Form;
+		$form->setTranslator($this->translator);
 		$carrierItems = $this->carrierRepository->getOnlyIds();
 		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $carrierItems)
 			->setRequired('Please select a carrier.');

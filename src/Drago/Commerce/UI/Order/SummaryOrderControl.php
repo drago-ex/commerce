@@ -99,6 +99,7 @@ class SummaryOrderControl extends BaseControl
 	protected function createComponentSendOrder(): Form
 	{
 		$form = new Form;
+		$form->setTranslator($this->translator);
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
 		return $form;
@@ -201,7 +202,7 @@ class SummaryOrderControl extends BaseControl
 		} catch (\Throwable $e) {
 			$this->orderRepository->getConnection()->rollback();
 			Debugger::barDump($e);
-			$form->addError('An error occurred while processing your order: ' . $e->getMessage());
+			$form->addError('An error occurred while processing your order. Please try again.');
 			return;
 		}
 

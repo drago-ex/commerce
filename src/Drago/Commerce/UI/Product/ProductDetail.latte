@@ -1,14 +1,23 @@
 {templateType Drago\Commerce\UI\Product\ProductDetailTemplate}
 {varType Drago\Commerce\Domain\Product\ProductVariantOption[] $variants}
 
-<nav aria-label="breadcrumb" class="mb-3">
+<nav aria-label="{_'Product navigation'}" class="mb-3">
 	<a href="{plink default}" class="text-decoration-none small">
 		<i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
 		{_'Back to products'}
 	</a>
 </nav>
 
-<div class="row g-4" id="shop-product-detail" data-matrix="{$variantMatrixJson}">
+<div
+		class="row g-4"
+		id="shop-product-detail"
+		data-matrix="{$variantMatrixJson}"
+		data-stock-many="{_'In stock > 5 pcs'}"
+		data-stock-few="{_'In stock'}"
+		data-stock-none="{_'Out of stock'}"
+		data-stock-pcs="{_'pcs'}"
+		data-stock-unavailable="{_'Unavailable combination'}"
+>
 
 	<div class="col-md-5">
 		<div class="card border-0 shadow-sm">
@@ -244,19 +253,19 @@ document.addEventListener('DOMContentLoaded', () => {
 					stockBox.innerHTML = `
 						<p class="small text-success mb-0 d-flex align-items-center gap-1">
 							<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-							<span>In stock &gt; 5 pcs</span>
+							<span>${container.dataset.stockMany}</span>
 						</p>`;
 				} else if (matched.stock > 0) {
 					stockBox.innerHTML = `
 						<p class="small text-warning-emphasis mb-0 d-flex align-items-center gap-1">
 							<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-							<span>In stock: ${ matched.stock} pcs</span>
+							<span>${container.dataset.stockFew}: ${ matched.stock} ${container.dataset.stockPcs}</span>
 						</p>`;
 				} else {
 					stockBox.innerHTML = `
 						<p class="small text-danger mb-0 d-flex align-items-center gap-1">
 							<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-							<span>Out of stock</span>
+						<span>${container.dataset.stockNone}</span>
 						</p>`;
 				}
 			}
@@ -277,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				stockBox.innerHTML = `
 					<p class="small text-danger mb-0 d-flex align-items-center gap-1">
 						<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-						<span>Unavailable combination</span>
+						<span>${container.dataset.stockUnavailable}</span>
 					</p>`;
 			}
 		}

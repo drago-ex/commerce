@@ -1,6 +1,6 @@
 {varType \Drago\Commerce\UI\Breadcrumbs $breadcrumbs}
 {define breadcrumbs, $breadcrumbs}
-	<nav aria-label="Checkout progress" class="mb-4 mt-3 pb-3 border-bottom">
+	<nav aria-label="{_'Checkout steps'}" class="mb-4 mt-3 pb-4 border-bottom">
 		<ol class="shop-stepper">
 			{foreach $breadcrumbs->steps as $step => $label}
 				{var $isCurrent = $step === $breadcrumbs->currentStep}
@@ -13,12 +13,12 @@
 							<span class="shop-stepper-badge">
 								<i class="fa-solid fa-check" aria-hidden="true"></i>
 							</span>
-							<span class="shop-stepper-label">{$label}</span>
+							<span class="shop-stepper-label">{$label|translate}</span>
 						</a>
 					{else}
 						<span class="d-flex align-items-center" aria-current="{$isCurrent ? 'step' : null}">
 							<span class="shop-stepper-badge">{$iterator->counter}</span>
-							<span class="shop-stepper-label">{$label}</span>
+							<span class="shop-stepper-label">{$label|translate}</span>
 						</span>
 					{/if}
 

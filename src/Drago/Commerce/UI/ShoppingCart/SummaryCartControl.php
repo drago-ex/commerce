@@ -87,7 +87,7 @@ class SummaryCartControl extends BaseControl
 	 */
 	public static function cartItemKey(int $productId, ?int $variantId): string
 	{
-		return $productId . ':' . ($variantId ?? '');
+		return $variantId !== null ? $productId . '_' . $variantId : (string) $productId;
 	}
 
 
@@ -98,8 +98,10 @@ class SummaryCartControl extends BaseControl
 	 */
 	private static function splitCartItemKey(string $key): array
 	{
-		[$productId, $variantId] = array_pad(explode(':', $key, 2), 2, '');
-		return [$productId, $variantId === '' ? null : (int) $variantId];
+		$parts = explode('_', $key, 2);
+		$productId = $parts[0];
+		$variantId = isset($parts[1]) && $parts[1] !== '' ? (int) $parts[1] : null;
+		return [$productId, $variantId];
 	}
 
 

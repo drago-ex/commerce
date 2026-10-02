@@ -1,37 +1,42 @@
 services:
-	- Drago\Commerce\Service\OrderSession
-	- Drago\Commerce\Service\ShoppingCartSession
-	- Drago\Commerce\Service\DiscountCodeService
-
 	- Drago\Commerce\Data\ReaderGeoLite
 	- Drago\Commerce\UI\Factory
 
-	- Drago\Commerce\Domain\Product\ProductMapper
-	- Drago\Commerce\Domain\Product\ProductRepository
-	- Drago\Commerce\Domain\Product\ProductVariantRepository
-	- Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository
+	- Drago\Commerce\Service\DiscountCodeService
+	- Drago\Commerce\Service\OrderSession
+	- Drago\Commerce\Service\ShoppingCartSession
+
+	- Drago\Commerce\Domain\Customer\CustomerRepository
 
 	- Drago\Commerce\Domain\Delivery\CarrierMapper
 	- Drago\Commerce\Domain\Delivery\CarrierRepository
 	- Drago\Commerce\Domain\Delivery\PaymentMapper
 	- Drago\Commerce\Domain\Delivery\PaymentRepository
 
-	- Drago\Commerce\Domain\Customer\CustomerRepository
+	- Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository
 
-	- Drago\Commerce\Domain\Order\OrderRepository
 	- Drago\Commerce\Domain\Order\OrderProductRepository
+	- Drago\Commerce\Domain\Order\OrderRepository
 
-	- Drago\Commerce\UI\ShoppingCart\SummaryCartControl
-	- Drago\Commerce\UI\ShoppingCart\MiniCartControl
+	- Drago\Commerce\Domain\Product\ProductAttributeRepository
+	- Drago\Commerce\Domain\Product\ProductAttributeValueRepository
+	- Drago\Commerce\Domain\Product\ProductMapper
+	- Drago\Commerce\Domain\Product\ProductRepository
+	- Drago\Commerce\Domain\Product\ProductVariantMapper
+	- Drago\Commerce\Domain\Product\ProductVariantRepository
 
 	- Drago\Commerce\UI\Order\CustomerControl
+	- Drago\Commerce\UI\Order\CustomerFactory
 	- Drago\Commerce\UI\Order\DeliveryControl
 	- Drago\Commerce\UI\Order\SummaryOrderControl
-	- Drago\Commerce\UI\Order\CustomerFactory
 
 	- Drago\Commerce\UI\Product\ProductControl
+	- Drago\Commerce\UI\Product\ProductDetailControl
 
-	# events listeners
+	- Drago\Commerce\UI\ShoppingCart\MiniCartControl
+	- Drago\Commerce\UI\ShoppingCart\SummaryCartControl
+
+	# event listeners
 	discountListener:
 		class: Drago\Commerce\EventListener\DiscountListener
 
@@ -41,5 +46,5 @@ services:
 	eventDispatcher:
 		class: Drago\Commerce\Event\EventDispatcher
 		setup:
-			- addListener(Drago\Commerce\Event\ProductAddedToCart,@discountListener)
+			- addListener(Drago\Commerce\Event\ProductAddedToCart, @discountListener)
 			- addListener(Drago\Commerce\Event\OrderPlaced, @orderLoggerListener)

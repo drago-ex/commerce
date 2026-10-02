@@ -64,10 +64,12 @@ $dummyRepo = (new class extends ProductVariantRepository {
 	{
 	}
 
+
 	public function getLabels(int $variantId): array
 	{
 		return ['Barva: Černá', 'Kapacita: 256 GB'];
 	}
+
 
 	public function getAttributeValueIds(int $variantId): array
 	{

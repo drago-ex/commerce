@@ -174,16 +174,19 @@ class SummaryCartControl extends BaseControl
 	 */
 	public function changeQuantity(Form $form, FactoryValues $data): void
 	{
-		$productEntity = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
+		$productId = (int) $data->productId;
+		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
+
+		$productEntity = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
 		$product = $this->productMapper->map($productEntity);
 
 		$availableStock = $productEntity->stock;
 		$variantLabel = null;
 
-		if ($data->variantId !== null) {
-			$variantEntity = $this->productVariantRepository->getOne($data->variantId) ?? $this->error('Variant not found');
+		if ($variantId !== null) {
+			$variantEntity = $this->productVariantRepository->getOne($variantId) ?? $this->error('Variant not found');
 			$availableStock = $variantEntity->stock;
-			$variantLabel = implode(', ', $this->productVariantRepository->getLabels($data->variantId));
+			$variantLabel = implode(', ', $this->productVariantRepository->getLabels($variantId));
 		}
 
 		if ($availableStock < $data->amount) {
@@ -194,7 +197,7 @@ class SummaryCartControl extends BaseControl
 			return;
 		}
 
-		$this->shoppingCart->addItem($product, $data->amount, dontCount: true, variantId: $data->variantId, variantLabel: $variantLabel);
+		$this->shoppingCart->addItem($product, $data->amount, dontCount: true, variantId: $variantId, variantLabel: $variantLabel);
 		$this->eventDispatcher->dispatch(new CartItemChanged($product, $data->amount));
 		$this->redrawShoppingCart();
 	}

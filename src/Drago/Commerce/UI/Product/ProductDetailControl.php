@@ -239,7 +239,10 @@ class ProductDetailControl extends BaseControl
 	 */
 	public function success(Form $form, FactoryValues $data): void
 	{
-		$entity = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found.');
+		$productId = (int) $data->productId;
+		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
+
+		$entity = $this->productRepository->getOne($productId) ?? $this->error('Product not found.');
 
 		$availableStock = $entity->stock;
 		$variantLabel = null;
@@ -247,8 +250,8 @@ class ProductDetailControl extends BaseControl
 
 		$applyDiscount = true;
 
-		if ($data->variantId !== null) {
-			$variantEntity = $this->variantRepository->getOne($data->variantId) ?? $this->error('Variant not found.');
+		if ($variantId !== null) {
+			$variantEntity = $this->variantRepository->getOne($variantId) ?? $this->error('Variant not found.');
 			$availableStock = $variantEntity->stock;
 			$variantLabel = implode(', ', $this->variantRepository->getLabels($variantEntity->id));
 
@@ -274,7 +277,7 @@ class ProductDetailControl extends BaseControl
 			$item->setDiscount($entity->discount);
 		}
 
-		$this->shoppingCartSession->addItem($item, $data->amount, variantId: $data->variantId, variantLabel: $variantLabel);
+		$this->shoppingCartSession->addItem($item, $data->amount, variantId: $variantId, variantLabel: $variantLabel);
 
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
 		$this->getPresenter()->redrawControl('message');

@@ -18,14 +18,14 @@ class FactoryValues extends ArrayHash
 		Amount = 'amount',
 		Code = 'code';
 
-	public int $productId;
+	public int|string $productId;
 
 	/**
 	 * Set only when a variant-selecting form included the hidden variantId
 	 * field (see Factory::addHiddenProductId()) — stays at this default
 	 * otherwise, so products without variants are unaffected.
 	 */
-	public ?int $variantId = null;
+	public int|string|null $variantId = null;
 
 	public int $amount;
 	public string $code;

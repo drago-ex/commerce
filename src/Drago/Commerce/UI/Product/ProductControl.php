@@ -40,7 +40,6 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Render product listing template
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
@@ -55,7 +54,7 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Create add-to-cart forms for each product using Nette Multiplier
+	 * Creates an add-to-cart form for each product using Nette Multiplier.
 	 *
 	 * @return Multiplier<BaseForm>
 	 */
@@ -72,8 +71,8 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Handle add-to-cart form success
-	 * Validates product, calculates final price, adds item to cart
+	 * Handles successful add-to-cart submissions by validating the product,
+	 * calculating its final price, and adding it to the cart.
 	 *
 	 * @throws Exception
 	 * @throws AttributeDetectionException
@@ -89,14 +88,11 @@ class ProductControl extends BaseControl
 			return;
 		}
 
-		// Create domain model Product with original price
 		$product = $this->createProductEntity($entity, $this->commerce->moneyOf($entity->price));
 
-		// Dispatch event to possibly modify price (e.g., apply discount)
 		$event = new ProductAddedToCart($product, $product->price);
 		$this->eventDispatcher->dispatch($event);
 
-		// Create cart item with possibly modified price
 		$item = $this->createProductEntity($entity, $event->getPrice());
 
 		$this->shoppingCartSession->addItem($item);
@@ -112,8 +108,8 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Validate product existence, activity and stock
-	 * Redirects with a flash message if invalid
+	 * Validates product existence, activity, and stock, redirecting with a
+	 * flash message when the product cannot be purchased.
 	 */
 	private function validateProduct(?ProductEntity $product): void
 	{
@@ -130,7 +126,7 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Create a Product domain object from entity and given price
+	 * Creates a Product domain object from an entity and the given price.
 	 *
 	 * @throws MoneyMismatchException
 	 */

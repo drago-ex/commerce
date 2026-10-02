@@ -14,13 +14,9 @@ use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
 
-/**
- * Represents the shopping cart in the session.
- * Manages products added by the customer, including quantity and total price calculation.
- */
+/** Stores cart items in the session and calculates their totals. */
 class ShoppingCartSession
 {
-	/** Session section key for cart items */
 	private const string Items = 'items';
 
 	private SessionSection $sessionSection;
@@ -37,11 +33,7 @@ class ShoppingCartSession
 	}
 
 
-	/**
-	 * Returns all items currently in the basket.
-	 *
-	 * @return ProductCart[] Array of basket items.
-	 */
+	/** @return ProductCart[] */
 	public function getItems(): array
 	{
 		return $this->sessionSection->get(self::Items) ?? [];
@@ -149,15 +141,11 @@ class ShoppingCartSession
 			}
 		}
 
-		// Product (+ variant) combination isn't found in the basket, add new
 		$items[] = new ProductCart($product, BigInteger::of($amount), $variantId, $variantLabel);
 		$this->sessionSection->set(self::Items, $items);
 	}
 
 
-	/**
-	 * Removes a product (or a specific variant of it) from the basket.
-	 */
 	public function removeItem(Product $product, ?int $variantId = null): void
 	{
 		$items = [];
@@ -172,9 +160,6 @@ class ShoppingCartSession
 	}
 
 
-	/**
-	 * Empties the basket.
-	 */
 	public function remove(): void
 	{
 		$this->sessionSection->remove(self::Items);

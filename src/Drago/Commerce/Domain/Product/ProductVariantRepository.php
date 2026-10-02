@@ -43,7 +43,7 @@ class ProductVariantRepository
 	/**
 	 * Returns all active variants of a product.
 	 *
-	 * @return array<ProductVariantEntity>
+	 * @return ProductVariantEntity[]
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

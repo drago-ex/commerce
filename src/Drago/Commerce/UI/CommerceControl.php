@@ -36,10 +36,6 @@ trait CommerceControl
 	public ProductDetailControl $productDetailControl;
 
 
-	/**
-	 * Inject all commerce controls and configure the checkout ones for
-	 * their step in the flow.
-	 */
 	public function injectCommerceControl(
 		MiniCartControl $miniCartControl,
 		SummaryCartControl $shoppingCartControl,

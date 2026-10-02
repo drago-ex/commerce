@@ -42,7 +42,7 @@ class ProductRepository
 	/**
 	 * Returns all active products.
 	 *
-	 * @return array<ProductEntity>
+	 * @return ProductEntity[]
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

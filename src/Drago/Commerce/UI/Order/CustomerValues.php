@@ -9,8 +9,7 @@ use Nette\Utils\ArrayHash;
 
 
 /**
- * Data transfer object for customer information.
- * Represents customer details used in forms and order processing.
+ * Holds customer information submitted by the checkout form.
  */
 class CustomerValues extends ArrayHash
 {

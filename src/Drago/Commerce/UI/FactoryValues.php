@@ -8,7 +8,7 @@ use Nette\Utils\ArrayHash;
 
 
 /**
- * Represents form data for product operations.
+ * Holds values submitted by product and discount-code forms.
  */
 class FactoryValues extends ArrayHash
 {
@@ -21,9 +21,7 @@ class FactoryValues extends ArrayHash
 	public int|string $productId;
 
 	/**
-	 * Set only when a variant-selecting form included the hidden variantId
-	 * field (see Factory::addHiddenProductId()) — stays at this default
-	 * otherwise, so products without variants are unaffected.
+	 * Holds the selected variant ID, or null when the form has no variant.
 	 */
 	public int|string|null $variantId = null;
 

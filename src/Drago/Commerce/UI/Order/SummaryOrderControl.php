@@ -133,7 +133,6 @@ class SummaryOrderControl extends BaseControl
 		try {
 			$this->orderRepository->getConnection()->begin();
 
-			// Save the customer.
 			$phoneStr = $customer->phone instanceof PhoneNumber
 				? $customer->phone->format(PhoneNumberFormat::INTERNATIONAL)
 				: (string) $customer->phone;
@@ -152,7 +151,6 @@ class SummaryOrderControl extends BaseControl
 			$this->customerRepository->save((array) $customerData);
 			$customerId = $this->customerRepository->getInsertId();
 
-			// Save order.
 			$orderData = new OrderSummary(
 				customer_id: $customerId,
 				carrier_id: $carrier->id,
@@ -183,7 +181,6 @@ class SummaryOrderControl extends BaseControl
 					throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
 				}
 
-				//Save order products.
 				$orderProduct = new OrderProduct(
 					order_id: $orderId,
 					product_id: $item->product->id,

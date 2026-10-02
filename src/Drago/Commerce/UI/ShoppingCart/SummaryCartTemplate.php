@@ -9,7 +9,7 @@ use Drago\Commerce\UI\BaseTemplate;
 
 
 /**
- * Template data for ShoppingCartControl
+ * Template data for the shopping cart summary.
  */
 class SummaryCartTemplate extends BaseTemplate
 {

@@ -29,7 +29,7 @@ class ProductAttributeRepository
 	/**
 	 * Returns all defined attributes.
 	 *
-	 * @return array<ProductAttributeEntity>
+	 * @return ProductAttributeEntity[]
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

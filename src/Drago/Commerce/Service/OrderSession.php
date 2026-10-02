@@ -15,10 +15,7 @@ use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
 
-/**
- * Class responsible for managing a customer order.
- * Stores carrier, payment, and customer information in session.
- */
+/** Stores the selected carrier, payment method, and customer in the session. */
 class OrderSession
 {
 	private const string
@@ -40,7 +37,7 @@ class OrderSession
 	/**
 	 * Returns all keys used in the order (carrier, payment, customer).
 	 *
-	 * @return string[] List of order item keys.
+	 * @return list<string>
 	 */
 	private function items(): array
 	{
@@ -52,9 +49,6 @@ class OrderSession
 	}
 
 
-	/**
-	 * Loads all order items from session.
-	 */
 	public function getItems(): OrderState
 	{
 		$items = [];
@@ -70,20 +64,13 @@ class OrderSession
 	}
 
 
-	/**
-	 * Saves carrier information into session.
-	 */
 	public function setCarrier(Carrier $carrier): void
 	{
 		$this->sessionSection->set(self::Carrier, $carrier);
 	}
 
 
-	/**
-	 * Calculates carrier price.
-	 *
-	 * @throws MoneyMismatchException When currency types mismatch.
-	 */
+	/** @throws MoneyMismatchException When currency types mismatch. */
 	public function getCarrierPrice(): Money
 	{
 		$carrierPrice = $this->commerce->moneyZero();
@@ -97,20 +84,13 @@ class OrderSession
 	}
 
 
-	/**
-	 * Saves payment information into session.
-	 */
 	public function setPayment(Payment $payment): void
 	{
 		$this->sessionSection->set(self::Payment, $payment);
 	}
 
 
-	/**
-	 * Calculates payment price.
-	 *
-	 * @throws MoneyMismatchException When currency types mismatch.
-	 */
+	/** @throws MoneyMismatchException When currency types mismatch. */
 	public function getPaymentPrice(): Money
 	{
 		$paymentPrice = $this->commerce->moneyZero();
@@ -124,18 +104,12 @@ class OrderSession
 	}
 
 
-	/**
-	 * Saves customer information into session.
-	 */
 	public function setCustomer(Customer $customer): void
 	{
 		$this->sessionSection->set(self::Customer, $customer);
 	}
 
 
-	/**
-	 * Removes all order items from session.
-	 */
 	public function remove(): void
 	{
 		foreach ($this->items() as $item) {

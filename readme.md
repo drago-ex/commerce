@@ -83,7 +83,7 @@ class CommercePresenter extends Nette\Application\UI\Presenter
 }
 ```
 
-The trait injects the six commerce controls (`$this->deliveryControl`, `$this->customerControl`, `$this->summaryOrderControl`, `$this->shoppingCartControl`, `$this->miniCartControl`, `$this->productControl`) and configures each checkout-step control for its place in the flow: the step map, completed steps, current step, and the redirect target for the next step. Each control always represents the same fixed step — a `DeliveryControl` is always the delivery step — so this configuration doesn't need repeating per presenter; a presenter only sets what genuinely varies per use, such as the translator. See "Example Presenter" below.
+The trait injects seven controls: `$this->deliveryControl`, `$this->customerControl`, `$this->summaryOrderControl`, `$this->shoppingCartControl`, `$this->miniCartControl`, `$this->productControl`, and `$this->productDetailControl`. It configures each checkout-step control for its place in the flow: the step map, completed steps, current step, and redirect target for the next step. Each control always represents the same fixed step — a `DeliveryControl` is always the delivery step — so this configuration doesn't need repeating per presenter; a presenter only sets what genuinely varies per use, such as the translator. See "Example Presenter" below.
 
 ## Inject CheckoutProcess Service
 ```php
@@ -114,6 +114,7 @@ use Drago\Commerce\UI\Order\CustomerControl;
 use Drago\Commerce\UI\Order\DeliveryControl;
 use Drago\Commerce\UI\Order\SummaryOrderControl;
 use Drago\Commerce\UI\Product\ProductControl;
+use Drago\Commerce\UI\Product\ProductDetailControl;
 use Drago\Commerce\UI\ShoppingCart\MiniCartControl;
 use Drago\Commerce\UI\ShoppingCart\SummaryCartControl;
 
@@ -266,6 +267,28 @@ Include the mini cart widget in your navbar / header:
     {control product}
 {/block}
 ```
+
+For a product detail page, set the selected product ID before rendering the component:
+
+```php
+protected function createComponentProductDetail(): ProductDetailControl
+{
+    $control = $this->productDetailControl;
+    $control->setProductId((int) $this->getParameter('productId'));
+    $control->translator = $this->getTranslator();
+    return $control;
+}
+```
+
+Then render it in the detail template:
+
+```latte
+{block content}
+    {control productDetail}
+{/block}
+```
+
+`ProductDetailControl` renders the product's available variants and lets the customer select a variant before adding it to the cart.
 
 ### 3. Shopping Cart (`shoppingCart.latte`)
 ```latte

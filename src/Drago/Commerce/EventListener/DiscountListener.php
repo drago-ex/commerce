@@ -25,6 +25,5 @@ class DiscountListener
 {
 	public function __invoke(ProductAddedToCart $event): void
 	{
-		// No standard-discount logic here anymore — see the class docblock.
 	}
 }

@@ -8,9 +8,7 @@ use Drago\Application\UI\ExtraControl;
 
 
 /**
- * It manages the list of steps, tracks the current active step, and
- * which steps have been completed. It also provides a method to
- * retrieve a Breadcrumbs object representing this state.
+ * Manages checkout steps and their completion state for breadcrumb rendering.
  */
 class BaseControl extends ExtraControl
 {
@@ -25,60 +23,38 @@ class BaseControl extends ExtraControl
 	public string $linkRedirectTarget;
 
 	/**
-	 * List of all steps in the navigation.
-	 * Associative array where keys are step identifiers and values are labels.
+	 * Checkout step labels keyed by action identifier.
 	 *
 	 * @var array<string, string>
 	 */
 	protected array $steps = [];
 
-	/**
-	 * Identifier of the currently active step.
-	 */
 	protected string $currentStep = '';
 
-	/**
-	 * List of identifiers for completed steps.
-	 *
-	 * @var list<string>
-	 */
+	/** @var list<string> */
 	protected array $completedSteps = [];
 
 
-	/**
-	 * Sets the list of all navigation steps.
-	 *
-	 * @param array<string, string> $steps
-	 */
+	/** @param array<string, string> $steps */
 	public function setSteps(array $steps): void
 	{
 		$this->steps = $steps;
 	}
 
 
-	/**
-	 * Sets the current active step identifier.
-	 */
 	public function setCurrentStep(string $currentStep): void
 	{
 		$this->currentStep = $currentStep;
 	}
 
 
-	/**
-	 * Sets the list of completed steps identifiers.
-	 *
-	 * @param list<string> $completedSteps
-	 */
+	/** @param list<string> $completedSteps */
 	public function setCompletedSteps(array $completedSteps): void
 	{
 		$this->completedSteps = $completedSteps;
 	}
 
 
-	/**
-	 * Creates and returns a Breadcrumbs object representing the current navigation state.
-	 */
 	public function getBreadcrumbs(): Breadcrumbs
 	{
 		return new Breadcrumbs(
@@ -90,9 +66,9 @@ class BaseControl extends ExtraControl
 
 
 	/**
-	 * Sets the link to redirect to after a successful action.
+	 * Sets the action used by the control's navigation link.
 	 *
-	 * @throws \InvalidArgumentException if the link is empty
+	 * @throws \InvalidArgumentException The target action is empty.
 	 */
 	public function setLinkRedirectTarget(string $link): void
 	{

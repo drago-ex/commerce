@@ -8,7 +8,7 @@ use Nette\Utils\ArrayHash;
 
 
 /**
- * Data container for delivery form data.
+ * Holds the carrier and payment IDs selected in the delivery form.
  */
 class DeliveryValues extends ArrayHash
 {

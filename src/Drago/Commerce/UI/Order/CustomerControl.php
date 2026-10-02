@@ -85,11 +85,7 @@ class CustomerControl extends BaseControl
 	}
 
 
-	/**
-	 * Handle successful form submission.
-	 *
-	 * @throws AbortException
-	 */
+	/** @throws AbortException */
 	public function success(Form $form, CustomerValues $data): void
 	{
 		try {

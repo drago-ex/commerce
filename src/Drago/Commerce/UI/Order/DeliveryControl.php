@@ -63,7 +63,6 @@ class DeliveryControl extends BaseControl
 		if ($delivery->carrier !== null && $delivery->payment !== null) {
 			$form = $this->getComponent('delivery');
 
-			// Prefill form with data from session only if the form wasn't submitted yet.
 			if (!$form->isSubmitted()) {
 
 				$buttonSend = $this->getFormComponent($form, 'send');

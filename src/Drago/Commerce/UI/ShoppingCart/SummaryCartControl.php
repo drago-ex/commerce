@@ -54,7 +54,6 @@ class SummaryCartControl extends BaseControl
 	 */
 	public function render(): void
 	{
-		// Set default values for addToBasket forms based on basket items
 		/** @var Multiplier<BaseForm> $multiplier */
 		$multiplier = $this->getComponent('changeQuantity');
 		foreach ($this->shoppingCart->getItems() as $item) {

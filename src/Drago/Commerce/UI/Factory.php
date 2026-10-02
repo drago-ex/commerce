@@ -8,9 +8,7 @@ use Drago\Form\Autocomplete;
 use Nette\Localization\Translator;
 
 
-/**
- * Factory class for creating instances of FormBase with necessary configurations.
- */
+/** Creates Commerce forms and applies the configured translator. */
 readonly class Factory
 {
 	public function __construct(

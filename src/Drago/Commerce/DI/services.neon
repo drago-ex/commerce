@@ -8,6 +8,7 @@ services:
 
 	- Drago\Commerce\Domain\Product\ProductMapper
 	- Drago\Commerce\Domain\Product\ProductRepository
+	- Drago\Commerce\Domain\Product\ProductVariantRepository
 	- Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository
 
 	- Drago\Commerce\Domain\Delivery\CarrierMapper

@@ -55,8 +55,10 @@
 								</div>
 
 								<div class="col-auto">
+									{var $changeQuantityName = 'changeQuantity-' . \Drago\Commerce\UI\ShoppingCart\SummaryCartControl::cartItemKey($cart->product->id, $cart->variantId)}
+
 									<form
-											n:name="changeQuantity-{\Drago\Commerce\UI\ShoppingCart\SummaryCartControl::cartItemKey($cart->product->id, $cart->variantId)}"
+											n:name="$changeQuantityName"
 											class="ajax"
 											data-items-cart
 											data-naja-history="replace"

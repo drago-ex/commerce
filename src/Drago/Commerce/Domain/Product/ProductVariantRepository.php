@@ -76,7 +76,7 @@ class ProductVariantRepository
 		', $variantId)->fetchAll();
 
 		return array_map(
-			static fn ($row): string => $row->attribute . ': ' . $row->value,
+			static fn($row): string => $row->attribute . ': ' . $row->value,
 			$rows,
 		);
 	}

@@ -18,19 +18,19 @@
 		<div class="col-6 col-sm-4 col-md-3 col-lg-2">
 			<div class="card h-100 border-0 shadow-sm hover-shadow" role="region" aria-label="{_'Product'} {$product->name}">
 
-				<div class="position-relative overflow-hidden">
+				<a href="{plink detail, id: $product->id}" class="position-relative overflow-hidden d-block text-decoration-none">
 					{var $imageSrc = "https://placehold.co/200x160?text=%20&bg=f4f6f8"}
 					{include productImage, name: $product->name, src: $imageSrc}
 
 					<span n:if="$product->hasDiscount()" class="shop-ribbon" title="{_'Discount'} {$product->getDiscountPercent()}%">
 						-{$product->getDiscountPercent()}%
 					</span>
-				</div>
+				</a>
 
 				<div class="card-body d-flex flex-column">
 
 					<h6 class="card-title text-truncate mb-1" title="{$product->name}">
-						<a n:href="detail, id: $product->id" class="text-decoration-none text-body-emphasis stretched-link">
+						<a href="{plink detail, id: $product->id}" class="text-decoration-none text-body-emphasis">
 							{$product->name}
 						</a>
 					</h6>

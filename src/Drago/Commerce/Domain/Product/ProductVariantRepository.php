@@ -6,6 +6,7 @@ namespace Drago\Commerce\Domain\Product;
 
 use Dibi\Connection;
 use Dibi\Exception;
+use Dibi\Fluent;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Attr\Table;
 use Drago\Database\Database;
@@ -63,21 +64,24 @@ class ProductVariantRepository
 	 *
 	 * @return list<string>
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function getLabels(int $variantId): array
 	{
-		$rows = $this->connection->query('
-			SELECT [a].[name] AS attribute, [v].[value] AS value
-			FROM [product_variant_values] [vv]
-			INNER JOIN [product_attribute_values] [v] ON [v].[id] = [vv].[attribute_value_id]
-			INNER JOIN [product_attributes] [a] ON [a].[id] = [v].[attribute_id]
-			WHERE [vv].[variant_id] = %i
-			ORDER BY [a].[id]
-		', $variantId)->fetchAll();
+		$rows = $this->command()
+			->select('a.name AS attribute', 'v.value AS value')
+			->from('product_variant_values vv')
+			->innerJoin('product_attribute_values v')
+			->on('v.id = vv.attribute_value_id')
+			->innerJoin('product_attributes a')
+			->on('a.id = v.attribute_id')
+			->where('vv.variant_id = ?', $variantId)
+			->orderBy('a.id')
+			->fetchAll();
 
 		$labels = [];
 		foreach ($rows as $row) {
-			$labels[] = (string) $row['attribute'] . ': ' . (string) $row['value'];
+			$labels[] = $row['attribute'] . ': ' . $row['value'];
 		}
 
 		return $labels;
@@ -89,17 +93,20 @@ class ProductVariantRepository
 	 *
 	 * @return list<int>
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function getAttributeValueIds(int $variantId): array
 	{
-		$rows = $this->connection->query('
-			SELECT [vv].[attribute_value_id]
-			FROM [product_variant_values] [vv]
-			INNER JOIN [product_attribute_values] [v] ON [v].[id] = [vv].[attribute_value_id]
-			INNER JOIN [product_attributes] [a] ON [a].[id] = [v].[attribute_id]
-			WHERE [vv].[variant_id] = %i
-			ORDER BY [a].[id]
-		', $variantId)->fetchAll();
+		$rows = $this->command()
+			->select('vv.attribute_value_id')
+			->from('product_variant_values vv')
+			->innerJoin('product_attribute_values v')
+			->on('v.id = vv.attribute_value_id')
+			->innerJoin('product_attributes a')
+			->on('a.id = v.attribute_id')
+			->where('vv.variant_id = ?', $variantId)
+			->orderBy('a.id')
+			->fetchAll();
 
 		$ids = [];
 		foreach ($rows as $row) {
@@ -115,22 +122,24 @@ class ProductVariantRepository
 	 *
 	 * @return list<array{id: int, name: string, values: list<array{id: int, value: string}>}>
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function getProductAttributeGroups(int $productId): array
 	{
-		$rows = $this->connection->query('
-			SELECT DISTINCT
-				[a].[id] AS attribute_id,
-				[a].[name] AS attribute_name,
-				[v].[id] AS value_id,
-				[v].[value] AS value_name
-			FROM [product_variants] [pv]
-			INNER JOIN [product_variant_values] [vv] ON [vv].[variant_id] = [pv].[id]
-			INNER JOIN [product_attribute_values] [v] ON [v].[id] = [vv].[attribute_value_id]
-			INNER JOIN [product_attributes] [a] ON [a].[id] = [v].[attribute_id]
-			WHERE [pv].[product_id] = %i AND [pv].[active] = 1
-			ORDER BY [a].[id], [v].[id]
-		', $productId)->fetchAll();
+		$rows = $this->command()
+			->select('DISTINCT a.id AS attribute_id')
+			->select('a.name AS attribute_name', 'v.id AS value_id', 'v.value AS value_name')
+			->from('product_variants pv')
+			->innerJoin('product_variant_values vv')
+			->on('vv.variant_id = pv.id')
+			->innerJoin('product_attribute_values v')
+			->on('v.id = vv.attribute_value_id')
+			->innerJoin('product_attributes a')
+			->on('a.id = v.attribute_id')
+			->where('pv.product_id = ?', $productId)
+			->where('pv.active = ?', 1)
+			->orderBy('a.id', 'v.id')
+			->fetchAll();
 
 		$groups = [];
 		foreach ($rows as $row) {
@@ -159,21 +168,15 @@ class ProductVariantRepository
 	 * instead of the product row.
 	 *
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function decrementStock(int $id, int $amount): bool
 	{
-		$this->connection->query(
-			'UPDATE %n SET %n = %n - %i WHERE %n = %i AND %n >= %i',
-			ProductVariantEntity::Table,
-			ProductVariantEntity::Stock,
-			ProductVariantEntity::Stock,
-			$amount,
-			ProductVariantEntity::PrimaryKey,
-			$id,
-			ProductVariantEntity::Stock,
-			$amount,
-		);
-
-		return $this->connection->getAffectedRows() > 0;
+		return $this->command()
+			->update(ProductVariantEntity::Table)
+			->set('%n = %n - %i', ProductVariantEntity::Stock, ProductVariantEntity::Stock, $amount)
+			->where('%n = ?', ProductVariantEntity::PrimaryKey, $id)
+			->where('%n >= %i', ProductVariantEntity::Stock, $amount)
+			->execute(Fluent::AffectedRows) > 0;
 	}
 }

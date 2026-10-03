@@ -6,17 +6,18 @@ namespace Drago\Commerce\Domain\Product;
 
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
+use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 
 
 /**
  * Converts a ProductVariantEntity to a domain ProductVariantOption object.
  */
-class ProductVariantMapper
+readonly class ProductVariantMapper
 {
 	public function __construct(
-		private readonly Commerce $commerce,
-		private readonly ProductVariantRepository $variantRepository,
+		private Commerce $commerce,
+		private ProductVariantRepository $variantRepository,
 	) {
 	}
 
@@ -27,6 +28,7 @@ class ProductVariantMapper
 	 *
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function map(ProductVariantEntity $entity, float $fallbackPrice): ProductVariantOption
 	{

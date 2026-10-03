@@ -10,6 +10,7 @@
 	?\Brick\Money\Money $discountAmount = null,
 	?string $note = null,
 	?string $continueUrl = null,
+	bool $showContinueForm = false,
 	bool $showConfirmOrder = false,
 	bool $canConfirmOrder = false,
 }
@@ -70,6 +71,8 @@
 					{_'Continue with order'}
 					<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 				</a>
+
+				<input n:if="$showContinueForm" n:name="send" class="btn btn-shop-accent w-100 mt-2" />
 
 				<form n:if="$showConfirmOrder && $canConfirmOrder" n:name="sendOrder" class="mt-2">
 					<input n:name="send" class="btn btn-success w-100" aria-label="{_'Confirm your order and complete the purchase'}" />

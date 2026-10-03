@@ -11,11 +11,10 @@
 		{_'Customer information'}
 	</h1>
 
-	<div class="row g-4">
+	<form n:name="customer">
+		<div class="row g-4">
 
 		<div class="col-lg-8">
-			<form n:name="customer">
-
 				<ul n:if="$form->hasErrors()" class="errors">
 					<li n:foreach="$form->errors as $error">{$error}</li>
 				</ul>
@@ -102,12 +101,6 @@
 					<label n:name="note" class="form-label" />
 					<textarea n:name="note" class="form-control" rows="3"></textarea>
 				</div>
-
-				<div class="text-end">
-					<input n:name="send" class="btn btn-shop-accent" />
-				</div>
-
-			</form>
 		</div>
 
 		<div class="col-lg-4">
@@ -121,10 +114,12 @@
 				subtotalPrice: $subtotalPrice,
 				discountCode: $discountCode,
 				discountAmount: $discountAmount,
+				showContinueForm: true,
 			}
 		</div>
 
-	</div>
+		</div>
+	</form>
 
 {else}
 	<p>{_'Your shopping cart is empty.'}</p>

@@ -56,17 +56,17 @@ try {
 	Assert::same('Herní notebook ASUS ROG Strix', $product->name);
 	$connection->query(
 		'INSERT INTO [product_images] ([product_id], [image], [position]) VALUES (%i, %s, %i), (%i, %s, %i)',
-		4,
+		3,
 		'/images/notebook-side.jpg',
 		2,
-		4,
+		3,
 		'/images/notebook-back.jpg',
 		1,
 	);
 	Assert::same([
 		'/images/notebook-back.jpg',
 		'/images/notebook-side.jpg',
-	], $productImageRepository->getForProduct(4));
+	], $productImageRepository->getForProduct(3));
 
 	$variant = $variantRepository->getOne(17);
 	Assert::notNull($variant);

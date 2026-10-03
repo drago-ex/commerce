@@ -118,12 +118,13 @@
 				<input n:name="productId" />
 				<input n:if="count($variants)" n:name="variantId" id="shop-variant-id-input" />
 
-				<div class="mb-3" style="max-width: 8rem;">
-					<label n:name="amount" class="form-label fw-semibold">{_'Amount'}</label>
-					<input n:name="amount" class="form-control" />
+				<div class="d-flex flex-wrap align-items-end gap-2">
+					<div style="width: 8rem;">
+						<label n:name="amount" class="form-label fw-semibold">{_'Amount'}</label>
+						<input n:name="amount" class="form-control" />
+					</div>
+					<input n:name="add" id="shop-add-to-cart-btn" class="btn btn-shop-accent" />
 				</div>
-
-				<input n:name="add" id="shop-add-to-cart-btn" class="btn btn-shop-accent" />
 
 			</div>
 		</form>

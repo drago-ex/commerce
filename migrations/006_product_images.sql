@@ -9,16 +9,36 @@ CREATE TABLE IF NOT EXISTS `product_images` (
 		FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Demo gallery images for the SoundPro product (ID 5). Replace these
--- placeholder URLs with the real image URLs/paths in the host application.
--- Repair the seed filename for existing demo databases without replacing
--- a real image path that an application may already have configured.
+-- Repair image filenames from older demo seeds without replacing custom
+-- image paths configured by the host application.
 UPDATE `products`
-SET `photo` = 'https://placehold.co/600x500/f4f6f8/495057.png?text=SoundPro+-+zepredu'
-WHERE `id` = 5 AND `photo` = 'sluchatka_soundpro.jpg';
+SET `photo` = 'https://images.unsplash.com/photo-1660820936305-3e8df25adf0d?auto=format&fit=crop&w=1000&q=85'
+WHERE `id` = 1 AND `photo` = 'usb_kabel.jpg';
+
+UPDATE `products`
+SET `photo` = 'https://images.unsplash.com/photo-1642101686083-71776082a4a2?auto=format&fit=crop&w=1000&q=85'
+WHERE `id` = 2 AND `photo` = 'mobil_xyz.jpg';
+
+UPDATE `products`
+SET `photo` = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1000&q=85'
+WHERE `id` = 3 AND `photo` = 'php_kniha.jpg';
+
+UPDATE `products`
+SET `photo` = 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1000&q=85'
+WHERE `id` = 4 AND `photo` = 'asus_rog.jpg';
+
+UPDATE `products`
+SET `photo` = 'https://images.unsplash.com/photo-1599955051125-571f47e04316?auto=format&fit=crop&w=1000&q=85'
+WHERE `id` = 5 AND (`photo` = 'sluchatka_soundpro.jpg' OR `photo` LIKE 'https://placehold.co/%SoundPro%');
+
+UPDATE `products`
+SET `photo` = 'https://images.unsplash.com/photo-1651761179569-4ba2aa054997?auto=format&fit=crop&w=1000&q=85'
+WHERE `id` = 6 AND `photo` = 'tricko_classic.jpg';
 
 INSERT INTO `product_images` (`product_id`, `image`, `position`) VALUES
-	(5, 'https://placehold.co/600x500/f4f6f8/495057.png?text=SoundPro+-+zleva', 1),
-	(5, 'https://placehold.co/600x500/f4f6f8/495057.png?text=SoundPro+-+detail', 2)
+	(2, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1000&q=85', 1),
+	(4, 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1000&q=85', 1),
+	(5, 'https://images.unsplash.com/photo-1599855129764-f4cc28295202?auto=format&fit=crop&w=1000&q=85', 1),
+	(5, 'https://images.unsplash.com/photo-1600019154417-70c9f205f406?auto=format&fit=crop&w=1000&q=85', 2)
 ON DUPLICATE KEY UPDATE
 	`image` = VALUES(`image`);

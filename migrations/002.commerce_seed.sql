@@ -45,12 +45,12 @@ ON DUPLICATE KEY UPDATE
     name = VALUES(name);
 
 INSERT INTO products (id, category, name, description, discount, price, photo, active, stock) VALUES
-(1, 1, 'USB Kabel', 'Kvalitní USB kabel délky 1m.', NULL, 150.00, 'usb_kabel.jpg', 1, 50),
-(2, 3, 'Mobilní telefon XYZ', 'Nejnovější model telefonu XYZ s AMOLED displejem.', 10, 12500.00, 'mobil_xyz.jpg', 1, 10),
-(3, 2, 'Kniha PHP Programování', 'Komplexní průvodce moderním programováním v PHP 8.', NULL, 399.00, 'php_kniha.jpg', 1, 25),
-(4, 4, 'Herní notebook ASUS ROG Strix', 'Špičkový herní notebook s procesorem AMD Ryzen a grafikou NVIDIA RTX.', 5, 34990.00, 'asus_rog.jpg', 1, 15),
-(5, 5, 'Bezdrátová sluchátka SoundPro', 'Prémiová bezdrátová sluchátka s aktivním potlačením hluku ANC.', 15, 2490.00, 'https://placehold.co/600x500/f4f6f8/495057.png?text=SoundPro+-+zepredu', 1, 30),
-(6, 6, 'Pánské tričko Classic', 'Pohodlné tričko ze 100% organické bavlny pro každodenní nošení.', NULL, 490.00, 'tricko_classic.jpg', 1, 40)
+(1, 1, 'USB Kabel', 'Odolný USB-C kabel pro rychlé nabíjení a přenos dat.', NULL, 150.00, 'https://images.unsplash.com/photo-1660820936305-3e8df25adf0d?auto=format&fit=crop&w=1000&q=85', 1, 50),
+(2, 3, 'Mobilní telefon XYZ', 'Moderní telefon s AMOLED displejem, kvalitním fotoaparátem a dlouhou výdrží baterie.', 10, 12500.00, 'https://images.unsplash.com/photo-1642101686083-71776082a4a2?auto=format&fit=crop&w=1000&q=85', 1, 10),
+(3, 2, 'Kniha PHP Programování', 'Praktický průvodce moderním programováním v PHP 8.', NULL, 399.00, 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1000&q=85', 1, 25),
+(4, 4, 'Herní notebook ASUS ROG Strix', 'Výkonný herní notebook s procesorem AMD Ryzen a grafikou NVIDIA RTX.', 5, 34990.00, 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1000&q=85', 1, 15),
+(5, 5, 'Bezdrátová sluchátka SoundPro', 'Bezdrátová sluchátka s aktivním potlačením hluku a pohodlnými náušníky.', 15, 2490.00, 'https://images.unsplash.com/photo-1599955051125-571f47e04316?auto=format&fit=crop&w=1000&q=85', 1, 30),
+(6, 6, 'Pánské tričko Classic', 'Pohodlné bavlněné tričko pro každodenní nošení.', NULL, 490.00, 'https://images.unsplash.com/photo-1651761179569-4ba2aa054997?auto=format&fit=crop&w=1000&q=85', 1, 40)
 ON DUPLICATE KEY UPDATE
     category = VALUES(category),
     name = VALUES(name),

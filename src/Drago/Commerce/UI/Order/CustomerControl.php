@@ -48,6 +48,9 @@ class CustomerControl extends BaseControl
 		$template->setTranslator($this->translator);
 		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
+		$orderState = $this->orderSession->getItems();
+		$template->carrier = $orderState->carrier;
+		$template->payment = $orderState->payment;
 
 		// By this step carrier + payment are already chosen, so this is the
 		// real grand total, not just the cart subtotal.

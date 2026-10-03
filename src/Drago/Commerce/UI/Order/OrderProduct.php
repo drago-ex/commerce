@@ -13,6 +13,7 @@ class OrderProduct
 	public function __construct(
 		public int $order_id,
 		public int $product_id,
+		public ?int $variant_id,
 		public int $amount,
 		public float $unit_price,
 	) {

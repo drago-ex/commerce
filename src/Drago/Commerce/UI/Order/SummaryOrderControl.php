@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
+use Brick\Math\RoundingMode;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Brick\PhoneNumber\PhoneNumber;
@@ -12,11 +13,13 @@ use DateTimeImmutable;
 use Dibi\DriverException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
+use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Service\DiscountCodeService;
@@ -39,6 +42,8 @@ class SummaryOrderControl extends BaseControl
 		private readonly OrderProductRepository $orderProductsRepository,
 		private readonly CustomerRepository $customerRepository,
 		private readonly ProductRepository $productRepository,
+		private readonly ProductVariantRepository $productVariantRepository,
+		private readonly Commerce $commerce,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
 	) {
@@ -173,19 +178,34 @@ class SummaryOrderControl extends BaseControl
 					throw new \Exception("Product with ID {$item->product->id} not found.");
 				}
 
-				// Atomically check-and-deduct inventory in a single SQL
-				// statement, so two concurrent orders can never both
-				// succeed for the same last unit of stock.
 				$amount = $item->amount->toInt();
-				if (!$this->productRepository->decrementStock($product->id, $amount)) {
+				$variantId = $item->variantId;
+				$unitPrice = $item->product->getDiscountedPrice();
+				if ($variantId !== null) {
+					$variant = $this->productVariantRepository->getOne($variantId);
+					if ($variant === null || $variant->product_id !== $product->id || $variant->active !== 1) {
+						throw new \Exception('The selected product variant is no longer available.');
+					}
+
+					if (!$this->productVariantRepository->decrementStock($variantId, $amount)) {
+						throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
+					}
+
+					if ($variant->price !== null) {
+						$discountRatio = max(0, min(100, $product->discount ?? 0)) / 100;
+						$unitPrice = $this->commerce->moneyOf($variant->price)
+							->multipliedBy(1 - $discountRatio, RoundingMode::HALF_UP);
+					}
+				} elseif (!$this->productRepository->decrementStock($product->id, $amount)) {
 					throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
 				}
 
 				$orderProduct = new OrderProduct(
 					order_id: $orderId,
 					product_id: $item->product->id,
+					variant_id: $variantId,
 					amount: $amount,
-					unit_price: $this->getAmountPrice($item->product->getDiscountedPrice()),
+					unit_price: $this->getAmountPrice($unitPrice),
 				);
 				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}

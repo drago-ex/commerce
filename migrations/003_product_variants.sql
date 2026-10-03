@@ -66,3 +66,19 @@ CREATE TABLE product_variant_values (
             REFERENCES product_attribute_values (id)
             ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- Order lines preserve selected variants, and the normalized variant key
+-- keeps each product/variant combination unique within an order, including
+-- the single non-variant line where variant_id is NULL.
+ALTER TABLE orders_products
+    DROP PRIMARY KEY,
+    ADD COLUMN id INT UNSIGNED NOT NULL AUTO_INCREMENT FIRST,
+    ADD COLUMN variant_id INT UNSIGNED NULL AFTER product_id,
+    ADD COLUMN variant_key INT UNSIGNED GENERATED ALWAYS AS (COALESCE(variant_id, 0)) STORED AFTER variant_id,
+    ADD PRIMARY KEY (id),
+    ADD UNIQUE KEY uq_orders_products_order_product_variant (order_id, product_id, variant_key),
+    ADD KEY idx_orders_products_variant (variant_id),
+    ADD CONSTRAINT fk_orders_products_variant
+        FOREIGN KEY (variant_id)
+            REFERENCES product_variants (id);

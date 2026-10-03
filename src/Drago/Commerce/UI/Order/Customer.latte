@@ -111,7 +111,17 @@
 		</div>
 
 		<div class="col-lg-4">
-			{include orderSummarySidebar, $amountItems, $totalPrice, $carrier, $payment}
+			{include orderSummarySidebar,
+				amountItems: $amountItems,
+				totalPrice: $totalPrice,
+				carrier: $carrier,
+				payment: $payment,
+				originalPrice: $originalPrice,
+				productDiscountAmount: $productDiscountAmount,
+				subtotalPrice: $subtotalPrice,
+				discountCode: $discountCode,
+				discountAmount: $discountAmount,
+			}
 		</div>
 
 	</div>

@@ -1,5 +1,6 @@
 {templateType Drago\Commerce\UI\Order\SummaryOrderTemplate}
 {import '../@breadcrumbs.latte'}
+{import '../@orderSummarySidebar.latte'}
 
 {if count($shoppingCart)}
 
@@ -13,7 +14,7 @@
 	<div class="row g-4">
 
 		{* Left column: itemized review + customer info *}
-		<div class="col-lg-7">
+		<div class="col-lg-8">
 
 			<div class="card border-0 shadow-sm mb-4">
 				<div class="card-body">
@@ -82,74 +83,20 @@
 		</div>
 
 		{* Right column: price breakdown + confirm button, stays in view *}
-		<div class="col-lg-5">
-			<div class="shop-summary-sticky">
-				<div class="card border-0 shadow-sm">
-					<div class="card-body">
-
-						<table class="table table-sm table-borderless mb-0">
-							<tbody>
-
-							<tr>
-								<td>{_'Items'}:</td>
-								<td class="text-end text-nowrap">{$amountItems}</td>
-							</tr>
-
-							<tr n:if="!$productDiscountAmount->isZero()">
-								<td>{_'Price without discount'}:</td>
-								<td class="text-end text-nowrap">{$originalPrice|money}</td>
-							</tr>
-
-							<tr n:if="!$productDiscountAmount->isZero()">
-								<td class="text-success">{_'Product discounts'}:</td>
-								<td class="text-success text-end text-nowrap">-{$productDiscountAmount|money}</td>
-							</tr>
-
-							<tr n:if="!$productDiscountAmount->isZero() || ($discountCode && !$discountAmount->isZero())" class="border-top">
-								<td class="fw-semibold">{_'Subtotal'}:</td>
-								<td class="text-end fw-semibold text-nowrap">{$subtotalPrice|money}</td>
-							</tr>
-
-							<tr n:if="$discountCode && !$discountAmount->isZero()">
-								<td class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
-								<td class="text-success fw-semibold text-end text-nowrap">-{$discountAmount|money}</td>
-							</tr>
-
-							<tr class="border-top">
-								<td class="d-flex align-items-center gap-2 pt-2">
-									<i class="fa-solid fa-truck text-body-secondary" aria-hidden="true"></i>
-									{$carrier->name}
-								</td>
-								<td class="text-end text-nowrap pt-2">{$carrier->price|money}</td>
-							</tr>
-
-							<tr>
-								<td class="d-flex align-items-center gap-2">
-									<i class="fa-solid fa-credit-card text-body-secondary" aria-hidden="true"></i>
-									{$payment->name}
-								</td>
-								<td class="text-end text-nowrap">{$payment->price|money}</td>
-							</tr>
-
-							<tr class="border-top">
-								<td class="text-shop-accent fw-bold fs-5">{_'Total to pay'}:</td>
-								<td class="fw-bold text-shop-accent text-end text-nowrap fs-5">{$totalPrice|money}</td>
-							</tr>
-
-							</tbody>
-						</table>
-
-						<form n:name="sendOrder" n:if="$customer !== null && $carrier !== null" class="mt-2">
-							<input
-									n:name="send"
-									class="btn btn-success w-100"
-									aria-label="{_'Confirm your order and complete the purchase'}"
-							>
-						</form>
-
-					</div>
-				</div>
-			</div>
+		<div class="col-lg-4">
+			{include orderSummarySidebar,
+				amountItems: $amountItems,
+				totalPrice: $totalPrice,
+				carrier: $carrier,
+				payment: $payment,
+				originalPrice: $originalPrice,
+				productDiscountAmount: $productDiscountAmount,
+				subtotalPrice: $subtotalPrice,
+				discountCode: $discountCode,
+				discountAmount: $discountAmount,
+				showConfirmOrder: true,
+				canConfirmOrder: $customer !== null && $carrier !== null && $payment !== null,
+			}
 		</div>
 
 	</div>

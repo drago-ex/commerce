@@ -8,10 +8,13 @@ use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Postcode\InvalidPostcodeException;
 use Brick\Postcode\PostcodeFormatter;
 use Brick\Postcode\UnknownCountryException;
+use Dibi\Exception;
+use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Event\CustomerUpdated;
 use Drago\Commerce\Event\EventDispatcher;
+use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -32,6 +35,7 @@ class CustomerControl extends BaseControl
 		private readonly Commerce $commerce,
 		private readonly CustomerFactory $customerFactory,
 		private readonly EventDispatcher $eventDispatcher,
+		private readonly DiscountCodeService $discountCodeService,
 	) {
 	}
 
@@ -39,6 +43,8 @@ class CustomerControl extends BaseControl
 	/**
 	 * Renders the customer form, pre-filling it with session data if available.
 	 *
+	 * @throws AttributeDetectionException
+	 * @throws Exception
 	 * @throws MoneyMismatchException
 	 */
 	public function render(): void
@@ -52,10 +58,14 @@ class CustomerControl extends BaseControl
 		$template->carrier = $orderState->carrier;
 		$template->payment = $orderState->payment;
 
-		// By this step carrier + payment are already chosen, so this is the
-		// real grand total, not just the cart subtotal.
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
-		$template->totalPrice = $this->shoppingCartSession->getTotalPrice()
+		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
+		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
+		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
+		$template->discountCode = $this->discountCodeService->getCode()?->code;
+		$cartTotalPrice = $this->shoppingCartSession->getTotalPrice();
+		$template->discountAmount = $template->subtotalPrice->minus($cartTotalPrice);
+		$template->totalPrice = $cartTotalPrice
 			->plus($this->orderSession->getCarrierPrice())
 			->plus($this->orderSession->getPaymentPrice());
 

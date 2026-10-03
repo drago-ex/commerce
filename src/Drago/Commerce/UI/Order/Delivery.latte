@@ -62,7 +62,18 @@
 		</div>
 
 		<div class="col-lg-4">
-			{include orderSummarySidebar, $amountItems, $totalPrice, null, null, 'Shipping and payment are added once selected.'|translate}
+			{include orderSummarySidebar,
+				amountItems: $amountItems,
+				totalPrice: $totalPrice,
+				carrier: $selectedCarrier,
+				payment: $selectedPayment,
+				originalPrice: $originalPrice,
+				productDiscountAmount: $productDiscountAmount,
+				subtotalPrice: $subtotalPrice,
+				discountCode: $discountCode,
+				discountAmount: $discountAmount,
+				note: ($selectedCarrier === null || $selectedPayment === null) ? ('Shipping and payment are added once selected.'|translate) : null,
+			}
 		</div>
 
 	</div>

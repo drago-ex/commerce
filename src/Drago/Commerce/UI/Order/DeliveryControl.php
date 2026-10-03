@@ -14,6 +14,7 @@ use Drago\Commerce\Domain\Delivery\PaymentMapper;
 use Drago\Commerce\Domain\Delivery\PaymentRepository;
 use Drago\Commerce\Event\DeliveryOptionsChanged;
 use Drago\Commerce\Event\EventDispatcher;
+use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -35,6 +36,7 @@ class DeliveryControl extends BaseControl
 		private readonly CarrierMapper $carrierMapper,
 		private readonly PaymentMapper $paymentMapper,
 		private readonly EventDispatcher $eventDispatcher,
+		private readonly DiscountCodeService $discountCodeService,
 	) {
 	}
 
@@ -54,12 +56,21 @@ class DeliveryControl extends BaseControl
 		$template->carrier = $this->carrierRepository->getCarrierItems();
 		$template->payment = $this->paymentRepository->getPaymentItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
-
-		// Cart total only — carrier/payment aren't chosen yet at this step.
-		$template->amountItems = $this->shoppingCartSession->getAmountItems();
-		$template->totalPrice = $this->shoppingCartSession->getTotalPrice();
-
 		$delivery = $this->orderSession->getItems();
+		$template->selectedCarrier = $delivery->carrier;
+		$template->selectedPayment = $delivery->payment;
+
+		$template->amountItems = $this->shoppingCartSession->getAmountItems();
+		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
+		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
+		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
+		$template->discountCode = $this->discountCodeService->getCode()?->code;
+		$cartTotalPrice = $this->shoppingCartSession->getTotalPrice();
+		$template->discountAmount = $template->subtotalPrice->minus($cartTotalPrice);
+		$template->totalPrice = $cartTotalPrice
+			->plus($this->orderSession->getCarrierPrice())
+			->plus($this->orderSession->getPaymentPrice());
+
 		if ($delivery->carrier !== null && $delivery->payment !== null) {
 			$form = $this->getComponent('delivery');
 

@@ -49,7 +49,7 @@ INSERT INTO products (id, category, name, description, discount, price, photo, a
 (2, 3, 'Mobilní telefon XYZ', 'Nejnovější model telefonu XYZ s AMOLED displejem.', 10, 12500.00, 'mobil_xyz.jpg', 1, 10),
 (3, 2, 'Kniha PHP Programování', 'Komplexní průvodce moderním programováním v PHP 8.', NULL, 399.00, 'php_kniha.jpg', 1, 25),
 (4, 4, 'Herní notebook ASUS ROG Strix', 'Špičkový herní notebook s procesorem AMD Ryzen a grafikou NVIDIA RTX.', 5, 34990.00, 'asus_rog.jpg', 1, 15),
-(5, 5, 'Bezdrátová sluchátka SoundPro', 'Prémiová bezdrátová sluchátka s aktivním potlačením hluku ANC.', 15, 2490.00, 'sluchatka_soundpro.jpg', 1, 30),
+(5, 5, 'Bezdrátová sluchátka SoundPro', 'Prémiová bezdrátová sluchátka s aktivním potlačením hluku ANC.', 15, 2490.00, 'https://placehold.co/600x500/f4f6f8/495057.png?text=SoundPro+-+zepredu', 1, 30),
 (6, 6, 'Pánské tričko Classic', 'Pohodlné tričko ze 100% organické bavlny pro každodenní nošení.', NULL, 490.00, 'tricko_classic.jpg', 1, 40)
 ON DUPLICATE KEY UPDATE
     category = VALUES(category),

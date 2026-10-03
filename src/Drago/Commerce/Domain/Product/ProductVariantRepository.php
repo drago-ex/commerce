@@ -69,7 +69,8 @@ class ProductVariantRepository
 	public function getLabels(int $variantId): array
 	{
 		$rows = $this->command()
-			->select('a.name AS attribute', 'v.value AS value')
+			->select('a.name AS attribute')
+			->select('v.value AS value')
 			->from('product_variant_values vv')
 			->innerJoin('product_attribute_values v')
 			->on('v.id = vv.attribute_value_id')
@@ -128,7 +129,9 @@ class ProductVariantRepository
 	{
 		$rows = $this->command()
 			->select('DISTINCT a.id AS attribute_id')
-			->select('a.name AS attribute_name', 'v.id AS value_id', 'v.value AS value_name')
+			->select('a.name AS attribute_name')
+			->select('v.id AS value_id')
+			->select('v.value AS value_name')
 			->from('product_variants pv')
 			->innerJoin('product_variant_values vv')
 			->on('vv.variant_id = pv.id')

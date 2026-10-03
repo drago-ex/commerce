@@ -15,6 +15,7 @@ use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductCart;
+use Drago\Commerce\Domain\Product\ProductImageRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\UI\Order\OrderProduct;
@@ -45,6 +46,7 @@ $connection->begin();
 
 try {
 	$productRepository = new ProductRepository($connection);
+	$productImageRepository = new ProductImageRepository($connection);
 	$variantRepository = new ProductVariantRepository($connection);
 	$orderRepository = new OrderRepository($connection);
 	$orderProductsRepository = new OrderProductRepository($connection);
@@ -52,6 +54,19 @@ try {
 	$product = $productRepository->getOne(4);
 	Assert::notNull($product);
 	Assert::same('Herní notebook ASUS ROG Strix', $product->name);
+	$connection->query(
+		'INSERT INTO [product_images] ([product_id], [image], [position]) VALUES (%i, %s, %i), (%i, %s, %i)',
+		4,
+		'/images/notebook-side.jpg',
+		2,
+		4,
+		'/images/notebook-back.jpg',
+		1,
+	);
+	Assert::same([
+		'/images/notebook-back.jpg',
+		'/images/notebook-side.jpg',
+	], $productImageRepository->getForProduct(4));
 
 	$variant = $variantRepository->getOne(17);
 	Assert::notNull($variant);

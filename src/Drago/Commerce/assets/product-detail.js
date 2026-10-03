@@ -4,7 +4,25 @@ export default class ProductDetail {
 			const container = root.matches?.('#shop-product-detail')
 				? root
 				: root.querySelector('#shop-product-detail');
-			if (!container || container.dataset.initialized === 'true') return;
+			if (!container) return;
+
+			const mainImage = container.querySelector('[data-gallery-main]');
+			if (mainImage && !container.dataset.galleryInitialized) {
+				container.querySelectorAll('[data-gallery-image]').forEach(thumbnail => {
+					thumbnail.addEventListener('click', () => {
+						mainImage.src = thumbnail.dataset.galleryImage;
+						mainImage.alt = thumbnail.dataset.galleryAlt || mainImage.alt;
+						container.querySelectorAll('[data-gallery-image]').forEach(item => {
+							const selected = item === thumbnail;
+							item.classList.toggle('active', selected);
+							item.setAttribute('aria-pressed', String(selected));
+						});
+					});
+				});
+				container.dataset.galleryInitialized = 'true';
+			}
+
+			if (container.dataset.initialized === 'true') return;
 
 			const matrixData = container.dataset.matrix ? JSON.parse(container.dataset.matrix) : [];
 			if (!matrixData.length) return;

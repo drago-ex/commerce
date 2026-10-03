@@ -14,6 +14,7 @@ use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductEntity;
+use Drago\Commerce\Domain\Product\ProductImageRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantMapper;
 use Drago\Commerce\Domain\Product\ProductVariantOption;
@@ -40,6 +41,7 @@ class ProductDetailControl extends BaseControl
 
 	public function __construct(
 		private readonly ProductRepository $productRepository,
+		private readonly ProductImageRepository $productImageRepository,
 		private readonly ProductVariantRepository $variantRepository,
 		private readonly ProductVariantMapper $variantMapper,
 		private readonly ShoppingCartSession $shoppingCartSession,
@@ -139,6 +141,13 @@ class ProductDetailControl extends BaseControl
 		$template->setFile($this->templateControl ?: __DIR__ . '/ProductDetail.latte');
 		$template->setTranslator($this->translator);
 		$template->product = $entity;
+		$template->images = array_values(array_unique(array_filter(
+			[$entity->photo, ...$this->productImageRepository->getForProduct($entity->id)],
+			static fn(string $image): bool => $image !== '',
+		)));
+		if ($template->images === []) {
+			$template->images = ['https://placehold.co/500x400?text=%20&bg=f4f6f8'];
+		}
 		$template->variants = $variants;
 		$template->attributeGroups = $attributeGroups;
 		$template->selectedVariant = $selectedVariant;

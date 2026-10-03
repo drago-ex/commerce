@@ -19,13 +19,27 @@
 >
 
 	<div class="col-md-5">
-		<div class="card border-0 shadow-sm">
+		<div class="card border-0 shadow-sm shop-product-gallery">
 			<img
-					src="https://placehold.co/500x400?text=%20&bg=f4f6f8"
+					src="{$images[0]}"
+					data-gallery-main
 					alt="{$product->name}"
-					class="card-img-top p-4"
-					style="object-fit: contain; max-height: 400px;"
+					class="card-img-top shop-product-gallery-main"
 			/>
+			<div n:if="count($images) > 1" class="shop-product-thumbnails" role="group" aria-label="{_'Product images'}">
+				{foreach $images as $image}
+					<button
+						type="button"
+						n:class="shop-product-thumbnail, $iterator->first ? active"
+						data-gallery-image="{$image}"
+						data-gallery-alt="{$product->name}"
+						aria-label="{_'Show product image'} {$iterator->counter}"
+						aria-pressed="{$iterator->first ? 'true' : 'false'}"
+					>
+						<img src="{$image}" alt="" loading="lazy" />
+					</button>
+				{/foreach}
+			</div>
 		</div>
 	</div>
 

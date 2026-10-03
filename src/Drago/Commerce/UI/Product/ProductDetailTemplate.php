@@ -13,6 +13,9 @@ class ProductDetailTemplate extends BaseTemplate
 {
 	public ProductEntity $product;
 
+	/** @var list<string> */
+	public array $images = [];
+
 	/** @var list<ProductVariantOption> */
 	public array $variants = [];
 

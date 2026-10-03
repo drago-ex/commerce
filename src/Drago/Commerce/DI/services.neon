@@ -20,6 +20,8 @@ services:
 
 	- Drago\Commerce\Domain\Product\ProductAttributeRepository
 	- Drago\Commerce\Domain\Product\ProductAttributeValueRepository
+	- Drago\Commerce\Domain\Product\ProductAttributeValueRepository
+	- Drago\Commerce\Domain\Product\ProductImageRepository
 	- Drago\Commerce\Domain\Product\ProductMapper
 	- Drago\Commerce\Domain\Product\ProductRepository
 	- Drago\Commerce\Domain\Product\ProductVariantMapper

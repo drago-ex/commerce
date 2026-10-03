@@ -3,6 +3,7 @@
 -- products from 002.commerce_seed.sql.
 -- Supports idempotent execution (UPSERT / ON DUPLICATE KEY UPDATE).
 --
+SET NAMES utf8mb4;
 
 -- 1. Product Attributes
 INSERT INTO product_attributes (id, name) VALUES

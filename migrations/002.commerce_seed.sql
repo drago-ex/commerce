@@ -1,6 +1,7 @@
 --
 --  Drago commerce data sql (Expanded with diverse product catalog)
 -- -----------------------------------------------------------------
+SET NAMES utf8mb4;
 
 INSERT INTO carrier (id, name, price) VALUES
 (1, 'DHL', 150.00),

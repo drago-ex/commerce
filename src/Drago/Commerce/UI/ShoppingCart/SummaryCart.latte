@@ -150,6 +150,7 @@
 					</div>
 				</div>
 
+				{var $orderSummaryNote = 'Shipping and payment are added once selected.'|translate}
 				{include orderSummarySidebar,
 					amountItems: $amountItems,
 					totalPrice: $totalPrice,
@@ -158,7 +159,7 @@
 					subtotalPrice: $subtotalPrice,
 					discountCode: $discountCode,
 					discountAmount: $discountAmount,
-					note: 'Shipping and payment are added once selected.'|translate,
+					note: $orderSummaryNote,
 					continueUrl: $linkOrderDelivery,
 				}
 

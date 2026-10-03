@@ -141,7 +141,8 @@ class ProductVariantRepository
 			->on('a.id = v.attribute_id')
 			->where('pv.product_id = ?', $productId)
 			->where('pv.active = ?', 1)
-			->orderBy('a.id', 'v.id')
+			->orderBy('a.id')
+			->orderBy('v.id')
 			->fetchAll();
 
 		$groups = [];

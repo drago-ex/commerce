@@ -35,7 +35,8 @@ class ProductImageRepository
 	{
 		$rows = $this->read('image')
 			->where('product_id = ?', $productId)
-			->orderBy('position', 'id')
+			->orderBy('position')
+			->orderBy('id')
 			->fetchAll();
 
 		$images = [];

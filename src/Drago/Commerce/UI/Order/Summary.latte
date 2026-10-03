@@ -90,6 +90,11 @@
 						<table class="table table-sm table-borderless mb-0">
 							<tbody>
 
+							<tr>
+								<td>{_'Items'}:</td>
+								<td class="text-end text-nowrap">{$amountItems}</td>
+							</tr>
+
 							<tr n:if="!$productDiscountAmount->isZero()">
 								<td>{_'Price without discount'}:</td>
 								<td class="text-end text-nowrap">{$originalPrice|money}</td>

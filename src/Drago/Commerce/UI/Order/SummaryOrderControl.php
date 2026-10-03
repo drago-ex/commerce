@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
-use Brick\Math\RoundingMode;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Brick\PhoneNumber\PhoneNumber;
@@ -174,13 +173,12 @@ class SummaryOrderControl extends BaseControl
 
 			foreach ($this->shoppingCartSession->getItems() as $item) {
 				$product = $this->productRepository->getOne($item->product->id);
-				if ($product === null) {
+				if ($product === null || !$product->active) {
 					throw new \Exception("Product with ID {$item->product->id} not found.");
 				}
 
 				$amount = $item->amount->toInt();
 				$variantId = $item->variantId;
-				$unitPrice = $item->product->getDiscountedPrice();
 				if ($variantId !== null) {
 					$variant = $this->productVariantRepository->getOne($variantId);
 					if ($variant === null || $variant->product_id !== $product->id || $variant->active !== 1) {
@@ -190,23 +188,11 @@ class SummaryOrderControl extends BaseControl
 					if (!$this->productVariantRepository->decrementStock($variantId, $amount)) {
 						throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
 					}
-
-					if ($variant->price !== null) {
-						$discountRatio = max(0, min(100, $product->discount ?? 0)) / 100;
-						$unitPrice = $this->commerce->moneyOf($variant->price)
-							->multipliedBy(1 - $discountRatio, RoundingMode::HALF_UP);
-					}
 				} elseif (!$this->productRepository->decrementStock($product->id, $amount)) {
 					throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
 				}
 
-				$orderProduct = new OrderProduct(
-					order_id: $orderId,
-					product_id: $item->product->id,
-					variant_id: $variantId,
-					amount: $amount,
-					unit_price: $this->getAmountPrice($unitPrice),
-				);
+				$orderProduct = OrderProduct::fromCartItem($orderId, $item);
 				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}
 
@@ -223,20 +209,25 @@ class SummaryOrderControl extends BaseControl
 			return;
 		}
 
-		$this->eventDispatcher->dispatch(
-			new OrderPlaced(
-				orderId: $orderId,
-				orderSummary: $orderData,
-				customer: $customer,
-				carrier: $carrier,
-				payment: $payment,
-				shoppingCartSession: $this->shoppingCartSession,
-			),
-		);
+		try {
+			$this->eventDispatcher->dispatch(
+				new OrderPlaced(
+					orderId: $orderId,
+					orderSummary: $orderData,
+					customer: $customer,
+					carrier: $carrier,
+					payment: $payment,
+					shoppingCartSession: $this->shoppingCartSession,
+				),
+			);
+		} catch (\Throwable $e) {
+			Debugger::log($e, 'commerce-order-event');
+		} finally {
+			$this->shoppingCartSession->remove();
+			$this->discountCodeService->remove();
+			$this->orderSession->remove();
+		}
 
-		$this->shoppingCartSession->remove();
-		$this->discountCodeService->remove();
-		$this->orderSession->remove();
 		$this->getPresenter()->redirect($this->linkRedirectTarget);
 	}
 }

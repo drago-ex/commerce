@@ -185,6 +185,9 @@ class SummaryCartControl extends BaseControl
 
 		if ($variantId !== null) {
 			$variantEntity = $this->productVariantRepository->getOne($variantId) ?? $this->error('Variant not found');
+			if ($variantEntity->product_id !== $productEntity->id || $variantEntity->active !== 1) {
+				$this->error('Variant not found');
+			}
 			$availableStock = $variantEntity->stock;
 			$variantLabel = implode(', ', $this->productVariantRepository->getLabels($variantId));
 		}

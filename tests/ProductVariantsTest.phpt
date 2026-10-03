@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
+use Brick\Math\BigInteger;
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
 use Drago\Commerce\Domain\Product\Product;
+use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Domain\Product\ProductVariantEntity;
 use Drago\Commerce\Domain\Product\ProductVariantMapper;
 use Drago\Commerce\Domain\Product\ProductVariantOption;
@@ -131,6 +133,12 @@ Assert::same(3, $cartSession->getAmountItems());
 // Subtotal: 2 * 14500 + 1 * 12500 = 41500 CZK
 Assert::true($cartSession->getSubtotalPrice()->isEqualTo(Money::of(41500, 'CZK')));
 Assert::true($cartSession->getTotalPrice()->isEqualTo(Money::of(41500, 'CZK')));
+Assert::true($cartSession->getItems()[0]->getUnitPrice()->isEqualTo(Money::of(14500, 'CZK')));
+
+$discountedProduct = new Product(id: 3, name: 'Tričko', price: Money::of(1000, 'CZK'));
+$discountedProduct->setDiscount(10);
+$discountedCartItem = new ProductCart($discountedProduct, BigInteger::one());
+Assert::true($discountedCartItem->getUnitPrice()->isEqualTo(Money::of(900, 'CZK')));
 
 // Update quantity of Variant 5
 $cartSession->addItem(
@@ -147,6 +155,26 @@ Assert::same(1, count($cartSession->getItems()));
 Assert::same(1, $cartSession->getAmountItems());
 Assert::same(6, $cartSession->getItems()[0]->variantId);
 Assert::true($cartSession->getSubtotalPrice()->isEqualTo(Money::of(12500, 'CZK')));
+
+// A non-variant product line stays separate from the same product's variant line.
+$cartSession->addItem($product, 1);
+Assert::same(2, count($cartSession->getItems()));
+Assert::same(2, $cartSession->getAmountItems());
+
+// Incrementing an existing variant changes only that variant line.
+$cartSession->addItem(
+	product: $product,
+	amount: 2,
+	variantId: 6,
+);
+Assert::same(2, count($cartSession->getItems()));
+Assert::same(4, $cartSession->getAmountItems());
+Assert::same(3, $cartSession->getItems()[0]->amount->toInt());
+Assert::same(1, $cartSession->getItems()[1]->amount->toInt());
+
+$cartSession->removeItem($product, variantId: 6);
+Assert::same(1, count($cartSession->getItems()));
+Assert::null($cartSession->getItems()[0]->variantId);
 
 $cartSession->remove();
 Assert::same([], $cartSession->getItems());

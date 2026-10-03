@@ -243,6 +243,10 @@ class ProductDetailControl extends BaseControl
 		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
 
 		$entity = $this->productRepository->getOne($productId) ?? $this->error('Product not found.');
+		if (!$entity->active) {
+			$this->getPresenter()->flashMessage('The product does not exist or is not active.', Alert::Danger);
+			$this->getPresenter()->redirect('this');
+		}
 
 		$availableStock = $entity->stock;
 		$variantLabel = null;
@@ -252,6 +256,9 @@ class ProductDetailControl extends BaseControl
 
 		if ($variantId !== null) {
 			$variantEntity = $this->variantRepository->getOne($variantId) ?? $this->error('Variant not found.');
+			if ($variantEntity->product_id !== $entity->id || $variantEntity->active !== 1) {
+				$this->error('Variant not found.');
+			}
 			$availableStock = $variantEntity->stock;
 			$variantLabel = implode(', ', $this->variantRepository->getLabels($variantEntity->id));
 

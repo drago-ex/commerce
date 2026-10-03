@@ -7,6 +7,11 @@ on:
 env:
   php-extensions: iconv, json, mbstring, xml, gd, intl, tokenizer, mysqli
   php-tools: composer:v2
+  COMMERCE_DB_HOST: 127.0.0.1
+  COMMERCE_DB_PORT: 3306
+  COMMERCE_DB_NAME: test
+  COMMERCE_DB_USER: root
+  COMMERCE_DB_PASSWORD: root
 
 jobs:
   tests:
@@ -19,6 +24,21 @@ jobs:
 
       matrix:
         php: ["8.3", "8.4"]
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+          --health-start-period=10s
 
     steps:
       - name: Checkout repository
@@ -45,6 +65,17 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
+
+      - name: Import commerce database migrations and seed data
+        run: |
+          for migration in migrations/*.sql; do
+            mysql --host 127.0.0.1 \
+                  --port 3306 \
+                  --default-character-set=utf8mb4 \
+                  -uroot \
+                  -proot \
+                  test < "$migration"
+          done
 
       - name: Run tests
         run: vendor/bin/tester -p php tests -s -C

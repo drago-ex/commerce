@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drago\Commerce\Domain\Product;
 
 use Brick\Math\BigInteger;
+use Brick\Money\Money;
 
 
 /**
@@ -18,5 +19,11 @@ class ProductCart
 		public ?int $variantId = null,
 		public ?string $variantLabel = null,
 	) {
+	}
+
+
+	public function getUnitPrice(): Money
+	{
+		return $this->product->getDiscountedPrice();
 	}
 }

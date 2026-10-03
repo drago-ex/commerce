@@ -21,5 +21,5 @@ class ProductDetailTemplate extends BaseTemplate
 
 	public ?ProductVariantOption $selectedVariant = null;
 
-	public string $variantMatrixJson = '{}';
+	public string $variantMatrixJson = '[]';
 }

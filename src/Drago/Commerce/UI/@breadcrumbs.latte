@@ -1,5 +1,4 @@
-{varType \Drago\Commerce\UI\Breadcrumbs $breadcrumbs}
-{define breadcrumbs, $breadcrumbs}
+{define breadcrumbs, \Drago\Commerce\UI\Breadcrumbs $breadcrumbs}
 	<nav aria-label="{_'Checkout steps'}" class="mb-4 mt-3 pb-4 border-bottom">
 		<ol class="shop-stepper">
 			{foreach $breadcrumbs->steps as $step => $label}

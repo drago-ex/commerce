@@ -42,7 +42,7 @@ class DiscountCodeService
 	public function apply(string $code): bool
 	{
 		$discountCode = $this->repository->findValid($code);
-		if ($discountCode === null) {
+		if ($discountCode === null || $discountCode->value <= 0) {
 			return false;
 		}
 
@@ -92,8 +92,9 @@ class DiscountCodeService
 		}
 
 		$discountCode = $this->repository->findValid($code);
-		if ($discountCode === null) {
+		if ($discountCode === null || $discountCode->value <= 0) {
 			$this->remove();
+			return null;
 		}
 
 		return $discountCode;
@@ -110,6 +111,10 @@ class DiscountCodeService
 	{
 		$discountCode ??= $this->getCode();
 		if ($discountCode === null) {
+			return $total;
+		}
+
+		if ($discountCode->value <= 0) {
 			return $total;
 		}
 

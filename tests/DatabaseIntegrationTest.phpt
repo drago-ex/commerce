@@ -77,6 +77,25 @@ try {
 		'Operační systém: Bez operačního systému',
 	], $variantRepository->getLabels(17));
 
+	Assert::true($variantRepository->hasActive(4));
+	Assert::false($variantRepository->hasActive(999999));
+
+	$attributes = $variantRepository->getAttributesForProduct(4);
+	Assert::same(
+		['Procesor', 'Grafická karta', 'Operační systém'],
+		array_column($attributes[17], 'attribute'),
+	);
+	Assert::same(
+		$variantRepository->getAttributeValueIds(17),
+		array_column($attributes[17], 'valueId'),
+	);
+
+	$summaries = $variantRepository->getSummaries();
+	Assert::same(5, $summaries[4]->count);
+	Assert::same(19, $summaries[4]->stock);
+	Assert::true($summaries[4]->inheritsPrice);
+	Assert::true($summaries[4]->inStock());
+
 	Assert::true($productRepository->decrementStock(4, 2));
 	Assert::false($productRepository->decrementStock(4, 14));
 	Assert::same(13, (int) $connection->query('SELECT stock FROM products WHERE id = %i', 4)->fetchSingle());

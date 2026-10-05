@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI;
 
 use Drago\Application\UI\ExtraControl;
-use function sprintf;
+use function vsprintf;
 
 
 /**
@@ -76,7 +76,7 @@ class BaseControl extends ExtraControl
 			return (string) $this->translator->translate($message, ...$params);
 		}
 
-		return $params === [] ? $message : sprintf($message, ...$params);
+		return $params === [] ? $message : vsprintf($message, $params);
 	}
 
 

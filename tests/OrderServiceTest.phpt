@@ -52,6 +52,7 @@ $session = new Session(
 	new Request(new UrlScript('http://localhost/')),
 	new Response,
 );
+$session->setExpiration('2 days');
 
 $customer = new Customer(
 	email: 'order-service-' . uniqid('', true) . '@example.com',

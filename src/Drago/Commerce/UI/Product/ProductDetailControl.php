@@ -139,8 +139,9 @@ class ProductDetailControl extends BaseControl
 	 */
 	private function pickSelectedVariant(array $variants): ?ProductVariantOption
 	{
+		$requestedId = $this->getRequestedVariantId();
 		foreach ($variants as $variant) {
-			if ($variant->id === $this->selectedVariantId) {
+			if ($variant->id === $requestedId) {
 				return $variant;
 			}
 		}
@@ -152,6 +153,23 @@ class ProductDetailControl extends BaseControl
 		}
 
 		return $variants[0] ?? null;
+	}
+
+
+	/**
+	 * The variant to preselect: the one set by the presenter, otherwise the
+	 * one in the `variant` URL parameter, which the detail page keeps up to
+	 * date as the customer picks a variant, so a reload or a shared link
+	 * shows the same variant.
+	 */
+	private function getRequestedVariantId(): ?int
+	{
+		if ($this->selectedVariantId !== null) {
+			return $this->selectedVariantId;
+		}
+
+		$value = $this->getPresenter()->getParameter('variant');
+		return is_string($value) && ctype_digit($value) ? (int) $value : null;
 	}
 
 

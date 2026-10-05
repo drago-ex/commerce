@@ -11,15 +11,15 @@ use Dibi\Connection;
 use Dibi\ForeignKeyConstraintViolationException;
 use Dibi\Row;
 use Dibi\UniqueConstraintViolationException;
+use Drago\Commerce\Domain\Order\OrderProduct;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
+use Drago\Commerce\Domain\Order\OrderSummary;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Domain\Product\ProductImageRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
-use Drago\Commerce\UI\Order\OrderProduct;
-use Drago\Commerce\UI\Order\OrderSummary;
 use Tester\Assert;
 use Tester\Environment;
 

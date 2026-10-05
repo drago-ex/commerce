@@ -10,6 +10,7 @@ use Brick\Money\Money;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductCart;
+use InvalidArgumentException;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
@@ -125,6 +126,10 @@ class ShoppingCartSession
 		?string $variantLabel = null,
 	): void
 	{
+		if ($amount < 1) {
+			throw new InvalidArgumentException('Cart item amount must be at least 1.');
+		}
+
 		$items = $this->getItems();
 
 		foreach ($items as $item) {

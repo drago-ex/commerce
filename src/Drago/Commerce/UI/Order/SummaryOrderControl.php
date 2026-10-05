@@ -6,23 +6,15 @@ namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
-use Brick\PhoneNumber\PhoneNumber;
-use Brick\PhoneNumber\PhoneNumberFormat;
-use DateTimeImmutable;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Commerce\Commerce;
-use Drago\Commerce\Domain\Customer\Customer;
-use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
-use Drago\Commerce\Domain\Order\OrderProductRepository;
-use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Domain\Order\OutOfStockException;
-use Drago\Commerce\Domain\Order\StockReservation;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Service\DiscountCodeService;
+use Drago\Commerce\Service\OrderService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -38,11 +30,7 @@ class SummaryOrderControl extends BaseControl
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCartSession,
 		private readonly OrderSession $orderSession,
-		private readonly OrderRepository $orderRepository,
-		private readonly OrderProductRepository $orderProductsRepository,
-		private readonly CustomerRepository $customerRepository,
-		private readonly StockReservation $stockReservation,
-		private readonly Commerce $commerce,
+		private readonly OrderService $orderService,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
 	) {
@@ -93,13 +81,6 @@ class SummaryOrderControl extends BaseControl
 	}
 
 
-	private function getAmountPrice(Money $money): float
-	{
-		return $money->getAmount()
-			->toFloat();
-	}
-
-
 	protected function createComponentSendOrder(): Form
 	{
 		$form = new Form;
@@ -133,69 +114,27 @@ class SummaryOrderControl extends BaseControl
 			return;
 		}
 
-		// Pre-compute pricing and discount data before starting DB transaction
 		$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
 		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
 		$discountCode = $this->discountCodeService->getCode()?->code;
 		$totalPrice = $this->getTotalPrice();
 
 		try {
-			$this->orderRepository->getConnection()->begin();
-
-			$phoneStr = $customer->phone instanceof PhoneNumber
-				? $customer->phone->format(PhoneNumberFormat::INTERNATIONAL)
-				: (string) $customer->phone;
-
-			$customerData = new Customer(
-				email: $customer->email,
-				phone: $phoneStr,
-				name: $customer->name,
-				surname: $customer->surname,
-				street: $customer->street,
-				city: $customer->city,
-				postal_code: $customer->postal_code,
-				country: $customer->country,
-				note: $customer->note,
+			$placement = $this->orderService->place(
+				customer: $customer,
+				carrier: $carrier,
+				payment: $payment,
+				items: $items,
+				subtotalPrice: $subtotalPrice,
+				discountAmount: $discountAmount,
+				totalPrice: $totalPrice,
+				discountCode: $discountCode,
 			);
-			$this->customerRepository->save((array) $customerData);
-			$customerId = $this->customerRepository->getInsertId();
-
-			$orderData = new OrderSummary(
-				customer_id: $customerId,
-				carrier_id: $carrier->id,
-				payment_id: $payment->id,
-				carrier_price: $this->getAmountPrice($carrier->price),
-				payment_price: $this->getAmountPrice($payment->price),
-				subtotal_price: $this->getAmountPrice($subtotalPrice),
-				total_price: $this->getAmountPrice($totalPrice),
-				discount_code: $discountCode,
-				discount_amount: $this->getAmountPrice($discountAmount),
-				created_at: new DateTimeImmutable,
-			);
-
-			$this->orderRepository->save((array) $orderData);
-			$orderId = $this->orderRepository->getInsertId();
-
-			$this->stockReservation->reserve($items);
-
-			foreach ($items as $item) {
-				$orderProduct = OrderProduct::fromCartItem($orderId, $item);
-				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
-			}
-
-			if (!$this->discountCodeService->consume()) {
-				throw new OrderException('The discount code has just reached its usage limit, please try again without the code.');
-			}
-
-			$this->orderRepository->getConnection()->commit();
-
 		} catch (OrderException $e) {
-			$this->rollback();
 			$form->addError($this->describe($e), false);
 			return;
 
 		} catch (\Throwable $e) {
-			$this->rollback();
 			Debugger::log($e, Debugger::EXCEPTION);
 			$form->addError('An error occurred while processing your order. Please try again.');
 			return;
@@ -204,8 +143,8 @@ class SummaryOrderControl extends BaseControl
 		try {
 			$this->eventDispatcher->dispatch(
 				new OrderPlaced(
-					orderId: $orderId,
-					orderSummary: $orderData,
+					orderId: $placement->orderId,
+					orderSummary: $placement->orderSummary,
 					customer: $customer,
 					carrier: $carrier,
 					payment: $payment,
@@ -222,19 +161,6 @@ class SummaryOrderControl extends BaseControl
 		}
 
 		$this->getPresenter()->redirect($this->linkRedirectTarget);
-	}
-
-
-	/**
-	 * Rolls the order transaction back; a failure to do so must not hide the original error.
-	 */
-	private function rollback(): void
-	{
-		try {
-			$this->orderRepository->getConnection()->rollback();
-		} catch (\Throwable $e) {
-			Debugger::log($e, 'commerce-order-rollback');
-		}
 	}
 
 

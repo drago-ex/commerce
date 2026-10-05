@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Drago\Commerce\UI\Order;
+namespace Drago\Commerce\Domain\Order;
 
 use Drago\Commerce\Domain\Product\ProductCart;
 
 
 /**
- * Represents products associated with an order.
+ * Represents a product line stored in an order.
  */
 class OrderProduct
 {

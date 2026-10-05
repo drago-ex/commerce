@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Drago\Commerce\UI\Order;
+namespace Drago\Commerce\Domain\Order;
 
 use DateTimeImmutable;
 
 
 /**
- * Represents a customer order.
+ * Represents a persisted customer order summary.
  */
 class OrderSummary
 {

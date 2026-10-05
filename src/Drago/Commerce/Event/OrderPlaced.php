@@ -7,9 +7,9 @@ namespace Drago\Commerce\Event;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
+use Drago\Commerce\Domain\Order\OrderSummary;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Service\ShoppingCartSession;
-use Drago\Commerce\UI\Order\OrderSummary;
 
 
 /**

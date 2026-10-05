@@ -9,7 +9,8 @@ use Drago\Commerce\Domain\Product\Product;
 
 /**
  * Event fired when the cart is updated.
- * (Use this event for general cart updates not covered by item changes.)
+ *
+ * @deprecated Never dispatched. Use ProductAddedToCart, CartItemChanged or CartItemRemoved.
  */
 class CartUpdated
 {

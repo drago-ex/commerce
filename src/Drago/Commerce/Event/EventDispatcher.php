@@ -5,13 +5,21 @@ declare(strict_types=1);
 namespace Drago\Commerce\Event;
 
 
+/**
+ * Calls the listeners registered for an event class, in the order they were added,
+ * synchronously within the current request. An exception in a listener propagates
+ * to the code that dispatched the event.
+ */
 class EventDispatcher
 {
-	/** @var array<string, list<callable|object>> Listeners by event class */
+	/** @var array<string, list<callable>> Listeners by event class */
 	private array $listeners = [];
 
 
-	public function addListener(string $eventClass, callable|object $listener): void
+	/**
+	 * @param class-string $eventClass
+	 */
+	public function addListener(string $eventClass, callable $listener): void
 	{
 		$this->listeners[$eventClass][] = $listener;
 	}
@@ -19,11 +27,8 @@ class EventDispatcher
 
 	public function dispatch(object $event): void
 	{
-		$eventClass = $event::class;
-		foreach ($this->listeners[$eventClass] ?? [] as $listener) {
-			if (is_callable($listener)) {
-				$listener($event);
-			}
+		foreach ($this->listeners[$event::class] ?? [] as $listener) {
+			$listener($event);
 		}
 	}
 }

@@ -20,6 +20,10 @@ use Drago\Commerce\Event\ProductAddedToCart;
  * Use this listener only for pricing rules that are NOT already covered by the
  * standard percentage discount (e.g. customer-specific pricing), by calling
  * $event->setPrice() with the final price you want that item to have.
+ *
+ * A product with variants is sold per variant: $event->variantId and $event->variantLabel
+ * tell which one is being added, and $event->product->price is already that variant's price.
+ * A variant with its own price is sold without the percentage discount.
  */
 class DiscountListener
 {

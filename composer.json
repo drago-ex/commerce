@@ -15,6 +15,7 @@
 		"latte/latte": "^3.0",
 		"nette/application": "^3.1",
 		"nette/di": "^3.0",
+		"nette/tester": "^2.3",
 		"drago-ex/application": "^2.0",
 		"drago-ex/database": "^3.0",
 		"drago-ex/form": "^2.0",
@@ -23,7 +24,6 @@
 		"nepada/phone-number-input": "^1.0"
 	},
 	"require-dev": {
-		"nette/tester": "^2.3",
 		"tracy/tracy": "^2.7",
 		"phpstan/phpstan-nette": "^2.0",
 		"geoip2/geoip2": "^2.12"

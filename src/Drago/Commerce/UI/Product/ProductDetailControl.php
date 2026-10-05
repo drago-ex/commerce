@@ -313,7 +313,7 @@ class ProductDetailControl extends BaseControl
 
 		$product = new Product(id: $entity->id, name: $entity->name, price: $price);
 
-		$event = new ProductAddedToCart($product, $product->price);
+		$event = new ProductAddedToCart($product, $product->price, $variantId, $variantLabel, $amount);
 		$this->eventDispatcher->dispatch($event);
 
 		$item = new Product(id: $entity->id, name: $entity->name, price: $event->getPrice());

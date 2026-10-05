@@ -201,7 +201,7 @@ class SummaryCartControl extends BaseControl
 		}
 
 		$this->shoppingCart->addItem($line->product, $amount, dontCount: true, variantId: $variantId, variantLabel: $line->variantLabel);
-		$this->eventDispatcher->dispatch(new CartItemChanged($line->product, $amount));
+		$this->eventDispatcher->dispatch(new CartItemChanged($line->product, $amount, $variantId, $line->variantLabel));
 		$this->redrawShoppingCart();
 	}
 
@@ -245,7 +245,7 @@ class SummaryCartControl extends BaseControl
 		$line = $this->shoppingCart->findItem($productId, $variantId);
 		if ($line !== null) {
 			$this->shoppingCart->removeLine($productId, $variantId);
-			$this->eventDispatcher->dispatch(new CartItemRemoved($line->product));
+			$this->eventDispatcher->dispatch(new CartItemRemoved($line->product, $variantId, $line->variantLabel));
 		}
 
 		$this->redrawShoppingCart();

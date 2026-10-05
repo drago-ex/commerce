@@ -210,6 +210,7 @@ class SummaryOrderControl extends BaseControl
 					carrier: $carrier,
 					payment: $payment,
 					shoppingCartSession: $this->shoppingCartSession,
+					items: $items,
 				),
 			);
 		} catch (\Throwable $e) {

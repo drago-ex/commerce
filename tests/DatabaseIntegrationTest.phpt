@@ -18,8 +18,8 @@ use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Domain\Product\ProductImageRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
-use Drago\Commerce\UI\Order\OrderProduct;
-use Drago\Commerce\UI\Order\OrderSummary;
+use Drago\Commerce\Domain\Order\OrderProduct;
+use Drago\Commerce\Domain\Order\OrderSummary;
 use Tester\Assert;
 use Tester\Environment;
 

@@ -8,7 +8,7 @@ use Brick\Math\BigInteger;
 use Brick\Money\Money;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductCart;
-use Drago\Commerce\UI\Order\OrderProduct;
+use Drago\Commerce\Domain\Order\OrderProduct;
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';

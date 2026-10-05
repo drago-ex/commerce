@@ -22,7 +22,7 @@ use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\EventListener\OrderLoggerListener;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
-use Drago\Commerce\UI\Order\OrderSummary;
+use Drago\Commerce\Domain\Order\OrderSummary;
 use Nette\Http\Request;
 use Nette\Http\Response;
 use Nette\Http\Session;

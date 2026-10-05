@@ -1,6 +1,6 @@
 {templateType Drago\Commerce\UI\ShoppingCart\SummaryCartTemplate}
-{varType Drago\Commerce\Domain\Product\ProductCart[] $shoppingCart}
 {import '../@breadcrumbs.latte'}
+{import '../@orderSummarySidebar.latte'}
 
 {if count($shoppingCart)}
 
@@ -24,7 +24,7 @@
 
 								<div class="col-auto">
 									<img
-											src="https://placehold.co/80x80?text=%20&bg=f4f6f8"
+											src={$cart->product->photo ?? 'https://placehold.co/80x80?text=%20&bg=f4f6f8'}
 											alt="{$cart->product->name}"
 											class="rounded"
 											width="64"
@@ -34,6 +34,10 @@
 
 								<div class="col">
 									<p class="fw-semibold mb-1">{$cart->product->name}</p>
+
+									<p n:if="$cart->variantLabel" class="text-body-secondary small mb-1">
+										{$cart->variantLabel}
+									</p>
 
 									<div class="d-flex align-items-center gap-2 flex-wrap">
 										<span class="text-body-secondary small">
@@ -51,8 +55,10 @@
 								</div>
 
 								<div class="col-auto">
+									{var $changeQuantityName = 'changeQuantity-' . \Drago\Commerce\UI\ShoppingCart\SummaryCartControl::cartItemKey($cart->product->id, $cart->variantId)}
+
 									<form
-											n:name="changeQuantity-{$cart->product->id}"
+											n:name="$changeQuantityName"
 											class="ajax"
 											data-items-cart
 											data-naja-history="replace"
@@ -84,7 +90,7 @@
 
 									<a
 											n:attr="$linkAttrs"
-											n:href="removeItem!, productId: $cart->product->id"
+											n:href="removeItem!, productId: $cart->product->id, variantId: $cart->variantId"
 									>
 										<i class="fa-solid fa-trash-can" aria-hidden="true"></i>
 										<span class="visually-hidden">{_'Remove'}</span>
@@ -144,50 +150,17 @@
 					</div>
 				</div>
 
-				<div class="card border-0 shadow-sm">
-					<div class="card-body">
-
-						<table class="table table-sm table-borderless mb-0">
-							<tbody>
-
-							<tr n:if="!$productDiscountAmount->isZero()">
-								<td>{_'Price without discount'}:</td>
-								<td class="text-end text-nowrap">{$originalPrice|money}</td>
-							</tr>
-
-							<tr n:if="!$productDiscountAmount->isZero()">
-								<td class="text-success">{_'Product discounts'}:</td>
-								<td class="text-success text-end text-nowrap">-{$productDiscountAmount|money}</td>
-							</tr>
-
-							<tr n:if="!$productDiscountAmount->isZero() || ($discountCode && !$discountAmount->isZero())" class="border-top">
-								<td class="fw-semibold">{_'Subtotal'}:</td>
-								<td class="text-end fw-semibold text-nowrap">{$subtotalPrice|money}</td>
-							</tr>
-
-							<tr n:if="$discountCode && !$discountAmount->isZero()">
-								<td class="text-success fw-semibold">{_'Discount'} ({$discountCode}):</td>
-								<td class="text-success fw-semibold text-end text-nowrap">-{$discountAmount|money}</td>
-							</tr>
-
-							<tr class="border-top">
-								<td class="text-shop-accent fw-bold fs-5">{_'Total to pay'}:</td>
-								<td class="fw-bold text-shop-accent text-end text-nowrap fs-5">{$totalPrice|money}</td>
-							</tr>
-
-							</tbody>
-						</table>
-
-						<a
-								href="{$linkOrderDelivery}"
-								class="btn btn-shop-accent w-100 mt-2 d-flex align-items-center justify-content-center gap-2"
-						>
-							{_'Continue with order'}
-							<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-						</a>
-
-					</div>
-				</div>
+				{include orderSummarySidebar,
+					amountItems: $amountItems,
+					totalPrice: $totalPrice,
+					originalPrice: $originalPrice,
+					productDiscountAmount: $productDiscountAmount,
+					subtotalPrice: $subtotalPrice,
+					discountCode: $discountCode,
+					discountAmount: $discountAmount,
+					note: 'Shipping and payment are added once selected.',
+					continueUrl: $linkOrderDelivery,
+				}
 
 			</div>
 		</div>

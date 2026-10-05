@@ -10,11 +10,7 @@ use Drago\Commerce\UI\BaseControl;
 use Nette\Application\UI\InvalidLinkException;
 
 
-/**
- * Basket control shows a summary of items in the shopping cart.
- *
- * @property-read MiniCartTemplate $template
- */
+/** @property-read MiniCartTemplate $template */
 class MiniCartControl extends BaseControl
 {
 	public function __construct(
@@ -24,8 +20,6 @@ class MiniCartControl extends BaseControl
 
 
 	/**
-	 * Render the basket summary.
-	 *
 	 * @throws MoneyMismatchException
 	 * @throws InvalidLinkException
 	 */

@@ -14,4 +14,6 @@ use Drago\Commerce\Domain\Item;
 class Product extends Item
 {
 	use Discount;
+
+	public ?string $photo = null;
 }

@@ -6,6 +6,7 @@ namespace Drago\Commerce\Domain\DiscountCode;
 
 use Dibi\Connection;
 use Dibi\Exception;
+use Dibi\Fluent;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Attr\Table;
 use Drago\Database\Database;
@@ -60,13 +61,11 @@ class DiscountCodeRepository
 	 */
 	public function incrementUsage(int $id): bool
 	{
-		$this->connection->query(
-			'UPDATE %n SET used_count = used_count + 1
-			WHERE id = %i AND (usage_limit IS NULL OR used_count < usage_limit)',
-			DiscountCodeEntity::Table,
-			$id,
-		);
-
-		return $this->connection->getAffectedRows() > 0;
+		return $this->command()
+			->update(DiscountCodeEntity::Table)
+			->set('%n = %n + 1', 'used_count', 'used_count')
+			->where('%n = ?', DiscountCodeEntity::PrimaryKey, $id)
+			->where('(usage_limit IS NULL OR used_count < usage_limit)')
+			->execute(Fluent::AffectedRows) > 0;
 	}
 }

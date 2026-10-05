@@ -1,0 +1,134 @@
+{templateType Drago\Commerce\UI\Product\ProductDetailTemplate}
+
+<nav aria-label="{_'Product navigation'}" class="mb-3">
+	<a href="{plink default}" class="text-decoration-none small">
+		<i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+		{_'Back to products'}
+	</a>
+</nav>
+
+<div
+		class="row g-4"
+		id="shop-product-detail"
+		data-matrix="{$variantMatrixJson}"
+		data-stock-many="{_'In stock > 5 pcs'}"
+		data-stock-few="{_'In stock'}"
+		data-stock-none="{_'Out of stock'}"
+		data-stock-pcs="{_'pcs'}"
+		data-stock-unavailable="{_'Unavailable combination'}"
+>
+
+	<div class="col-md-5">
+		<div class="card border-0 shadow-sm shop-product-gallery">
+			<img
+					src="{$images[0]}"
+					data-gallery-main
+					alt="{$product->name}"
+					class="card-img-top shop-product-gallery-main"
+			/>
+			<div n:if="count($images) > 1" class="shop-product-thumbnails" role="group" aria-label="{_'Product images'}">
+				{foreach $images as $image}
+					<button
+						type="button"
+						n:class="shop-product-thumbnail, $iterator->first ? active"
+						data-gallery-image="{$image}"
+						data-gallery-alt="{$product->name}"
+						aria-label="{_'Show product image'} {$iterator->counter}"
+						aria-pressed="{$iterator->first ? 'true' : 'false'}"
+					>
+						<img src="{$image}" alt="" loading="lazy" />
+					</button>
+				{/foreach}
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-7">
+
+		<h1 class="h3 mb-1">{$product->name}</h1>
+
+		<div id="shop-detail-sku-wrapper" n:class="text-body-secondary, small, mb-3, !$selectedVariant?->sku ? d-none">
+			{_'SKU'}: <span id="shop-detail-sku">{$selectedVariant?->sku}</span>
+		</div>
+
+		{* Price block *}
+		<div class="mb-3" id="shop-detail-price-box">
+			{var $hasDiscount = $product->hasDiscount()}
+			{var $currentPrice = $hasDiscount ? $product->getDiscountedPrice() : $product->getPrice()}
+			<span id="shop-detail-orig-price" n:class="text-body-secondary, text-decoration-line-through, me-2, !$hasDiscount ? d-none">
+				{$product->getPrice()|money}
+			</span>
+			<span id="shop-detail-price" n:class="fw-bold, fs-4, $hasDiscount ? text-danger">
+				{$currentPrice|money}
+			</span>
+			<span id="shop-detail-discount-badge" n:class="badge, bg-danger, ms-1, !$hasDiscount ? d-none">
+				-{$product->getDiscountPercent()}%
+			</span>
+		</div>
+
+		{* Stock availability *}
+		<div id="shop-detail-stock-box" class="mb-3">
+			{var $currentStock = $selectedVariant ? $selectedVariant->stock : $product->getStock()}
+			<p n:if="$currentStock > 5" class="small text-success mb-0 d-flex align-items-center gap-1" id="shop-stock-status">
+				<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+				<span>{_'In stock > 5 pcs'}</span>
+			</p>
+			<p n:if="$currentStock > 0 && $currentStock <= 5" class="small text-warning-emphasis mb-0 d-flex align-items-center gap-1" id="shop-stock-status">
+				<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+				<span>{_'In stock'}: {$currentStock} {_'pcs'}</span>
+			</p>
+			<p n:if="$currentStock <= 0" class="small text-danger mb-0 d-flex align-items-center gap-1" id="shop-stock-status">
+				<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+				<span>{_'Out of stock'}</span>
+			</p>
+		</div>
+
+		<p class="text-body-secondary mb-4">{$product->description}</p>
+
+		{* Multi-Attribute Variant Configurator *}
+		<div n:if="count($attributeGroups)" class="card border-0 bg-light p-3 mb-4 rounded-3" id="shop-variant-configurator">
+			{foreach $attributeGroups as $group}
+				<div class="shop-variant-group" data-attribute-id="{$group['id']}">
+					<div class="shop-variant-title d-flex justify-content-between align-items-center">
+						<span>{$group['name']}</span>
+						<span class="fw-normal text-muted small active-value-label"></span>
+					</div>
+					<div class="shop-variant-options">
+						{foreach $group['values'] as $val}
+							{var $isActive = $selectedVariant && in_array($val['id'], $selectedVariant->attributeValueIds, true)}
+							<button
+								type="button"
+								n:class="shop-variant-pill, $isActive ? active"
+								data-attribute-id="{$group['id']}"
+								data-value-id="{$val['id']}"
+								data-value-name="{$val['value']}"
+							>
+								{$val['value']}
+							</button>
+						{/foreach}
+					</div>
+				</div>
+			{/foreach}
+		</div>
+
+		{* Add to cart form *}
+		<form n:name="addToCart" class="card border-0 bg-body-tertiary">
+			<div class="card-body">
+
+				<input n:name="productId" />
+				<input n:if="count($variants)" n:name="variantId" id="shop-variant-id-input" />
+
+				<div class="d-flex flex-wrap align-items-end gap-2">
+					<div style="width: 8rem;">
+						<label n:name="amount" class="form-label fw-semibold">{_'Amount'}</label>
+						<input n:name="amount" class="form-control" />
+					</div>
+					<input n:name="add" id="shop-add-to-cart-btn" class="btn btn-shop-accent" />
+				</div>
+
+			</div>
+		</form>
+
+	</div>
+
+</div>

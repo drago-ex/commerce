@@ -9,7 +9,7 @@ use Drago\Commerce\UI\BaseTemplate;
 
 
 /**
- * Template variables for the product listing control.
+ * Template data for the product listing.
  */
 class ProductTemplate extends BaseTemplate
 {

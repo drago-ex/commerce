@@ -9,6 +9,7 @@ use Drago\Commerce\UI\Order\CustomerControl;
 use Drago\Commerce\UI\Order\DeliveryControl;
 use Drago\Commerce\UI\Order\SummaryOrderControl;
 use Drago\Commerce\UI\Product\ProductControl;
+use Drago\Commerce\UI\Product\ProductDetailControl;
 use Drago\Commerce\UI\ShoppingCart\MiniCartControl;
 use Drago\Commerce\UI\ShoppingCart\SummaryCartControl;
 
@@ -32,12 +33,9 @@ trait CommerceControl
 	public CustomerControl $customerControl;
 	public SummaryOrderControl $summaryOrderControl;
 	public ProductControl $productControl;
+	public ProductDetailControl $productDetailControl;
 
 
-	/**
-	 * Inject all commerce controls and configure the checkout ones for
-	 * their step in the flow.
-	 */
 	public function injectCommerceControl(
 		MiniCartControl $miniCartControl,
 		SummaryCartControl $shoppingCartControl,
@@ -45,6 +43,7 @@ trait CommerceControl
 		CustomerControl $customerControl,
 		SummaryOrderControl $summaryOrderControl,
 		ProductControl $productControl,
+		ProductDetailControl $productDetailControl,
 		CheckoutProcess $checkoutProcess,
 	): void
 	{
@@ -54,6 +53,7 @@ trait CommerceControl
 		$this->customerControl = $customerControl;
 		$this->summaryOrderControl = $summaryOrderControl;
 		$this->productControl = $productControl;
+		$this->productDetailControl = $productDetailControl;
 
 		// MiniCart lives outside the step flow (typically in the layout),
 		// so it only needs somewhere to send the customer when clicked.

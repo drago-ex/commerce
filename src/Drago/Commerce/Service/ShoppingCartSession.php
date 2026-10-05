@@ -14,13 +14,9 @@ use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
 
-/**
- * Represents the shopping cart in the session.
- * Manages products added by the customer, including quantity and total price calculation.
- */
+/** Stores cart items in the session and calculates their totals. */
 class ShoppingCartSession
 {
-	/** Session section key for cart items */
 	private const string Items = 'items';
 
 	private SessionSection $sessionSection;
@@ -37,11 +33,7 @@ class ShoppingCartSession
 	}
 
 
-	/**
-	 * Returns all items currently in the basket.
-	 *
-	 * @return ProductCart[] Array of basket items.
-	 */
+	/** @return ProductCart[] */
 	public function getItems(): array
 	{
 		return $this->sessionSection->get(self::Items) ?? [];
@@ -119,13 +111,24 @@ class ShoppingCartSession
 	 * Adds product(s) to the basket.
 	 *
 	 * $amount must be >= 1. If $dontCount is true, sets the item's quantity to $amount; otherwise adds the amount.
+	 *
+	 * $variantId identifies which variant of the product was chosen (null
+	 * for a product without variants). Two lines with the same product but
+	 * a different $variantId are kept as separate cart items — matching is
+	 * by product ID *and* variant ID together, not product ID alone.
 	 */
-	public function addItem(Product $product, int $amount = 1, bool $dontCount = false): void
+	public function addItem(
+		Product $product,
+		int $amount = 1,
+		bool $dontCount = false,
+		?int $variantId = null,
+		?string $variantLabel = null,
+	): void
 	{
 		$items = $this->getItems();
 
 		foreach ($items as $item) {
-			if ($item->product->id === $product->id) {
+			if ($item->product->id === $product->id && $item->variantId === $variantId) {
 				if ($dontCount) {
 					$item->amount = BigInteger::of($amount);
 				} else {
@@ -138,21 +141,17 @@ class ShoppingCartSession
 			}
 		}
 
-		// Product isn't found in a basket, add new
-		$items[] = new ProductCart($product, BigInteger::of($amount));
+		$items[] = new ProductCart($product, BigInteger::of($amount), $variantId, $variantLabel);
 		$this->sessionSection->set(self::Items, $items);
 	}
 
 
-	/**
-	 * Removes a product from the basket.
-	 */
-	public function removeItem(Product $product): void
+	public function removeItem(Product $product, ?int $variantId = null): void
 	{
 		$items = [];
 
 		foreach ($this->getItems() as $item) {
-			if ($item->product->id !== $product->id) {
+			if (!($item->product->id === $product->id && $item->variantId === $variantId)) {
 				$items[] = $item;
 			}
 		}
@@ -161,9 +160,6 @@ class ShoppingCartSession
 	}
 
 
-	/**
-	 * Empties the basket.
-	 */
 	public function remove(): void
 	{
 		$this->sessionSection->remove(self::Items);

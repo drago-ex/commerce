@@ -30,6 +30,7 @@ class ProductMapper
 			price: $this->commerce->moneyOf($entity->price),
 		);
 
+		$product->photo = $entity->photo !== '' ? $entity->photo : null;
 		$product->setDiscount($entity->discount);
 		return $product;
 	}

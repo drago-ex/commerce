@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drago\Commerce\Domain\Product;
+
+use Brick\Money\Exception\UnknownCurrencyException;
+use Dibi\Exception;
+use Drago\Attr\AttributeDetectionException;
+use Drago\Commerce\Commerce;
+
+
+/**
+ * Converts a ProductVariantEntity to a domain ProductVariantOption object.
+ */
+readonly class ProductVariantMapper
+{
+	public function __construct(
+		private Commerce $commerce,
+		private ProductVariantRepository $variantRepository,
+	) {
+	}
+
+
+	/**
+	 * @param float $fallbackPrice The product's own price, used when the
+	 *   variant itself has no price override.
+	 *
+	 * @throws UnknownCurrencyException
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	public function map(ProductVariantEntity $entity, float $fallbackPrice): ProductVariantOption
+	{
+		return new ProductVariantOption(
+			id: $entity->id,
+			sku: $entity->sku,
+			price: $this->commerce->moneyOf($entity->price ?? $fallbackPrice),
+			stock: $entity->stock,
+			labels: $this->variantRepository->getLabels($entity->id),
+			attributeValueIds: $this->variantRepository->getAttributeValueIds($entity->id),
+		);
+	}
+}

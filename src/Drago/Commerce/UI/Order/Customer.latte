@@ -11,11 +11,10 @@
 		{_'Customer information'}
 	</h1>
 
-	<div class="row g-4">
+	<form n:name="customer">
+		<div class="row g-4">
 
 		<div class="col-lg-8">
-			<form n:name="customer">
-
 				<ul n:if="$form->hasErrors()" class="errors">
 					<li n:foreach="$form->errors as $error">{$error}</li>
 				</ul>
@@ -32,24 +31,24 @@
 
 								<div class="mb-3">
 									<label n:name="email" class="form-label" />
-									<input n:name="email" type="email" class="form-control" required />
+									<input n:name="email" class="form-control" />
 								</div>
 								<div class="mb-3">
 									<label n:name="phone" class="form-label" />
-									<input n:name="phone" type="tel" class="form-control" />
+									<input n:name="phone" class="form-control" />
 								</div>
 
 								<div class="row gx-2">
 									<div class="col-6">
 										<div class="mb-3">
 											<label n:name="name" class="form-label" />
-											<input n:name="name" type="text" class="form-control" required />
+											<input n:name="name" class="form-control" />
 										</div>
 									</div>
 									<div class="col-6">
 										<div class="mb-3">
 											<label n:name="surname" class="form-label" />
-											<input n:name="surname" type="text" class="form-control" required />
+											<input n:name="surname" class="form-control" />
 										</div>
 									</div>
 								</div>
@@ -67,27 +66,27 @@
 
 								<div class="mb-3">
 									<label n:name="street" class="form-label" />
-									<input n:name="street" type="text" class="form-control" required />
+									<input n:name="street" class="form-control" />
 								</div>
 
 								<div class="row gx-2">
 									<div class="col-6">
 										<div class="mb-3">
 											<label n:name="city" class="form-label" />
-											<input n:name="city" type="text" class="form-control" required />
+											<input n:name="city" class="form-control" />
 										</div>
 									</div>
 									<div class="col-6">
 										<div class="mb-3">
 											<label n:name="country" class="form-label" />
-											<input n:name="country" type="text" class="form-control" required />
+											<input n:name="country" class="form-control" />
 										</div>
 									</div>
 								</div>
 
 								<div class="mb-3">
 									<label n:name="postal_code" class="form-label" />
-									<input n:name="postal_code" type="text" class="form-control" required />
+									<input n:name="postal_code" class="form-control" />
 								</div>
 							</div>
 						</div>
@@ -102,19 +101,25 @@
 					<label n:name="note" class="form-label" />
 					<textarea n:name="note" class="form-control" rows="3"></textarea>
 				</div>
-
-				<div class="text-end">
-					<input n:name="send" class="btn btn-shop-accent" />
-				</div>
-
-			</form>
 		</div>
 
 		<div class="col-lg-4">
-			{include orderSummarySidebar, $amountItems, $totalPrice}
+			{include orderSummarySidebar,
+				amountItems: $amountItems,
+				totalPrice: $totalPrice,
+				carrier: $carrier,
+				payment: $payment,
+				originalPrice: $originalPrice,
+				productDiscountAmount: $productDiscountAmount,
+				subtotalPrice: $subtotalPrice,
+				discountCode: $discountCode,
+				discountAmount: $discountAmount,
+				showContinueForm: true,
+			}
 		</div>
 
-	</div>
+		</div>
+	</form>
 
 {else}
 	<p>{_'Your shopping cart is empty.'}</p>

@@ -6,6 +6,7 @@ namespace Drago\Commerce\Domain\Product;
 
 use Dibi\Connection;
 use Dibi\Exception;
+use Dibi\Fluent;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Attr\Table;
 use Drago\Database\Database;
@@ -42,7 +43,7 @@ class ProductRepository
 	/**
 	 * Returns all active products.
 	 *
-	 * @return array<ProductEntity>
+	 * @return ProductEntity[]
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
@@ -66,21 +67,15 @@ class ProductRepository
 	 * order) — in that case, no row was modified.
 	 *
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function decrementStock(int $id, int $amount): bool
 	{
-		$this->connection->query(
-			'UPDATE %n SET %n = %n - %i WHERE %n = %i AND %n >= %i',
-			ProductEntity::Table,
-			ProductEntity::Stock,
-			ProductEntity::Stock,
-			$amount,
-			ProductEntity::PrimaryKey,
-			$id,
-			ProductEntity::Stock,
-			$amount,
-		);
-
-		return $this->connection->getAffectedRows() > 0;
+		return $this->command()
+			->update(ProductEntity::Table)
+			->set('%n = %n - %i', ProductEntity::Stock, ProductEntity::Stock, $amount)
+			->where('%n = ?', ProductEntity::PrimaryKey, $id)
+			->where('%n >= %i', ProductEntity::Stock, $amount)
+			->execute(Fluent::AffectedRows) > 0;
 	}
 }

@@ -3,15 +3,14 @@
 <a
 		href="{$linkShoppingCart}"
 		class="shop-minicart"
-		aria-label="{_'Go to shopping cart'}: {$amountItems} {_'items'}, {_'total price'} {$formattedTotalPrice}"
+		aria-label="{_'Go to shopping cart'}. {_'Number of items'}: {$amountItems}, {_'total price'}: {$formattedTotalPrice}"
 >
-	<span class="position-relative d-inline-flex" style="width: 1.35rem; height: 1.35rem;">
-		<i class="fa-solid fa-cart-shopping" style="font-size: 1.25rem;" aria-hidden="true"></i>
+	<span class="shop-minicart-icon-wrap">
+		<i class="fa-solid fa-cart-shopping shop-minicart-icon" aria-hidden="true"></i>
 
 		<span
 				n:if="$amountItems > 0"
 				class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-				style="font-size: .625rem; padding: .25em .45em;"
 				aria-live="polite"
 		>
 			{$amountItems}

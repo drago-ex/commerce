@@ -59,6 +59,10 @@ final class CheckoutProcess
 	}
 
 
+	/**
+	 * Returns the first missing checkout prerequisite for the requested action,
+	 * or null when no redirect is needed.
+	 */
 	public function getRedirectTargetForAction(string $action): ?string
 	{
 		return $this->redirectResolver->getRedirectTargetForAction($action);
@@ -79,11 +83,6 @@ final class CheckoutProcess
 	 * Fully configures a step control for its place in the checkout flow:
 	 * the step map (for breadcrumbs), which steps are already completed,
 	 * which one is current, and where to send the customer next.
-	 *
-	 * Used by CommerceControl to wire each control up once, at injection
-	 * time — a control's step is fixed by what it is (DeliveryControl is
-	 * always the delivery step), so there's nothing presenter-specific
-	 * about this and no reason to repeat it in every presenter.
 	 */
 	public function configureStep(BaseControl $control, string $step): BaseControl
 	{

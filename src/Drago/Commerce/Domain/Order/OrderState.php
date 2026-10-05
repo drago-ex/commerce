@@ -10,9 +10,7 @@ use Drago\Commerce\Domain\Delivery\Payment;
 
 
 /**
- * Represents all components of an order stored in the session.
- * This class aggregates the carrier, payment, and customer information
- * related to a single order. Each property can be null if not set yet.
+ * Stores the selected carrier, payment method, and customer for an order in progress.
  */
 class OrderState
 {

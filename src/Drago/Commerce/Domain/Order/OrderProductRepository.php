@@ -13,12 +13,8 @@ use Drago\Database\Database;
 /**
  * Repository for persisting order-product relations.
  *
- * Note: the `orders_products` table has a composite primary key
- * (order_id, product_id) — no surrogate `id` column exists, so no
- * primary key is declared here. This repository is insert-only;
- * do not add get()/find()-by-id style methods without first adding
- * a real primary key column, or the generated `WHERE id = ?` query
- * will fail.
+ * The order line has a surrogate primary key, but this repository is
+ * intentionally insert-only because the package does not edit order lines.
  */
 #[Table('orders_products')]
 class OrderProductRepository

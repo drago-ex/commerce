@@ -12,11 +12,13 @@ use DateTimeImmutable;
 use Dibi\DriverException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
+use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Service\DiscountCodeService;
@@ -39,6 +41,8 @@ class SummaryOrderControl extends BaseControl
 		private readonly OrderProductRepository $orderProductsRepository,
 		private readonly CustomerRepository $customerRepository,
 		private readonly ProductRepository $productRepository,
+		private readonly ProductVariantRepository $productVariantRepository,
+		private readonly Commerce $commerce,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
 	) {
@@ -99,6 +103,7 @@ class SummaryOrderControl extends BaseControl
 	protected function createComponentSendOrder(): Form
 	{
 		$form = new Form;
+		$form->setTranslator($this->translator);
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
 		return $form;
@@ -132,7 +137,6 @@ class SummaryOrderControl extends BaseControl
 		try {
 			$this->orderRepository->getConnection()->begin();
 
-			// Save the customer.
 			$phoneStr = $customer->phone instanceof PhoneNumber
 				? $customer->phone->format(PhoneNumberFormat::INTERNATIONAL)
 				: (string) $customer->phone;
@@ -151,7 +155,6 @@ class SummaryOrderControl extends BaseControl
 			$this->customerRepository->save((array) $customerData);
 			$customerId = $this->customerRepository->getInsertId();
 
-			// Save order.
 			$orderData = new OrderSummary(
 				customer_id: $customerId,
 				carrier_id: $carrier->id,
@@ -170,25 +173,26 @@ class SummaryOrderControl extends BaseControl
 
 			foreach ($this->shoppingCartSession->getItems() as $item) {
 				$product = $this->productRepository->getOne($item->product->id);
-				if ($product === null) {
+				if ($product === null || !$product->active) {
 					throw new \Exception("Product with ID {$item->product->id} not found.");
 				}
 
-				// Atomically check-and-deduct inventory in a single SQL
-				// statement, so two concurrent orders can never both
-				// succeed for the same last unit of stock.
 				$amount = $item->amount->toInt();
-				if (!$this->productRepository->decrementStock($product->id, $amount)) {
+				$variantId = $item->variantId;
+				if ($variantId !== null) {
+					$variant = $this->productVariantRepository->getOne($variantId);
+					if ($variant === null || $variant->product_id !== $product->id || $variant->active !== 1) {
+						throw new \Exception('The selected product variant is no longer available.');
+					}
+
+					if (!$this->productVariantRepository->decrementStock($variantId, $amount)) {
+						throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
+					}
+				} elseif (!$this->productRepository->decrementStock($product->id, $amount)) {
 					throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
 				}
 
-				//Save order products.
-				$orderProduct = new OrderProduct(
-					order_id: $orderId,
-					product_id: $item->product->id,
-					amount: $amount,
-					unit_price: $this->getAmountPrice($item->product->getDiscountedPrice()),
-				);
+				$orderProduct = OrderProduct::fromCartItem($orderId, $item);
 				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}
 
@@ -201,24 +205,29 @@ class SummaryOrderControl extends BaseControl
 		} catch (\Throwable $e) {
 			$this->orderRepository->getConnection()->rollback();
 			Debugger::barDump($e);
-			$form->addError('An error occurred while processing your order: ' . $e->getMessage());
+			$form->addError('An error occurred while processing your order. Please try again.');
 			return;
 		}
 
-		$this->eventDispatcher->dispatch(
-			new OrderPlaced(
-				orderId: $orderId,
-				orderSummary: $orderData,
-				customer: $customer,
-				carrier: $carrier,
-				payment: $payment,
-				shoppingCartSession: $this->shoppingCartSession,
-			),
-		);
+		try {
+			$this->eventDispatcher->dispatch(
+				new OrderPlaced(
+					orderId: $orderId,
+					orderSummary: $orderData,
+					customer: $customer,
+					carrier: $carrier,
+					payment: $payment,
+					shoppingCartSession: $this->shoppingCartSession,
+				),
+			);
+		} catch (\Throwable $e) {
+			Debugger::log($e, 'commerce-order-event');
+		} finally {
+			$this->shoppingCartSession->remove();
+			$this->discountCodeService->remove();
+			$this->orderSession->remove();
+		}
 
-		$this->shoppingCartSession->remove();
-		$this->discountCodeService->remove();
-		$this->orderSession->remove();
 		$this->getPresenter()->redirect($this->linkRedirectTarget);
 	}
 }

@@ -20,18 +20,12 @@ class ProductAddedToCart
 	}
 
 
-	/**
-	 * Set the final price after discounts or modifications.
-	 */
 	public function setPrice(Money $price): void
 	{
 		$this->finalPrice = $price;
 	}
 
 
-	/**
-	 * Get the current final price of the product.
-	 */
 	public function getPrice(): Money
 	{
 		return $this->finalPrice;

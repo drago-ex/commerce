@@ -11,6 +11,7 @@ use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
+use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\Event\CartItemChanged;
 use Drago\Commerce\Event\CartItemRemoved;
 use Drago\Commerce\Event\EventDispatcher;
@@ -25,6 +26,7 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\Application\UI\Multiplier;
+use function sprintf;
 
 
 /**
@@ -36,6 +38,7 @@ class SummaryCartControl extends BaseControl
 		private readonly ShoppingCartSession $shoppingCart,
 		private readonly ProductRepository $productRepository,
 		private readonly ProductMapper $productMapper,
+		private readonly ProductVariantRepository $productVariantRepository,
 		private readonly Factory $factory,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
@@ -51,11 +54,10 @@ class SummaryCartControl extends BaseControl
 	 */
 	public function render(): void
 	{
-		// Set default values for addToBasket forms based on basket items
 		/** @var Multiplier<BaseForm> $multiplier */
 		$multiplier = $this->getComponent('changeQuantity');
 		foreach ($this->shoppingCart->getItems() as $item) {
-			$form = $multiplier->getComponent((string) $item->product->id);
+			$form = $multiplier->getComponent(self::cartItemKey($item->product->id, $item->variantId));
 			$form->setDefaults((array) $item);
 		}
 
@@ -77,14 +79,43 @@ class SummaryCartControl extends BaseControl
 
 
 	/**
+	 * Builds the composite key used for both the changeQuantity Multiplier
+	 * and the quantity-change form's hidden fields, so two different
+	 * variants of the same product each get their own independent form
+	 * instead of colliding on a single "productId" key. Public so the
+	 * template can build the identical key when accessing the component.
+	 */
+	public static function cartItemKey(int $productId, ?int $variantId): string
+	{
+		return $variantId !== null ? $productId . '_' . $variantId : (string) $productId;
+	}
+
+
+	/**
+	 * Splits a composite cartItemKey() back into [productId, variantId].
+	 *
+	 * @return array{0: string, 1: ?int}
+	 */
+	private static function splitCartItemKey(string $key): array
+	{
+		$parts = explode('_', $key, 2);
+		$productId = $parts[0];
+		$variantId = isset($parts[1]) && $parts[1] !== '' ? (int) $parts[1] : null;
+		return [$productId, $variantId];
+	}
+
+
+	/**
 	 * Component for adding an item with amount to the cart.
 	 *
 	 * @return Multiplier<BaseForm>
 	 */
 	protected function createComponentChangeQuantity(): Multiplier
 	{
-		return new Multiplier(function (string $productId) {
-			$form = $this->factory->addChangeAmountInCart($productId);
+		return new Multiplier(function (string $key) {
+			[$productId, $variantId] = self::splitCartItemKey($key);
+
+			$form = $this->factory->addChangeAmountInCart($productId, $variantId);
 			$form->setTranslator($this->translator);
 			$form->onSuccess[] = $this->changeQuantity(...);
 			return $form;
@@ -143,25 +174,41 @@ class SummaryCartControl extends BaseControl
 	 */
 	public function changeQuantity(Form $form, FactoryValues $data): void
 	{
-		$productEntity = $this->productRepository->getOne($data->productId) ?? $this->error('Product not found');
+		$productId = (int) $data->productId;
+		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
+
+		$productEntity = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
 		$product = $this->productMapper->map($productEntity);
 
-		if ($productEntity->stock < $data->amount) {
-			$message = "The product $product->name is only $productEntity->stock pcs in stock.";
+		$availableStock = $productEntity->stock;
+		$variantLabel = null;
+
+		if ($variantId !== null) {
+			$variantEntity = $this->productVariantRepository->getOne($variantId) ?? $this->error('Variant not found');
+			if ($variantEntity->product_id !== $productEntity->id || $variantEntity->active !== 1) {
+				$this->error('Variant not found');
+			}
+			$availableStock = $variantEntity->stock;
+			$variantLabel = implode(', ', $this->productVariantRepository->getLabels($variantId));
+		}
+
+		if ($availableStock < $data->amount) {
+			$message = $this->translator?->translate('The product %s is only %d pcs in stock.', $product->name, $availableStock)
+				?? sprintf('The product %s is only %d pcs in stock.', $product->name, $availableStock);
 			$this->getPresenter()->flashMessage($message, Alert::Danger);
 			$this->getPresenter()->redrawControl('message');
 			$this->redrawShoppingCart();
 			return;
 		}
 
-		$this->shoppingCart->addItem($product, $data->amount, dontCount: true);
+		$this->shoppingCart->addItem($product, $data->amount, dontCount: true, variantId: $variantId, variantLabel: $variantLabel);
 		$this->eventDispatcher->dispatch(new CartItemChanged($product, $data->amount));
 		$this->redrawShoppingCart();
 	}
 
 
 	/**
-	 * Handles removing an item from the cart.
+	 * Handles removing an item (a specific variant, if given) from the cart.
 	 *
 	 * @throws AbortException
 	 * @throws AttributeDetectionException
@@ -169,11 +216,11 @@ class SummaryCartControl extends BaseControl
 	 * @throws UnknownCurrencyException
 	 * @throws BadRequestException
 	 */
-	public function handleRemoveItem(int $productId): void
+	public function handleRemoveItem(int $productId, ?int $variantId = null): void
 	{
 		$productEntity = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
 		$product = $this->productMapper->map($productEntity);
-		$this->shoppingCart->removeItem($product);
+		$this->shoppingCart->removeItem($product, $variantId);
 
 		$this->eventDispatcher->dispatch(new CartItemRemoved($product));
 		$this->redrawShoppingCart();

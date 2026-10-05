@@ -6,16 +6,13 @@ namespace Drago\Commerce\UI;
 
 
 /**
- * Represents the breadcrumb navigation state for a multistep process.
- *
- * This class holds the list of all steps, which steps are completed,
- * and the current active step, used to render breadcrumbs in the UI.
+ * Represents checkout steps and their completion state for breadcrumb rendering.
  */
 class Breadcrumbs
 {
 	/**
 	 * @param array<string, string> $steps
-	 * @param string[] $completedSteps
+	 * @param list<string> $completedSteps
 	 */
 	public function __construct(
 		public array $steps,

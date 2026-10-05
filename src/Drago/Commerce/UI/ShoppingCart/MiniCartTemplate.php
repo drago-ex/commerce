@@ -8,7 +8,7 @@ use Drago\Commerce\UI\BaseTemplate;
 
 
 /**
- * Template variables for BasketControl.
+ * Template data for the mini cart control.
  */
 class MiniCartTemplate extends BaseTemplate
 {

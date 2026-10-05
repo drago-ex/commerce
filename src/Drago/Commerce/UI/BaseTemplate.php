@@ -8,31 +8,20 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Drago\Application\UI\ExtraTemplate;
 use Drago\Commerce\Commerce;
+use Drago\Commerce\Domain\Product\ProductCart;
 use Latte\Attributes\TemplateFilter;
 use NumberFormatter;
 
 
-/**
- * Base template providing common template functionality.
- */
 class BaseTemplate extends ExtraTemplate
 {
-	/** @var array<int|string, mixed> Items in the shopping cart */
+	/** @var ProductCart[] */
 	public array $shoppingCart;
 
-	/**
-	 * Total number of items
-	 */
 	public int $amountItems;
 
-	/**
-	 * Total price as a Money object
-	 */
 	public Money $totalPrice;
 
-	/**
-	 * Breadcrumbs navigation data
-	 */
 	public Breadcrumbs $breadcrumbs;
 
 

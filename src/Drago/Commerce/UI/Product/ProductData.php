@@ -6,7 +6,7 @@ namespace Drago\Commerce\UI\Product;
 
 
 /**
- * Data transfer object holding the product ID from a form submission.
+ * Holds the product ID submitted by the product form.
  */
 class ProductData
 {

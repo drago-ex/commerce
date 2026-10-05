@@ -73,7 +73,7 @@ readonly class Factory
 			->setRequired('Please enter a discount code.')
 			->setAutocomplete(Autocomplete::Off)
 			->setPlaceholder('Enter discount code')
-			->setHtmlAttribute('aria-label', 'Discount code');
+			->setHtmlAttribute('aria-label', $this->translator?->translate('Discount code') ?? 'Discount code');
 		$form->addSubmit('apply', 'Apply');
 
 		return $form;

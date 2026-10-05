@@ -68,16 +68,6 @@ $customer = new Customer(
 
 $carrier = new Carrier(1, 'DHL', Money::of(150, 'CZK'));
 $payment = new Payment(1, 'Platba kartou', Money::zero('CZK'));
-$item = new ProductCart(
-	new Product(
-		id: 4,
-		name: 'Herní notebook ASUS ROG Strix',
-		price: Money::of(32490, 'CZK'),
-	),
-	BigInteger::one(),
-	variantId: 17,
-);
-
 $orderRepository = new OrderRepository($connection);
 $orderProductsRepository = new OrderProductRepository($connection);
 $customerRepository = new CustomerRepository($connection);
@@ -103,11 +93,39 @@ $orderService = new OrderService(
 
 $successOrderId = null;
 $successCustomerId = null;
+$successVariantId = 0;
+$rollbackVariantId = 0;
+$outOfStockVariantId = 0;
 
 try {
-	// 1. Successful placement: all order data is persisted and variant stock is decremented.
+	// Each variant is created by this test so it can run safely in parallel with other DB tests.
+	$createVariant = static function (Connection $connection, int $stock): int {
+		$sku = 'order-service-test-' . bin2hex(random_bytes(8));
+		$connection->query(
+			'INSERT INTO product_variants ([product_id], [sku], [price], [stock], [active]) VALUES (%i, %s, %f, %i, %i)',
+			6,
+			$sku,
+			490,
+			$stock,
+			1,
+		);
+
+		return $connection->getInsertId();
+	};
+
+	$successVariantId = $createVariant($connection, 1);
+	$rollbackVariantId = $createVariant($connection, 1);
+	$outOfStockVariantId = $createVariant($connection, 0);
+
+	$item = new ProductCart(
+		new Product(id: 6, name: 'Pánské tričko Classic', price: Money::of(490, 'CZK')),
+		BigInteger::one(),
+		variantId: $successVariantId,
+	);
+
+	// 1. Successful placement.
 	$stockBefore = (int) $connection
-		->query('SELECT stock FROM product_variants WHERE id = %i', 17)
+		->query('SELECT stock FROM product_variants WHERE id = %i', $successVariantId)
 		->fetchSingle();
 
 	$placement = $orderService->place(
@@ -115,9 +133,9 @@ try {
 		$carrier,
 		$payment,
 		[$item],
-		Money::of(32490, 'CZK'),
+		Money::of(490, 'CZK'),
 		Money::zero('CZK'),
-		Money::of(32640, 'CZK'),
+		Money::of(640, 'CZK'),
 		null,
 	);
 
@@ -126,13 +144,13 @@ try {
 
 	Assert::true($placement->orderId > 0);
 	Assert::same($successCustomerId, $placement->orderSummary->customer_id);
-	Assert::same(32490.0, $placement->orderSummary->subtotal_price);
-	Assert::same(32640.0, $placement->orderSummary->total_price);
+	Assert::same(490.0, $placement->orderSummary->subtotal_price);
+	Assert::same(640.0, $placement->orderSummary->total_price);
 	Assert::same(
 		$stockBefore - 1,
 		(int) $connection->query(
 			'SELECT stock FROM product_variants WHERE id = %i',
-			17,
+			$successVariantId,
 		)->fetchSingle(),
 	);
 	Assert::same(
@@ -161,7 +179,7 @@ try {
 	$connection->query('DELETE FROM orders_products WHERE order_id = %i', $successOrderId);
 	$connection->query('DELETE FROM orders WHERE id = %i', $successOrderId);
 	$connection->query('DELETE FROM customers WHERE id = %i', $successCustomerId);
-	$connection->query('UPDATE product_variants SET stock = stock + 1 WHERE id = %i', 17);
+	$connection->query('UPDATE product_variants SET stock = stock + 1 WHERE id = %i', $successVariantId);
 	$successOrderId = null;
 	$successCustomerId = null;
 
@@ -178,18 +196,14 @@ try {
 		note: null,
 	);
 	$outOfStockItem = new ProductCart(
-		new Product(
-			id: 4,
-			name: 'Herní notebook ASUS ROG Strix',
-			price: Money::of(52490, 'CZK'),
-		),
+		new Product(id: 6, name: 'Pánské tričko Classic', price: Money::of(490, 'CZK')),
 		BigInteger::one(),
-		variantId: 20,
+		variantId: $outOfStockVariantId,
 	);
 
 	Assert::same(
 		0,
-		(int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', 20)->fetchSingle(),
+		(int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', $outOfStockVariantId)->fetchSingle(),
 	);
 
 	Assert::exception(
@@ -198,9 +212,9 @@ try {
 			$carrier,
 			$payment,
 			[$outOfStockItem],
-			Money::of(52490, 'CZK'),
+			Money::of(490, 'CZK'),
 			Money::zero('CZK'),
-			Money::of(52640, 'CZK'),
+			Money::of(640, 'CZK'),
 			null,
 		),
 		OutOfStockException::class,
@@ -215,7 +229,7 @@ try {
 	);
 	Assert::same(
 		0,
-		(int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', 20)->fetchSingle(),
+		(int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', $outOfStockVariantId)->fetchSingle(),
 	);
 
 	// 3. If discount consumption fails after stock reservation, everything rolls back.
@@ -251,8 +265,14 @@ try {
 		$rejectingDiscountService,
 	);
 
+	$rollbackItem = new ProductCart(
+		new Product(id: 6, name: 'Pánské tričko Classic', price: Money::of(490, 'CZK')),
+		BigInteger::one(),
+		variantId: $rollbackVariantId,
+	);
+
 	$stockBeforeRollback = (int) $connection
-		->query('SELECT stock FROM product_variants WHERE id = %i', 17)
+		->query('SELECT stock FROM product_variants WHERE id = %i', $rollbackVariantId)
 		->fetchSingle();
 
 	Assert::exception(
@@ -260,10 +280,10 @@ try {
 			$rollbackCustomer,
 			$carrier,
 			$payment,
-			[$item],
-			Money::of(32490, 'CZK'),
+			[$rollbackItem],
+			Money::of(490, 'CZK'),
 			Money::of(100, 'CZK'),
-			Money::of(32540, 'CZK'),
+			Money::of(540, 'CZK'),
 			'TEST10',
 		),
 		OrderException::class,
@@ -271,7 +291,7 @@ try {
 
 	Assert::same(
 		$stockBeforeRollback,
-		(int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', 17)->fetchSingle(),
+		(int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', $rollbackVariantId)->fetchSingle(),
 	);
 	Assert::same(
 		0,
@@ -289,5 +309,11 @@ try {
 	if ($successCustomerId !== null) {
 		$connection->query('DELETE FROM customers WHERE id = %i', $successCustomerId);
 	}
+	$connection->query(
+		'DELETE FROM product_variants WHERE id IN (%i, %i, %i)',
+		$successVariantId,
+		$rollbackVariantId,
+		$outOfStockVariantId,
+	);
 	$connection->disconnect();
 }

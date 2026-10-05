@@ -84,11 +84,11 @@
 									{var $linkAttrs = [
 									'role' => 'button',
 									'class' => 'ajax btn btn-sm btn-outline-danger',
-									'aria-label' => "Remove {$cart->product->name} from cart",
 									'data-naja-history' => 'off'
 									]}
 
 									<a
+										aria-label="{_'Remove %s from cart', $cart->product->name}"
 											n:attr="$linkAttrs"
 											n:href="removeItem!, productId: $cart->product->id, variantId: $cart->variantId"
 									>

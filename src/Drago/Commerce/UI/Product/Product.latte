@@ -20,7 +20,7 @@
 				<a href="{plink detail, id: $product->id}" class="position-relative overflow-hidden d-block text-decoration-none">
 					{include productImage, name: $product->name, src: "https://placehold.co/200x160?text=%20&bg=f4f6f8"}
 
-					<span n:if="$product->hasDiscount()" class="shop-ribbon" title="{_'Discount'} {$product->getDiscountPercent()}%">
+					<span n:if="$product->hasDiscount() && (!isset($variantSummaries[$product->id]) || $variantSummaries[$product->id]->inheritsPrice)" class="shop-ribbon" title="{_'Discount'} {$product->getDiscountPercent()}%">
 						-{$product->getDiscountPercent()}%
 					</span>
 				</a>
@@ -37,36 +37,59 @@
 						{$product->description|truncate:50}
 					</p>
 
+					{var $summary = $variantSummaries[$product->id] ?? null}
+					{var $stock = $summary ? $summary->stock : $product->getStock()}
+
 					<div class="mt-auto">
 
-						<div n:if="$product->hasDiscount()" class="mb-2">
-							<span class="text-body-secondary text-decoration-line-through me-2 small" aria-label="{_'Original price'}">
+						{if $summary}
+							<p class="mb-2 fw-bold fs-6" aria-label="{_'Product price'}">
+								<span class="fw-normal small text-body-secondary">{_'from'}</span>
+								{$lowestPrices[$product->id]|money}
+							</p>
+						{elseif $product->hasDiscount()}
+							<div class="mb-2">
+								<span class="text-body-secondary text-decoration-line-through me-2 small" aria-label="{_'Original price'}">
+									{$product->getPrice()|money}
+								</span>
+								<span class="fw-bold text-danger d-block fs-6" aria-label="{_'Discounted price'}">
+									{$product->getDiscountedPrice()|money}
+								</span>
+							</div>
+						{else}
+							<p class="mb-2 fw-bold fs-6" aria-label="{_'Product price'}">
 								{$product->getPrice()|money}
-							</span>
-							<span class="fw-bold text-danger d-block fs-6" aria-label="{_'Discounted price'}">
-								{$product->getDiscountedPrice()|money}
-							</span>
-						</div>
-						<p n:if="!$product->hasDiscount()" class="mb-2 fw-bold fs-6" aria-label="{_'Product price'}">
-							{$product->getPrice()|money}
+							</p>
+						{/if}
+
+						<p n:if="$stock > 5" class="small text-success mb-2 d-flex align-items-center gap-1">
+							<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+							{_'In stock > 5 pcs'}
+						</p>
+						<p n:if="$stock > 0 && $stock <= 5" class="small text-warning-emphasis mb-2 d-flex align-items-center gap-1">
+							<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+							{_'In stock'}: {$stock} {_'pcs'}
+						</p>
+						<p n:if="$stock <= 0" class="small mb-2 text-danger d-flex align-items-center gap-1">
+							<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+							{_'Out of stock'}
 						</p>
 
-						<p n:if="$product->getStock() > 5" class="small text-success mb-2 d-flex align-items-center gap-1">
-								<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-								{_'In stock > 5 pcs'}
-						</p>
-						<p n:if="$product->getStock() > 0 && $product->getStock() <= 5" class="small text-warning-emphasis mb-2 d-flex align-items-center gap-1">
-								<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-								{_'In stock'}: {$product->getStock()} {_'pcs'}
-						</p>
-						<p n:if="$product->getStock() <= 0" class="small mb-2 text-danger d-flex align-items-center gap-1">
-								<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-								{_'Out of stock'}
-						</p>
-
-						<form n:if="$product->getStock() > 0" n:name="addToCart-{$product->id}">
-							{input add, class: "btn btn-shop-accent btn-sm w-100", aria-label => "{_'Add'} {$product->name} {_'to cart'}"}
-						</form>
+						{if $summary}
+							<a
+									n:if="$stock > 0"
+									href="{plink detail, id: $product->id}"
+									class="btn btn-shop-accent btn-sm w-100"
+									aria-label="{_'Choose variant'}: {$product->name}"
+							>
+								{_'Choose variant'}
+							</a>
+						{else}
+							<form n:if="$stock > 0" n:name="addToCart-{$product->id}">
+								{capture $addLabel}{_'Add'} {$product->name} {_'to cart'}{/capture}
+								{input add, class: "btn btn-shop-accent btn-sm w-100", aria-label => $addLabel}
+							</form>
+						{/if}
 
 					</div>
 				</div>

@@ -237,6 +237,29 @@ The completion page is part of the host application's presenter. For example:
 {/block}
 ```
 
+## Events
+
+Listeners are registered in `services.neon` with `addListener(EventClass, @listener)`. A listener must be callable (a class with `__invoke`), otherwise registering it throws. Listeners run synchronously in the request, and an exception in a listener reaches the code that dispatched the event. The exception is `OrderPlaced`, where the order is already saved, so a failure is only logged.
+
+| Event | Fired when | Variant data |
+| --- | --- | --- |
+| `ProductAddedToCart` | An item is added to the cart, before it is stored. A listener can change the price with `setPrice()`. | `variantId`, `variantLabel`, `amount` |
+| `CartItemChanged` | The quantity of a line already in the cart changes. `amount` is the new quantity. | `variantId`, `variantLabel` |
+| `CartItemRemoved` | A line is removed from the cart. | `variantId`, `variantLabel` |
+| `CustomerUpdated` | The customer step is completed. | – |
+| `DeliveryOptionsChanged` | Carrier and payment are chosen. | – |
+| `OrderPlaced` | The order is saved and stock is taken. | `items` (snapshot of the ordered lines) |
+
+`ProductAddedToCart::$product->price` is the price before the product's percentage discount: the variant's own price if it has one, otherwise the product price. The discount is applied afterwards, only if no listener changed the price and the variant has no own price. `OrderPlaced` empties the cart right after the listeners run, so a listener that defers its work should read `items`, not the cart session. `OrderLoggerListener` writes the placed order, including variants, to the Tracy log `order`; it contains customer contact details, so mind how long you keep that log. `CartUpdated` is never dispatched and is deprecated.
+
+## Product Variants
+
+- A product with at least one active variant is bought only through a variant. Its own `stock` and `price` are not used for ordering; the listing shows the summed variant stock, the lowest price, and a link to the detail page.
+- A variant with `price = NULL` inherits the product price and its percentage discount. A variant with its own price is sold at that price and the product discount does not apply to it.
+- Cart quantity changes only affect lines already in the cart, and the stock check counts what the cart already holds.
+- Checkout re-validates every line against the database inside the order transaction (`StockReservation`): the product and variant must exist and be active, variants must belong to the product, and stock is decremented atomically. Unexpected errors are logged with `Debugger::log()`; a sold-out or unavailable item is reported to the customer by name.
+- The schema does not prevent duplicate attribute combinations within one product or several values of one attribute on a variant. Keep that consistent in whatever manages the data.
+
 ## Optional Customization
 
 ### Custom templates

@@ -17,9 +17,9 @@ services:
 
 	- Drago\Commerce\Domain\Order\OrderProductRepository
 	- Drago\Commerce\Domain\Order\OrderRepository
+	- Drago\Commerce\Domain\Order\StockReservation
 
 	- Drago\Commerce\Domain\Product\ProductAttributeRepository
-	- Drago\Commerce\Domain\Product\ProductAttributeValueRepository
 	- Drago\Commerce\Domain\Product\ProductAttributeValueRepository
 	- Drago\Commerce\Domain\Product\ProductImageRepository
 	- Drago\Commerce\Domain\Product\ProductMapper

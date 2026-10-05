@@ -77,6 +77,17 @@ $dummyRepo = (new class extends ProductVariantRepository {
 	{
 		return [1, 10];
 	}
+
+
+	public function getAttributesForProduct(int $productId): array
+	{
+		return [
+			5 => [
+				['attribute' => 'Barva', 'value' => 'Černá', 'valueId' => 1],
+				['attribute' => 'Kapacita', 'value' => '256 GB', 'valueId' => 10],
+			],
+		];
+	}
 });
 
 $mapper = new ProductVariantMapper($commerce, $dummyRepo);
@@ -91,6 +102,7 @@ $entityOverride->active = 1;
 
 $optionOverride = $mapper->map($entityOverride, 12500.0);
 Assert::true($optionOverride->price?->isEqualTo(Money::of(14500, 'CZK')));
+Assert::true($optionOverride->priceOverridden);
 Assert::same([1, 10], $optionOverride->attributeValueIds);
 Assert::same('Barva: Černá, Kapacita: 256 GB', $optionOverride->getLabel());
 
@@ -105,6 +117,18 @@ $entityFallback->active = 1;
 
 $optionFallback = $mapper->map($entityFallback, 12500.0);
 Assert::true($optionFallback->price?->isEqualTo(Money::of(12500, 'CZK')));
+Assert::false($optionFallback->priceOverridden);
+
+// Bulk mapping uses one attribute lookup for all variants of the product.
+$options = $mapper->mapMany(2, [$entityOverride, $entityFallback], 12500.0);
+Assert::count(2, $options);
+Assert::same('Barva: Černá, Kapacita: 256 GB', $options[0]->getLabel());
+Assert::same([1, 10], $options[0]->attributeValueIds);
+Assert::true($options[0]->priceOverridden);
+Assert::same([], $options[1]->labels);
+Assert::same([], $options[1]->attributeValueIds);
+Assert::true($options[1]->price?->isEqualTo(Money::of(12500, 'CZK')));
+Assert::false($options[1]->priceOverridden);
 
 // 3. Test ShoppingCartSession with multiple variants of the same product
 $product = new Product(id: 2, name: 'Mobilní telefon XYZ', price: Money::of(12500, 'CZK'));
@@ -156,6 +180,13 @@ Assert::same(1, $cartSession->getAmountItems());
 Assert::same(6, $cartSession->getItems()[0]->variantId);
 Assert::true($cartSession->getSubtotalPrice()->isEqualTo(Money::of(12500, 'CZK')));
 
+// Lines are found by product and variant together.
+Assert::same(1, $cartSession->getAmount(2, 6));
+Assert::same(0, $cartSession->getAmount(2, 5));
+Assert::same(0, $cartSession->getAmount(2));
+Assert::null($cartSession->findItem(2, 5));
+Assert::same(6, $cartSession->findItem(2, 6)?->variantId);
+
 // A non-variant product line stays separate from the same product's variant line.
 $cartSession->addItem($product, 1);
 Assert::same(2, count($cartSession->getItems()));
@@ -175,6 +206,12 @@ Assert::same(1, $cartSession->getItems()[1]->amount->toInt());
 $cartSession->removeItem($product, variantId: 6);
 Assert::same(1, count($cartSession->getItems()));
 Assert::null($cartSession->getItems()[0]->variantId);
+
+// A line can be removed by IDs alone (its product may no longer exist).
+Assert::same(1, $cartSession->getAmount(2));
+$cartSession->removeLine(2);
+Assert::same(0, $cartSession->getAmount(2));
+Assert::same([], $cartSession->getItems());
 
 $cartSession->remove();
 Assert::same([], $cartSession->getItems());

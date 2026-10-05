@@ -9,16 +9,17 @@ use Brick\Money\Money;
 use Brick\PhoneNumber\PhoneNumber;
 use Brick\PhoneNumber\PhoneNumberFormat;
 use DateTimeImmutable;
-use Dibi\DriverException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
+use Drago\Commerce\Domain\Order\ItemUnavailableException;
+use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
-use Drago\Commerce\Domain\Product\ProductRepository;
-use Drago\Commerce\Domain\Product\ProductVariantRepository;
+use Drago\Commerce\Domain\Order\OutOfStockException;
+use Drago\Commerce\Domain\Order\StockReservation;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Service\DiscountCodeService;
@@ -40,8 +41,7 @@ class SummaryOrderControl extends BaseControl
 		private readonly OrderRepository $orderRepository,
 		private readonly OrderProductRepository $orderProductsRepository,
 		private readonly CustomerRepository $customerRepository,
-		private readonly ProductRepository $productRepository,
-		private readonly ProductVariantRepository $productVariantRepository,
+		private readonly StockReservation $stockReservation,
 		private readonly Commerce $commerce,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
@@ -112,7 +112,6 @@ class SummaryOrderControl extends BaseControl
 
 	/**
 	 * @throws AttributeDetectionException
-	 * @throws DriverException
 	 * @throws Exception
 	 * @throws MoneyMismatchException
 	 */
@@ -125,6 +124,12 @@ class SummaryOrderControl extends BaseControl
 
 		if ($customer === null || $carrier === null || $payment === null) {
 			$form->addError('Order details are incomplete.');
+			return;
+		}
+
+		$items = $this->shoppingCartSession->getItems();
+		if ($items === []) {
+			$form->addError('Your shopping cart is empty.');
 			return;
 		}
 
@@ -171,40 +176,27 @@ class SummaryOrderControl extends BaseControl
 			$this->orderRepository->save((array) $orderData);
 			$orderId = $this->orderRepository->getInsertId();
 
-			foreach ($this->shoppingCartSession->getItems() as $item) {
-				$product = $this->productRepository->getOne($item->product->id);
-				if ($product === null || !$product->active) {
-					throw new \Exception("Product with ID {$item->product->id} not found.");
-				}
+			$this->stockReservation->reserve($items);
 
-				$amount = $item->amount->toInt();
-				$variantId = $item->variantId;
-				if ($variantId !== null) {
-					$variant = $this->productVariantRepository->getOne($variantId);
-					if ($variant === null || $variant->product_id !== $product->id || $variant->active !== 1) {
-						throw new \Exception('The selected product variant is no longer available.');
-					}
-
-					if (!$this->productVariantRepository->decrementStock($variantId, $amount)) {
-						throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
-					}
-				} elseif (!$this->productRepository->decrementStock($product->id, $amount)) {
-					throw new \Exception("The product '$product->name' is not in stock in the requested quantity.");
-				}
-
+			foreach ($items as $item) {
 				$orderProduct = OrderProduct::fromCartItem($orderId, $item);
 				$this->orderProductsRepository->insert((array) $orderProduct)->execute();
 			}
 
 			if (!$this->discountCodeService->consume()) {
-				throw new \Exception('The discount code has just reached its usage limit, please try again without the code.');
+				throw new OrderException('The discount code has just reached its usage limit, please try again without the code.');
 			}
 
 			$this->orderRepository->getConnection()->commit();
 
+		} catch (OrderException $e) {
+			$this->rollback();
+			$form->addError($this->describe($e), false);
+			return;
+
 		} catch (\Throwable $e) {
-			$this->orderRepository->getConnection()->rollback();
-			Debugger::barDump($e);
+			$this->rollback();
+			Debugger::log($e, Debugger::EXCEPTION);
 			$form->addError('An error occurred while processing your order. Please try again.');
 			return;
 		}
@@ -218,6 +210,7 @@ class SummaryOrderControl extends BaseControl
 					carrier: $carrier,
 					payment: $payment,
 					shoppingCartSession: $this->shoppingCartSession,
+					items: $items,
 				),
 			);
 		} catch (\Throwable $e) {
@@ -229,5 +222,31 @@ class SummaryOrderControl extends BaseControl
 		}
 
 		$this->getPresenter()->redirect($this->linkRedirectTarget);
+	}
+
+
+	/**
+	 * Rolls the order transaction back; a failure to do so must not hide the original error.
+	 */
+	private function rollback(): void
+	{
+		try {
+			$this->orderRepository->getConnection()->rollback();
+		} catch (\Throwable $e) {
+			Debugger::log($e, 'commerce-order-rollback');
+		}
+	}
+
+
+	/**
+	 * Builds the customer-facing message for an order that cannot be completed.
+	 */
+	private function describe(OrderException $e): string
+	{
+		return match (true) {
+			$e instanceof OutOfStockException => $this->translate('The product %s is not in stock in the requested quantity.', $e->productName),
+			$e instanceof ItemUnavailableException => $this->translate('The product %s is no longer available.', $e->productName),
+			default => $this->translate($e->getMessage()),
+		};
 	}
 }

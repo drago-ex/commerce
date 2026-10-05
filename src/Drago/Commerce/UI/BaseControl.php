@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI;
 
 use Drago\Application\UI\ExtraControl;
+use function sprintf;
 
 
 /**
@@ -62,6 +63,20 @@ class BaseControl extends ExtraControl
 			completedSteps: $this->completedSteps,
 			currentStep: $this->currentStep,
 		);
+	}
+
+
+	/**
+	 * Translates a message with sprintf-style parameters. Without a translator,
+	 * the message is returned with the parameters filled in.
+	 */
+	protected function translate(string $message, string|int ...$params): string
+	{
+		if ($this->translator !== null) {
+			return (string) $this->translator->translate($message, ...$params);
+		}
+
+		return $params === [] ? $message : sprintf($message, ...$params);
 	}
 
 

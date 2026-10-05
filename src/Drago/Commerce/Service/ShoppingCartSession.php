@@ -146,12 +146,46 @@ class ShoppingCartSession
 	}
 
 
+	/**
+	 * Returns the cart line for the product (and variant, if any), or null.
+	 */
+	public function findItem(int $productId, ?int $variantId = null): ?ProductCart
+	{
+		foreach ($this->getItems() as $item) {
+			if ($item->product->id === $productId && $item->variantId === $variantId) {
+				return $item;
+			}
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * Returns how many pieces of the product (and variant, if any) are in the cart.
+	 */
+	public function getAmount(int $productId, ?int $variantId = null): int
+	{
+		return $this->findItem($productId, $variantId)?->amount->toInt() ?? 0;
+	}
+
+
 	public function removeItem(Product $product, ?int $variantId = null): void
+	{
+		$this->removeLine($product->id, $variantId);
+	}
+
+
+	/**
+	 * Removes the cart line by IDs, so it also works for a product that has
+	 * meanwhile been deleted or deactivated.
+	 */
+	public function removeLine(int $productId, ?int $variantId = null): void
 	{
 		$items = [];
 
 		foreach ($this->getItems() as $item) {
-			if (!($item->product->id === $product->id && $item->variantId === $variantId)) {
+			if (!($item->product->id === $productId && $item->variantId === $variantId)) {
 				$items[] = $item;
 			}
 		}

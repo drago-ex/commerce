@@ -53,16 +53,14 @@
 
 		{* Price block *}
 		<div class="mb-3" id="shop-detail-price-box">
-			{var $hasDiscount = $product->hasDiscount()}
-			{var $currentPrice = $hasDiscount ? $product->getDiscountedPrice() : $product->getPrice()}
-			<span id="shop-detail-orig-price" n:class="text-body-secondary, text-decoration-line-through, me-2, !$hasDiscount ? d-none">
-				{$product->getPrice()|money}
+			<span id="shop-detail-orig-price" n:class="text-body-secondary, text-decoration-line-through, me-2, !$originalPrice ? d-none">
+				{if $originalPrice}{$originalPrice|money}{/if}
 			</span>
-			<span id="shop-detail-price" n:class="fw-bold, fs-4, $hasDiscount ? text-danger">
-				{$currentPrice|money}
+			<span id="shop-detail-price" n:class="fw-bold, fs-4, $discountPercent > 0 ? text-danger">
+				{$price|money}
 			</span>
-			<span id="shop-detail-discount-badge" n:class="badge, bg-danger, ms-1, !$hasDiscount ? d-none">
-				-{$product->getDiscountPercent()}%
+			<span id="shop-detail-discount-badge" n:class="badge, bg-danger, ms-1, $discountPercent <= 0 ? d-none">
+				-{$discountPercent}%
 			</span>
 		</div>
 

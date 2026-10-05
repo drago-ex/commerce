@@ -38,6 +38,9 @@ class ProductDetailControl extends BaseControl
 	private int $productId;
 	private ?int $selectedVariantId = null;
 
+	/** @var list<ProductVariantOption>|null */
+	private ?array $variantOptions = null;
+
 
 	public function __construct(
 		private readonly ProductRepository $productRepository,
@@ -85,57 +88,26 @@ class ProductDetailControl extends BaseControl
 
 		$variants = $this->getVariantOptions($entity);
 		$attributeGroups = $this->variantRepository->getProductAttributeGroups($entity->id);
-
-		$selectedVariant = null;
-		if ($variants !== []) {
-			if ($this->selectedVariantId !== null) {
-				foreach ($variants as $v) {
-					if ($v->id === $this->selectedVariantId) {
-						$selectedVariant = $v;
-						break;
-					}
-				}
-			}
-
-			if ($selectedVariant === null) {
-				foreach ($variants as $v) {
-					if ($v->inStock()) {
-						$selectedVariant = $v;
-						break;
-					}
-				}
-				$selectedVariant ??= $variants[0];
-			}
-		}
+		$selectedVariant = $this->pickSelectedVariant($variants);
 
 		$variantMatrix = [];
 		foreach ($variants as $variant) {
-			$variantEntity = $this->variantRepository->getOne($variant->id);
-			$hasExplicitPrice = $variantEntity !== null && $variantEntity->price !== null;
-
-			$originalPrice = null;
-			$discountPercent = null;
-			$discountedPrice = $variant->price;
-
-			if (!$hasExplicitPrice && $entity->hasDiscount() && $variant->price !== null) {
-				$discountRatio = max(0, min(100, $entity->discount ?? 0)) / 100;
-				$discountedPrice = $variant->price->multipliedBy(1 - $discountRatio, RoundingMode::HALF_UP);
-				$originalPrice = $this->formatMoney($variant->price);
-				$discountPercent = $entity->getDiscountPercent();
-			}
+			$pricing = $this->resolvePrice($entity, $variant);
 
 			$variantMatrix[] = [
 				'id' => $variant->id,
 				'sku' => $variant->sku,
 				'stock' => $variant->stock,
 				'inStock' => $variant->inStock(),
-				'price' => $this->formatMoney($discountedPrice),
-				'originalPrice' => $originalPrice,
-				'discountPercent' => $discountPercent,
+				'price' => $this->formatMoney($pricing['price']),
+				'originalPrice' => $pricing['original'] !== null ? $this->formatMoney($pricing['original']) : null,
+				'discountPercent' => $pricing['percent'] > 0 ? $pricing['percent'] : null,
 				'attributeValueIds' => $variant->attributeValueIds,
 				'label' => $variant->getLabel(),
 			];
 		}
+
+		$pricing = $this->resolvePrice($entity, $selectedVariant);
 
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/ProductDetail.latte');
@@ -151,8 +123,61 @@ class ProductDetailControl extends BaseControl
 		$template->variants = $variants;
 		$template->attributeGroups = $attributeGroups;
 		$template->selectedVariant = $selectedVariant;
+		$template->price = $pricing['price'];
+		$template->originalPrice = $pricing['original'];
+		$template->discountPercent = $pricing['percent'];
 		$template->variantMatrixJson = json_encode($variantMatrix, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
 		$template->render();
+	}
+
+
+	/**
+	 * Picks the variant to show as selected: the requested one if it exists,
+	 * otherwise the first one in stock, otherwise the first one.
+	 *
+	 * @param list<ProductVariantOption> $variants
+	 */
+	private function pickSelectedVariant(array $variants): ?ProductVariantOption
+	{
+		foreach ($variants as $variant) {
+			if ($variant->id === $this->selectedVariantId) {
+				return $variant;
+			}
+		}
+
+		foreach ($variants as $variant) {
+			if ($variant->inStock()) {
+				return $variant;
+			}
+		}
+
+		return $variants[0] ?? null;
+	}
+
+
+	/**
+	 * Returns the price a customer pays for the product, or for its variant if
+	 * one is given. The product's percentage discount applies unless the
+	 * variant has its own price.
+	 *
+	 * @return array{price: Money, original: ?Money, percent: int}
+	 * @throws UnknownCurrencyException
+	 */
+	private function resolvePrice(ProductEntity $entity, ?ProductVariantOption $variant): array
+	{
+		$base = $variant->price ?? $entity->getPrice();
+
+		if ($variant?->priceOverridden === true || !$entity->hasDiscount()) {
+			return ['price' => $base, 'original' => null, 'percent' => 0];
+		}
+
+		$ratio = max(0, min(100, $entity->getDiscountPercent())) / 100;
+
+		return [
+			'price' => $base->multipliedBy(1 - $ratio, RoundingMode::HALF_UP),
+			'original' => $base,
+			'percent' => $entity->getDiscountPercent(),
+		];
 	}
 
 
@@ -164,11 +189,11 @@ class ProductDetailControl extends BaseControl
 	 */
 	private function getVariantOptions(ProductEntity $entity): array
 	{
-		$options = [];
-		foreach ($this->variantRepository->getForProduct($entity->id) as $variantEntity) {
-			$options[] = $this->variantMapper->map($variantEntity, $entity->price);
-		}
-		return $options;
+		return $this->variantOptions ??= $this->variantMapper->mapMany(
+			$entity->id,
+			$this->variantRepository->getForProduct($entity->id),
+			$entity->price,
+		);
 	}
 
 
@@ -212,19 +237,9 @@ class ProductDetailControl extends BaseControl
 		$form->addHidden(FactoryValues::ProductId, (string) $this->productId)
 			->addRule($form::Integer);
 
-		if ($variants !== []) {
-			$defaultVariantId = $this->selectedVariantId;
-			if ($defaultVariantId === null) {
-				foreach ($variants as $v) {
-					if ($v->inStock()) {
-						$defaultVariantId = $v->id;
-						break;
-					}
-				}
-				$defaultVariantId ??= $variants[0]->id;
-			}
-
-			$form->addHidden(FactoryValues::VariantId, (string) $defaultVariantId);
+		$selected = $this->pickSelectedVariant($variants);
+		if ($selected !== null) {
+			$form->addHidden(FactoryValues::VariantId, (string) $selected->id);
 		}
 
 		$form->addIntegerInput(FactoryValues::Amount)
@@ -250,6 +265,7 @@ class ProductDetailControl extends BaseControl
 	{
 		$productId = (int) $data->productId;
 		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
+		$amount = (int) $data->amount;
 
 		$entity = $this->productRepository->getOne($productId) ?? $this->error('Product not found.');
 		if (!$entity->active) {
@@ -257,29 +273,41 @@ class ProductDetailControl extends BaseControl
 			$this->getPresenter()->redirect('this');
 		}
 
+		if ($amount < 1) {
+			return;
+		}
+
 		$availableStock = $entity->stock;
 		$variantLabel = null;
 		$price = $this->commerce->moneyOf($entity->price);
-
 		$applyDiscount = true;
 
-		if ($variantId !== null) {
+		if ($variantId === null) {
+			// A product with variants is bought through one of them, never as a whole.
+			if ($this->variantRepository->hasActive($entity->id)) {
+				$this->reject('Please choose a variant.');
+				return;
+			}
+		} else {
 			$variantEntity = $this->variantRepository->getOne($variantId) ?? $this->error('Variant not found.');
-			if ($variantEntity->product_id !== $entity->id || $variantEntity->active !== 1) {
+			if ($variantEntity->product_id !== $entity->id || !$variantEntity->active) {
 				$this->error('Variant not found.');
 			}
+
 			$availableStock = $variantEntity->stock;
 			$variantLabel = implode(', ', $this->variantRepository->getLabels($variantEntity->id));
 
-			if ($variantEntity->price !== null) {
-				$price = $this->commerce->moneyOf($variantEntity->price);
+			if ($variantEntity->hasPriceOverride()) {
+				$price = $this->commerce->moneyOf((float) $variantEntity->price);
 				$applyDiscount = false;
 			}
 		}
 
-		if ($availableStock < $data->amount) {
-			$this->getPresenter()->flashMessage("The product $entity->name is only $availableStock pcs in stock.", Alert::Danger);
-			$this->getPresenter()->redrawControl('message');
+		$inCart = $this->shoppingCartSession->getAmount($entity->id, $variantId);
+		if ($inCart + $amount > $availableStock) {
+			$this->reject($inCart > 0
+				? $this->translate('The product %s is only %d pcs in stock, %d of them already in your cart.', $entity->name, $availableStock, $inCart)
+				: $this->translate('The product %s is only %d pcs in stock.', $entity->name, $availableStock));
 			return;
 		}
 
@@ -293,10 +321,17 @@ class ProductDetailControl extends BaseControl
 			$item->setDiscount($entity->discount);
 		}
 
-		$this->shoppingCartSession->addItem($item, $data->amount, variantId: $variantId, variantLabel: $variantLabel);
+		$this->shoppingCartSession->addItem($item, $amount, variantId: $variantId, variantLabel: $variantLabel);
 
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
 		$this->getPresenter()->redrawControl('message');
 		$this->getPresenter()->redrawControl('cart');
+	}
+
+
+	private function reject(string $message): void
+	{
+		$this->getPresenter()->flashMessage($message, Alert::Danger);
+		$this->getPresenter()->redrawControl('message');
 	}
 }

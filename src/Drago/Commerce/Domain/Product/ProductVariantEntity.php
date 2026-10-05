@@ -30,4 +30,15 @@ class ProductVariantEntity extends Entity
 	public ?float $price;
 	public int $stock;
 	public int $active;
+
+
+	/**
+	 * Whether the variant has its own price. Such a variant is sold at that
+	 * price as-is; the product's percentage discount applies only to variants
+	 * that inherit the product price.
+	 */
+	public function hasPriceOverride(): bool
+	{
+		return $this->price !== null;
+	}
 }

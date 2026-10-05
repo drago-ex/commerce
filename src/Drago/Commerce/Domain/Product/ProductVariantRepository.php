@@ -59,6 +59,99 @@ class ProductVariantRepository
 
 
 	/**
+	 * Whether the product has at least one active variant. Such a product can
+	 * only be bought through a variant; its own stock and price are not used.
+	 *
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	public function hasActive(int $productId): bool
+	{
+		return (int) $this->command()
+			->select('COUNT(*)')
+			->from(ProductVariantEntity::Table)
+			->where('%n = ?', ProductVariantEntity::ProductId, $productId)
+			->where('%n = ?', ProductVariantEntity::Active, 1)
+			->fetchSingle() > 0;
+	}
+
+
+	/**
+	 * Returns a stock and price summary of the active variants of every product
+	 * that has any, keyed by product ID. One query for the whole product listing.
+	 *
+	 * @return array<int, ProductVariantSummary>
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	public function getSummaries(): array
+	{
+		$rows = $this->command()
+			->select('%n', ProductVariantEntity::ProductId)
+			->select('%n', ProductVariantEntity::Price)
+			->select('%n', ProductVariantEntity::Stock)
+			->from(ProductVariantEntity::Table)
+			->where('%n = ?', ProductVariantEntity::Active, 1)
+			->fetchAll();
+
+		$summaries = [];
+		foreach ($rows as $row) {
+			$productId = (int) $row[ProductVariantEntity::ProductId];
+			$price = $row[ProductVariantEntity::Price];
+
+			$summaries[$productId] ??= new ProductVariantSummary;
+			$summaries[$productId]->add(
+				max(0, (int) $row[ProductVariantEntity::Stock]),
+				$price === null ? null : (float) $price,
+			);
+		}
+
+		return $summaries;
+	}
+
+
+	/**
+	 * Returns the attribute values of all active variants of a product in one
+	 * query, keyed by variant ID, in a stable order (by attribute ID).
+	 *
+	 * @return array<int, list<array{attribute: string, value: string, valueId: int}>>
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	public function getAttributesForProduct(int $productId): array
+	{
+		$rows = $this->command()
+			->select('vv.variant_id AS variant_id')
+			->select('a.name AS attribute')
+			->select('v.value AS value')
+			->select('v.id AS value_id')
+			->from('product_variant_values vv')
+			->innerJoin('product_variants pv')
+			->on('pv.id = vv.variant_id')
+			->innerJoin('product_attribute_values v')
+			->on('v.id = vv.attribute_value_id')
+			->innerJoin('product_attributes a')
+			->on('a.id = v.attribute_id')
+			->where('pv.product_id = ?', $productId)
+			->where('pv.active = ?', 1)
+			->orderBy('vv.variant_id')
+			->orderBy('a.id')
+			->fetchAll();
+
+		$attributes = [];
+		foreach ($rows as $row) {
+			$attributes[(int) $row['variant_id']][] = [
+				'attribute' => (string) $row['attribute'],
+				'value' => (string) $row['value'],
+				'valueId' => (int) $row['value_id'],
+			];
+		}
+
+		return $attributes;
+	}
+
+
+	/**
 	 * Returns the human-readable attribute labels for a variant, e.g.
 	 * ["Barva: Modrá", "Velikost: M"], in a stable order (by attribute ID).
 	 *

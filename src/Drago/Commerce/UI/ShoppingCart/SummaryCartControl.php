@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\ShoppingCart;
 
 use Brick\Money\Exception\MoneyMismatchException;
-use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Commerce\Domain\Product\ProductMapper;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\Event\CartItemChanged;
@@ -22,11 +20,9 @@ use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
 use Drago\Commerce\UI\FactoryValues;
 use Nette\Application\AbortException;
-use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\Application\UI\Multiplier;
-use function sprintf;
 
 
 /**
@@ -37,7 +33,6 @@ class SummaryCartControl extends BaseControl
 	public function __construct(
 		private readonly ShoppingCartSession $shoppingCart,
 		private readonly ProductRepository $productRepository,
-		private readonly ProductMapper $productMapper,
 		private readonly ProductVariantRepository $productVariantRepository,
 		private readonly Factory $factory,
 		private readonly EventDispatcher $eventDispatcher,
@@ -164,65 +159,95 @@ class SummaryCartControl extends BaseControl
 
 
 	/**
-	 * Handles successful add to basket form submission.
+	 * Handles a quantity change of an item that is already in the cart.
+	 * Lines that are not in the cart are ignored, so a crafted request cannot
+	 * add a product or variant at a price it was never offered for.
 	 *
 	 * @throws AbortException
 	 * @throws AttributeDetectionException
 	 * @throws Exception
-	 * @throws UnknownCurrencyException
-	 * @throws BadRequestException
 	 */
 	public function changeQuantity(Form $form, FactoryValues $data): void
 	{
 		$productId = (int) $data->productId;
 		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
+		$amount = (int) $data->amount;
 
-		$productEntity = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
-		$product = $this->productMapper->map($productEntity);
-
-		$availableStock = $productEntity->stock;
-		$variantLabel = null;
-
-		if ($variantId !== null) {
-			$variantEntity = $this->productVariantRepository->getOne($variantId) ?? $this->error('Variant not found');
-			if ($variantEntity->product_id !== $productEntity->id || $variantEntity->active !== 1) {
-				$this->error('Variant not found');
-			}
-			$availableStock = $variantEntity->stock;
-			$variantLabel = implode(', ', $this->productVariantRepository->getLabels($variantId));
+		$line = $this->shoppingCart->findItem($productId, $variantId);
+		if ($line === null || $amount < 1) {
+			$this->redrawShoppingCart();
+			return;
 		}
 
-		if ($availableStock < $data->amount) {
-			$message = $this->translator?->translate('The product %s is only %d pcs in stock.', $product->name, $availableStock)
-				?? sprintf('The product %s is only %d pcs in stock.', $product->name, $availableStock);
-			$this->getPresenter()->flashMessage($message, Alert::Danger);
+		$availableStock = $this->getAvailableStock($productId, $variantId);
+		if ($availableStock === null) {
+			$this->getPresenter()->flashMessage(
+				$this->translate('The product %s is no longer available.', $line->product->name),
+				Alert::Danger,
+			);
 			$this->getPresenter()->redrawControl('message');
 			$this->redrawShoppingCart();
 			return;
 		}
 
-		$this->shoppingCart->addItem($product, $data->amount, dontCount: true, variantId: $variantId, variantLabel: $variantLabel);
-		$this->eventDispatcher->dispatch(new CartItemChanged($product, $data->amount));
+		if ($availableStock < $amount) {
+			$this->getPresenter()->flashMessage(
+				$this->translate('The product %s is only %d pcs in stock.', $line->product->name, $availableStock),
+				Alert::Danger,
+			);
+			$this->getPresenter()->redrawControl('message');
+			$this->redrawShoppingCart();
+			return;
+		}
+
+		$this->shoppingCart->addItem($line->product, $amount, dontCount: true, variantId: $variantId, variantLabel: $line->variantLabel);
+		$this->eventDispatcher->dispatch(new CartItemChanged($line->product, $amount));
 		$this->redrawShoppingCart();
 	}
 
 
 	/**
-	 * Handles removing an item (a specific variant, if given) from the cart.
+	 * Returns how many pieces can currently be bought, or null when the
+	 * product or variant is gone, inactive, or needs a variant that is missing.
 	 *
-	 * @throws AbortException
 	 * @throws AttributeDetectionException
 	 * @throws Exception
-	 * @throws UnknownCurrencyException
-	 * @throws BadRequestException
+	 */
+	private function getAvailableStock(int $productId, ?int $variantId): ?int
+	{
+		$product = $this->productRepository->getOne($productId);
+		if ($product === null || !$product->active) {
+			return null;
+		}
+
+		if ($variantId === null) {
+			return $this->productVariantRepository->hasActive($productId) ? null : $product->stock;
+		}
+
+		$variant = $this->productVariantRepository->getOne($variantId);
+		if ($variant === null || $variant->product_id !== $product->id || !$variant->active) {
+			return null;
+		}
+
+		return $variant->stock;
+	}
+
+
+	/**
+	 * Handles removing an item (a specific variant, if given) from the cart.
+	 * Works on the cart line itself, so an item whose product has since been
+	 * deleted or deactivated can still be removed.
+	 *
+	 * @throws AbortException
 	 */
 	public function handleRemoveItem(int $productId, ?int $variantId = null): void
 	{
-		$productEntity = $this->productRepository->getOne($productId) ?? $this->error('Product not found');
-		$product = $this->productMapper->map($productEntity);
-		$this->shoppingCart->removeItem($product, $variantId);
+		$line = $this->shoppingCart->findItem($productId, $variantId);
+		if ($line !== null) {
+			$this->shoppingCart->removeLine($productId, $variantId);
+			$this->eventDispatcher->dispatch(new CartItemRemoved($line->product));
+		}
 
-		$this->eventDispatcher->dispatch(new CartItemRemoved($product));
 		$this->redrawShoppingCart();
 	}
 

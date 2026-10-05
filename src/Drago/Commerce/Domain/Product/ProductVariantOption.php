@@ -15,6 +15,8 @@ final class ProductVariantOption
 	/**
 	 * @param list<string> $labels e.g. ["Barva: Modrá", "Velikost: M"]
 	 * @param list<int> $attributeValueIds e.g. [1, 6]
+	 * @param bool $priceOverridden True when $price is the variant's own price rather than
+	 *   the inherited product price (the product discount does not apply to it).
 	 */
 	public function __construct(
 		public int $id,
@@ -23,6 +25,7 @@ final class ProductVariantOption
 		public int $stock,
 		public array $labels,
 		public array $attributeValueIds = [],
+		public bool $priceOverridden = false,
 	) {
 	}
 

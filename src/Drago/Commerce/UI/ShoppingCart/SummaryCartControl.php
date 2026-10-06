@@ -149,8 +149,8 @@ class SummaryCartControl extends BaseControl
 	private function redrawShoppingCart(): void
 	{
 		if ($this->isAjax()) {
-			$this->getPresenter()->redrawControl('shoppingCart');
-			$this->getPresenter()->redrawControl('cart');
+			$this->addRedraw('shoppingCart');
+			$this->addRedraw('cart');
 		} else {
 			$this->redirect('this');
 		}
@@ -180,21 +180,21 @@ class SummaryCartControl extends BaseControl
 
 		$availableStock = $this->getAvailableStock($productId, $variantId);
 		if ($availableStock === null) {
-			$this->getPresenter()->flashMessage(
+			$this->addFlashMessage(
 				$this->translate('The product %s is no longer available.', $line->product->name),
 				Alert::Danger,
 			);
-			$this->getPresenter()->redrawControl('message');
+			$this->addRedraw('message');
 			$this->redrawShoppingCart();
 			return;
 		}
 
 		if ($availableStock < $amount) {
-			$this->getPresenter()->flashMessage(
+			$this->addFlashMessage(
 				$this->translate('The product %s is only %d pcs in stock.', $line->product->name, $availableStock),
 				Alert::Danger,
 			);
-			$this->getPresenter()->redrawControl('message');
+			$this->addRedraw('message');
 			$this->redrawShoppingCart();
 			return;
 		}

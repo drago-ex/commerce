@@ -115,7 +115,7 @@ class CustomerControl extends BaseControl
 
 			$this->orderSession->setCustomer($customer);
 			$this->eventDispatcher->dispatch(new CustomerUpdated($customer));
-			$this->getPresenter()->redirect($this->linkRedirectTarget);
+			$this->addRedirect($this->linkRedirectTarget);
 
 		} catch (InvalidPostcodeException | UnknownCountryException $e) {
 			$form->addError('The postal code does not match the same region as the phone number.');

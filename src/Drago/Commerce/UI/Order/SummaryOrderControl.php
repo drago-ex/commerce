@@ -241,7 +241,7 @@ class SummaryOrderControl extends BaseControl
 			$this->orderSession->remove();
 		}
 
-		$this->getPresenter()->redirect($this->linkRedirectTarget);
+		$this->addRedirect($this->linkRedirectTarget);
 	}
 
 

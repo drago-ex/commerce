@@ -17,7 +17,7 @@
 		"latte/latte": "^3.0",
 		"nette/application": "^3.1",
 		"nette/di": "^3.0",
-		"drago-ex/application": "^2.0",
+		"drago-ex/application": "^3.0",
 		"drago-ex/database": "^3.0",
 		"drago-ex/form": "^2.0",
 		"brick/money": "^0.5",

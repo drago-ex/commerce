@@ -121,7 +121,7 @@ class ProductControl extends BaseControl
 
 		$inCart = $this->shoppingCartSession->getAmount($entity->id);
 		if ($inCart + 1 > $entity->stock) {
-			$this->getPresenter()->flashMessage(
+			$this->addFlashMessage(
 				$this->translate('The product %s is only %d pcs in stock, %d of them already in your cart.', $entity->name, $entity->stock, $inCart),
 				Alert::Danger,
 			);
@@ -130,7 +130,7 @@ class ProductControl extends BaseControl
 		}
 
 		$this->shoppingCartSession->addItem($this->priceResolver->forCart($entity, null, null, 1));
-		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
+		$this->addFlashMessage('The product has been added to the cart.', Alert::Success);
 		$this->finish();
 	}
 
@@ -138,10 +138,10 @@ class ProductControl extends BaseControl
 	private function finish(): void
 	{
 		if ($this->isAjax()) {
-			$this->getPresenter()->redrawControl('message');
-			$this->getPresenter()->redrawControl('cart');
+			$this->addRedraw('message');
+			$this->addRedraw('cart');
 		} else {
-			$this->getPresenter()->redirect('this');
+			$this->addRedirect('this');
 		}
 	}
 
@@ -157,18 +157,18 @@ class ProductControl extends BaseControl
 	private function validateProduct(?ProductEntity $product): void
 	{
 		if (!$product || !$product->active) {
-			$this->getPresenter()->flashMessage('The product does not exist or is not active.', Alert::Danger);
-			$this->getPresenter()->redirect('this');
+			$this->addFlashMessage('The product does not exist or is not active.', Alert::Danger);
+			$this->addRedirect('this');
 		}
 
 		if ($this->variantRepository->hasActive($product->id)) {
-			$this->getPresenter()->flashMessage('Please choose a variant.', Alert::Warning);
-			$this->getPresenter()->redirect('this');
+			$this->addFlashMessage('Please choose a variant.', Alert::Warning);
+			$this->addRedirect('this');
 		}
 
 		if ($product->stock <= 0) {
-			$this->getPresenter()->flashMessage('The product is out of stock.', Alert::Warning);
-			$this->getPresenter()->redirect('this');
+			$this->addFlashMessage('The product is out of stock.', Alert::Warning);
+			$this->addRedirect('this');
 		}
 	}
 }

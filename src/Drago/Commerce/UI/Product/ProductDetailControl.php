@@ -260,8 +260,8 @@ class ProductDetailControl extends BaseControl
 
 		$entity = $this->productRepository->getOne($productId) ?? $this->error('Product not found.');
 		if (!$entity->active) {
-			$this->getPresenter()->flashMessage('The product does not exist or is not active.', Alert::Danger);
-			$this->getPresenter()->redirect('this');
+			$this->addFlashMessage('The product does not exist or is not active.', Alert::Danger);
+			$this->addRedirect('this');
 		}
 
 		if ($amount < 1) {
@@ -299,15 +299,15 @@ class ProductDetailControl extends BaseControl
 		$item = $this->priceResolver->forCart($entity, $variantEntity, $variantLabel, $amount);
 		$this->shoppingCartSession->addItem($item, $amount, variantId: $variantId, variantLabel: $variantLabel);
 
-		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
-		$this->getPresenter()->redrawControl('message');
-		$this->getPresenter()->redrawControl('cart');
+		$this->addFlashMessage('The product has been added to the cart.', Alert::Success);
+		$this->addRedraw('message');
+		$this->addRedraw('cart');
 	}
 
 
 	private function reject(string $message): void
 	{
-		$this->getPresenter()->flashMessage($message, Alert::Danger);
-		$this->getPresenter()->redrawControl('message');
+		$this->addFlashMessage($message, Alert::Danger);
+		$this->addRedraw('message');
 	}
 }

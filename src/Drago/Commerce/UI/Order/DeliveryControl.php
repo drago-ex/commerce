@@ -133,6 +133,6 @@ class DeliveryControl extends BaseControl
 		$this->orderSession->setPayment($payment);
 
 		$this->eventDispatcher->dispatch(new DeliveryOptionsChanged($carrier, $payment));
-		$this->getPresenter()->redirect($this->linkRedirectTarget);
+		$this->addRedirect($this->linkRedirectTarget);
 	}
 }

@@ -164,6 +164,16 @@ The order-completion page is provided by the application as the `done` action. E
 $control->templateControl = __DIR__ . '/templates/Delivery/custom.latte';
 ```
 
+A custom order-summary template must include both hidden fields in the `sendOrder` form so checkout can verify that the customer is confirming the displayed order:
+
+```latte
+<form n:name="sendOrder">
+	<input n:name="expectedTotal">
+	<input n:name="orderToken">
+	<input n:name="send">
+</form>
+```
+
 ## Checkout and prices
 
 The default checkout actions are `default`, `shoppingCart`, `delivery`, `customer`, `summary`, and `done`. Register `CheckoutProcess` and use it in `startup()` to redirect customers to the first checkout step whose requirements are not met:

@@ -22,7 +22,9 @@ class OrderSession
 		Carrier = 'carrier',
 		Payment = 'payment',
 		Customer = 'customer',
-		ExpectedTotal = 'expectedTotal';
+		ExpectedTotal = 'expectedTotal',
+		OrderFingerprint = 'orderFingerprint',
+		OrderToken = 'orderToken';
 
 	private SessionSection $sessionSection;
 
@@ -138,11 +140,39 @@ class OrderSession
 	}
 
 
+	public function setOrderFingerprint(string $fingerprint): void
+	{
+		$this->sessionSection->set(self::OrderFingerprint, $fingerprint);
+	}
+
+
+	public function getOrderFingerprint(): ?string
+	{
+		$fingerprint = $this->sessionSection->get(self::OrderFingerprint);
+		return is_string($fingerprint) ? $fingerprint : null;
+	}
+
+
+	public function setOrderToken(string $token): void
+	{
+		$this->sessionSection->set(self::OrderToken, $token);
+	}
+
+
+	public function getOrderToken(): ?string
+	{
+		$token = $this->sessionSection->get(self::OrderToken);
+		return is_string($token) ? $token : null;
+	}
+
+
 	public function remove(): void
 	{
 		foreach ($this->items() as $item) {
 			$this->sessionSection->remove($item);
 		}
 		$this->sessionSection->remove(self::ExpectedTotal);
+		$this->sessionSection->remove(self::OrderFingerprint);
+		$this->sessionSection->remove(self::OrderToken);
 	}
 }

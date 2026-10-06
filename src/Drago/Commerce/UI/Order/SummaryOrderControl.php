@@ -11,6 +11,7 @@ use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Order\ExpectedTotal;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
+use Drago\Commerce\Domain\Order\OrderFingerprint;
 use Drago\Commerce\Domain\Order\OutOfStockException;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
@@ -24,6 +25,7 @@ use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\HiddenField;
+use Random\RandomException;
 use Tracy\Debugger;
 
 
@@ -48,6 +50,7 @@ class SummaryOrderControl extends BaseControl
 	 * @throws MoneyMismatchException
 	 * @throws AttributeDetectionException
 	 * @throws Exception
+	 * @throws RandomException
 	 */
 	public function render(): void
 	{
@@ -63,12 +66,29 @@ class SummaryOrderControl extends BaseControl
 
 		$expectedTotal = ExpectedTotal::format($template->totalPrice);
 		$this->orderSession->setExpectedTotal($expectedTotal);
+		$order = $this->orderSession->getItems();
+		$discountCode = $this->discountCodeService->getCode();
+		$this->orderSession->setOrderFingerprint(OrderFingerprint::create(
+			$template->shoppingCart,
+			$order,
+			$discountCode,
+			$template->subtotalPrice,
+			$template->discountAmount,
+			$template->totalPrice,
+		));
+		$orderToken = bin2hex(random_bytes(32));
+		$this->orderSession->setOrderToken($orderToken);
 
-		// Keep the displayed total in the form and verify it against the server-side session value.
+		// Bind the form to the order version that was displayed on this page.
 		$sendOrder = $this->getComponent('sendOrder');
-		$field = $sendOrder->getComponent('expectedTotal');
-		if ($field instanceof HiddenField) {
-			$field->setValue($expectedTotal);
+		$totalField = $sendOrder->getComponent('expectedTotal');
+		if ($totalField instanceof HiddenField) {
+			$totalField->setValue($expectedTotal);
+		}
+
+		$tokenField = $sendOrder->getComponent('orderToken');
+		if ($tokenField instanceof HiddenField) {
+			$tokenField->setValue($orderToken);
 		}
 
 		$template->carrier = $this->getOrderItem('carrier');
@@ -93,6 +113,7 @@ class SummaryOrderControl extends BaseControl
 	{
 		$form = $this->factory->create($this->translator);
 		$form->addHidden('expectedTotal');
+		$form->addHidden('orderToken');
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
 		return $form;
@@ -148,8 +169,30 @@ class SummaryOrderControl extends BaseControl
 			$discountCode,
 		);
 
-		// The server-side total is authoritative; the hidden field is never trusted.
-		if (!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)) {
+		// Match the submitted page version and current order to the server-side snapshot.
+		$totalField = $form->getComponent('expectedTotal');
+		$tokenField = $form->getComponent('orderToken');
+		$expectedFingerprint = $this->orderSession->getOrderFingerprint();
+		$expectedToken = $this->orderSession->getOrderToken();
+		$currentFingerprint = OrderFingerprint::create(
+			$items,
+			$order,
+			$discountCode,
+			$subtotalPrice,
+			$discountAmount,
+			$totalPrice,
+		);
+		if (
+			!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)
+			|| !$totalField instanceof HiddenField
+			|| !ExpectedTotal::matches($totalField->getValue(), $totalPrice)
+			|| !$tokenField instanceof HiddenField
+			|| !is_string($tokenField->getValue())
+			|| $expectedToken === null
+			|| !hash_equals($expectedToken, $tokenField->getValue())
+			|| $expectedFingerprint === null
+			|| !hash_equals($expectedFingerprint, $currentFingerprint)
+		) {
 			$form->addError(
 				$this->translate('The order total has changed to %s, please review your order.', $this->template->money($totalPrice)),
 				false,

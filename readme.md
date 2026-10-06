@@ -15,8 +15,6 @@ Reusable storefront and checkout components for Nette applications.
 - Transactional order creation with atomic stock reservation and order-line snapshots.
 - Events for customizing product pricing and reacting to checkout changes.
 
-The application manages its own catalog, delivery options, payment methods, and discount-code data. Payment gateways, shipping integrations, order emails, and shop administration are not included.
-
 ## Requirements
 
 - PHP >= 8.3

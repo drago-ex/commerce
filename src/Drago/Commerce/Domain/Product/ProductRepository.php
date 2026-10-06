@@ -64,12 +64,13 @@ class ProductRepository
 	 */
 	public function getPage(int $limit, int $offset): array
 	{
-		return $this->read('*')
+		$query = $this->read('*')
 			->where(ProductEntity::Active, '= ?', 1)
-			->orderBy(ProductEntity::PrimaryKey)
-			->limit($limit)
-			->offset($offset)
-			->recordAll();
+			->orderBy(ProductEntity::PrimaryKey);
+
+		$query->limit($limit);
+		$query->offset($offset);
+		return $query->recordAll();
 	}
 
 

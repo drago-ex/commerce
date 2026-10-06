@@ -31,7 +31,10 @@
 							<tbody>
 
 							<tr n:foreach="$shoppingCart as $cart">
-								<td>{$cart->product->name}</td>
+								<td>
+									{$cart->product->name}
+									<div n:if="$cart->variantLabel" class="text-body-secondary small">{$cart->variantLabel}</div>
+								</td>
 								<td class="text-end text-nowrap">{$cart->product->getDiscountedPrice()|money}</td>
 								<td class="text-center">{$cart->amount}</td>
 								<td class="text-end text-nowrap">
@@ -51,7 +54,7 @@
 				<i class="fa-solid fa-address-card text-body-secondary" aria-hidden="true"></i>
 				{_'Customer information'}
 			</h2>
-			<div class="card border-0 shadow-sm">
+			<div n:if="$customer !== null" class="card border-0 shadow-sm">
 				<div class="card-body">
 					<div class="row gy-3">
 						<div class="col-md-6">
@@ -79,6 +82,7 @@
 					</div>
 				</div>
 			</div>
+			<p n:if="$customer === null" class="text-body-secondary">{_'Customer information is incomplete.'}</p>
 
 		</div>
 

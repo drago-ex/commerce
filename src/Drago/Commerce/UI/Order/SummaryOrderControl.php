@@ -63,11 +63,14 @@ class SummaryOrderControl extends BaseControl
 		$template->discountCode = $discountCode?->code;
 		$template->totalPrice = $this->getTotalPrice($discountCode);
 
-		// The confirmation form carries the total shown here and is checked against it on submit.
+		$expectedTotal = ExpectedTotal::format($template->totalPrice);
+		$this->orderSession->setExpectedTotal($expectedTotal);
+
+		// Keep the displayed total in the form and verify it against the server-side session value.
 		$sendOrder = $this->getComponent('sendOrder');
-		$field = $sendOrder instanceof Form ? $sendOrder->getComponent('expectedTotal') : null;
+		$field = $sendOrder->getComponent('expectedTotal');
 		if ($field instanceof HiddenField) {
-			$field->setValue(ExpectedTotal::format($template->totalPrice));
+			$field->setValue($expectedTotal);
 		}
 
 		$template->carrier = $this->getOrderItem('carrier');
@@ -151,9 +154,8 @@ class SummaryOrderControl extends BaseControl
 		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
 		$totalPrice = $this->getTotalPrice($discountCode);
 
-		// The customer must pay what the summary showed; a changed total (expired code, cart edited elsewhere) is shown first.
-		$expected = $form->getComponent('expectedTotal');
-		if ($expected instanceof HiddenField && !ExpectedTotal::matches($expected->getValue(), $totalPrice)) {
+		// The server-side total is authoritative; the hidden field is never trusted.
+		if (!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)) {
 			$form->addError(
 				$this->translate('The order total has changed to %s, please review your order.', $this->template->money($totalPrice)),
 				false,

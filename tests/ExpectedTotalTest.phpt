@@ -23,6 +23,6 @@ Assert::true(ExpectedTotal::matches('1234.500', $total));
 Assert::false(ExpectedTotal::matches('1100.00', $total));
 Assert::false(ExpectedTotal::matches('abc', $total));
 
-// Without the field (custom template) the check is skipped.
-Assert::true(ExpectedTotal::matches(null, $total));
-Assert::true(ExpectedTotal::matches('', $total));
+// A missing expected value must not allow checkout to skip the price check.
+Assert::false(ExpectedTotal::matches(null, $total));
+Assert::false(ExpectedTotal::matches('', $total));

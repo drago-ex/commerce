@@ -8,6 +8,7 @@ use Brick\Money\Money;
 use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductVariantSummary;
 use Drago\Commerce\UI\BaseTemplate;
+use Nette\Utils\Paginator;
 
 
 /**
@@ -17,6 +18,9 @@ class ProductTemplate extends BaseTemplate
 {
 	/** @var ProductEntity[] */
 	public array $products = [];
+
+	/** Paging of the listing; null when all products are shown on one page. */
+	public ?Paginator $paginator = null;
 
 	/**
 	 * Active-variant summary of the products that have variants, keyed by product ID.

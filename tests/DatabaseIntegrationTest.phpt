@@ -54,6 +54,15 @@ try {
 	$product = $productRepository->getOne(4);
 	Assert::notNull($product);
 	Assert::same('Herní notebook ASUS ROG Strix', $product->name);
+
+	// Paging of the listing.
+	Assert::same(count($productRepository->getAll()), $productRepository->countActive());
+	$firstPage = $productRepository->getPage(2, 0);
+	$secondPage = $productRepository->getPage(2, 2);
+	Assert::count(2, $firstPage);
+	Assert::true($firstPage[0]->id < $firstPage[1]->id && $firstPage[1]->id < $secondPage[0]->id);
+	Assert::same([], $variantRepository->getSummaries([]));
+	Assert::same([6], array_keys($variantRepository->getSummaries([6])));
 	$connection->query(
 		'INSERT INTO [product_images] ([product_id], [image], [position]) VALUES (%i, %s, %i), (%i, %s, %i)',
 		3,

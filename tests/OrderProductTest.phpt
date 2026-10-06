@@ -41,6 +41,8 @@ Assert::same([
 	'variant_id' => 24,
 	'amount' => 2,
 	'unit_price' => 490.0,
+	'product_name' => '',
+	'variant_label' => null,
 ], (array) $firstVariantLine);
 Assert::same(28, ((array) $secondVariantLine)['variant_id']);
 Assert::hasKey('variant_id', (array) $nonVariantLine);
@@ -54,3 +56,18 @@ $variantCartItem = new ProductCart(
 $persistedVariantLine = OrderProduct::fromCartItem(43, $variantCartItem);
 Assert::same(32490.0, $persistedVariantLine->unit_price);
 Assert::same(31, $persistedVariantLine->variant_id);
+
+// The name and variant label are copied from the cart line, so the order keeps reading the same later.
+$labelledLine = OrderProduct::fromCartItem(
+	44,
+	new ProductCart(
+		new Product(id: 6, name: 'Pánské tričko Classic', price: Money::of(490, 'CZK')),
+		BigInteger::one(),
+		variantId: 25,
+		variantLabel: 'Barva: Bílá, Velikost: L',
+	),
+);
+Assert::same('Pánské tričko Classic', $labelledLine->product_name);
+Assert::same('Barva: Bílá, Velikost: L', $labelledLine->variant_label);
+Assert::same('Notebook', $persistedVariantLine->product_name);
+Assert::null($persistedVariantLine->variant_label);

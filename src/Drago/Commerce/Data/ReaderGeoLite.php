@@ -7,7 +7,8 @@ namespace Drago\Commerce\Data;
 use Drago\Commerce\Commerce;
 use GeoIp2\Database\Reader;
 use GeoIp2\Model\City;
-use MaxMind\Db\Reader\InvalidDatabaseException;
+use Throwable;
+use Tracy\Debugger;
 
 
 /**
@@ -20,6 +21,11 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
  */
 class ReaderGeoLite
 {
+	private ?Reader $reader = null;
+
+	private bool $failed = false;
+
+
 	public function __construct(
 		private readonly Commerce $commerce,
 	) {
@@ -27,15 +33,34 @@ class ReaderGeoLite
 
 
 	/**
-	 * Opens the configured GeoLite2 City database reader, or null when no
-	 * path is configured.
-	 *
-	 * @throws InvalidDatabaseException
+	 * Opens the configured GeoLite2 City database once and reuses the reader.
+	 * Returns null when no path is configured. A database that cannot be opened
+	 * (wrong path, geoip2/geoip2 not installed) is logged once and then skipped,
+	 * so customers can still fill in the form.
 	 */
 	private function reader(): ?Reader
 	{
+		if ($this->reader !== null || $this->failed) {
+			return $this->reader;
+		}
+
 		$path = $this->commerce->getGeoLite2Path();
-		return $path !== null ? new Reader($path) : null;
+		if ($path === null) {
+			return null;
+		}
+
+		try {
+			$this->reader = new Reader($path);
+		} catch (Throwable $e) {
+			$this->failed = true;
+			try {
+				Debugger::log($e, Debugger::ERROR);
+			} catch (Throwable) {
+				// Logging must never break the form.
+			}
+		}
+
+		return $this->reader;
 	}
 
 
@@ -47,7 +72,7 @@ class ReaderGeoLite
 	{
 		try {
 			return $this->reader()?->city($ip);
-		} catch (\Throwable $e) {
+		} catch (Throwable) {
 			return null;
 		}
 	}

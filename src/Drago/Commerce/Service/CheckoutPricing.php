@@ -73,11 +73,13 @@ class CheckoutPricing
 				continue;
 			}
 
+			// The session hands out the same line objects, so read the old price before replacing the product.
+			$oldPrice = $line->product->getDiscountedPrice();
 			$product = $this->priceResolver->forCart($entity, $variant, $line->variantLabel, $line->amount->toInt());
 			$this->shoppingCartSession->replaceProduct($product, $line->variantId);
 
-			if (!$product->getDiscountedPrice()->isEqualTo($line->product->getDiscountedPrice())) {
-				$changed[] = $line->product->name;
+			if (!$product->getDiscountedPrice()->isEqualTo($oldPrice)) {
+				$changed[] = $product->name;
 			}
 		}
 

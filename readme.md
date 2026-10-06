@@ -61,6 +61,8 @@ services:
 	- Drago\Commerce\Domain\Checkout\CheckoutSteps
 ```
 
+Set the Nette session expiration to at least 1 day (`session: expiration: 14 days`); the cart, discount code and order data expire after 1 day, and Nette warns when the session expires sooner.
+
 ### 3. Presenter
 
 Use the trait. It injects all controls and sets up checkout navigation:

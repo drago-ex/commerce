@@ -22,6 +22,7 @@ $session = new Session(
 	new Request(new UrlScript('http://localhost/')),
 	new Response,
 );
+$session->setExpiration('14 days');
 $commerce = new Commerce([
 	'currency' => 'CZK',
 	'moneyFormat' => 'cs_CZ',

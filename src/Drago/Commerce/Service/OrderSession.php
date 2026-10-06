@@ -30,7 +30,9 @@ class OrderSession
 		private readonly Session $session,
 		private readonly Commerce $commerce,
 	) {
-		$this->sessionSection = $this->session->getSection(self::class);
+		$this->sessionSection = $this->session
+			->getSection(self::class)
+			->setExpiration('1 day');
 	}
 
 
@@ -81,6 +83,18 @@ class OrderSession
 		}
 
 		return $carrierPrice;
+	}
+
+
+	public function removeCarrier(): void
+	{
+		$this->sessionSection->remove(self::Carrier);
+	}
+
+
+	public function removePayment(): void
+	{
+		$this->sessionSection->remove(self::Payment);
 	}
 
 

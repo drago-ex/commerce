@@ -11,6 +11,7 @@ use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
+use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
@@ -251,11 +252,23 @@ try {
 		}
 
 
-		public function consume(): bool
+		public function consume(?DiscountCodeEntity $discountCode = null): bool
 		{
 			return false;
 		}
 	};
+
+	$rejectedCode = new DiscountCodeEntity;
+	$rejectedCode->id = 1;
+	$rejectedCode->code = 'TEST10';
+	$rejectedCode->type = 'fixed';
+	$rejectedCode->value = 100;
+	$rejectedCode->valid_from = null;
+	$rejectedCode->valid_to = null;
+	$rejectedCode->usage_limit = null;
+	$rejectedCode->used_count = 0;
+	$rejectedCode->minimum_order_amount = null;
+	$rejectedCode->active = 1;
 
 	$rollbackOrderService = new OrderService(
 		$orderRepository,
@@ -284,7 +297,7 @@ try {
 			Money::of(490, 'CZK'),
 			Money::of(100, 'CZK'),
 			Money::of(540, 'CZK'),
-			'TEST10',
+			$rejectedCode,
 		),
 		OrderException::class,
 	);

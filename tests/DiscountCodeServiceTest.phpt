@@ -124,3 +124,13 @@ Assert::true($service->apply('FIXED500'));
 $repository->codes = [];
 Assert::null($service->getCode());
 Assert::null($service->getCode());
+
+// Consuming an explicit code records exactly that code, whatever is in the session.
+$service->remove();
+$repository->consumedIds = [];
+$repository->usageResult = true;
+Assert::true($service->consume($percentCode));
+Assert::same([11], $repository->consumedIds);
+$repository->usageResult = false;
+Assert::false($service->consume($fixedCode));
+Assert::same([11, 12], $repository->consumedIds);

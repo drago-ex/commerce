@@ -48,14 +48,14 @@ class DiscountCodeRepository
 
 
 	/**
-	 * Atomically increments the usage counter, but only while the usage
-	 * limit (if any) has not yet been reached. The limit check and the
-	 * increment happen in a single SQL statement, so two concurrent
-	 * requests using the same limited code cannot both succeed once the
-	 * limit is exhausted.
+	 * Atomically increments the usage counter, but only while the code is
+	 * still active, within its validity dates and under its usage limit
+	 * (if any). The checks and the increment happen in a single SQL
+	 * statement, so two concurrent requests using the same limited code
+	 * cannot both succeed once the limit is exhausted.
 	 *
-	 * Returns true when the usage was recorded, false when the limit had
-	 * already been reached in the meantime by another concurrent request.
+	 * Returns true when the usage was recorded, false when the code could
+	 * no longer be used by the time the order was placed.
 	 *
 	 * @throws Exception
 	 */
@@ -65,6 +65,9 @@ class DiscountCodeRepository
 			->update(DiscountCodeEntity::Table)
 			->set('%n = %n + 1', 'used_count', 'used_count')
 			->where('%n = ?', DiscountCodeEntity::PrimaryKey, $id)
+			->where('active = ?', 1)
+			->where('(valid_from IS NULL OR valid_from <= NOW())')
+			->where('(valid_to IS NULL OR valid_to >= NOW())')
 			->where('(usage_limit IS NULL OR used_count < usage_limit)')
 			->execute(Fluent::AffectedRows) > 0;
 	}

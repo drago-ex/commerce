@@ -2,6 +2,7 @@ services:
 	- Drago\Commerce\Data\ReaderGeoLite
 	- Drago\Commerce\UI\Factory
 
+	- Drago\Commerce\Service\CheckoutPricing
 	- Drago\Commerce\Service\DiscountCodeService
 	- Drago\Commerce\Service\OrderSession
 	- Drago\Commerce\Service\OrderService
@@ -20,6 +21,7 @@ services:
 	- Drago\Commerce\Domain\Order\OrderRepository
 	- Drago\Commerce\Domain\Order\StockReservation
 
+	- Drago\Commerce\Domain\Product\PriceResolver
 	- Drago\Commerce\Domain\Product\ProductAttributeRepository
 	- Drago\Commerce\Domain\Product\ProductAttributeValueRepository
 	- Drago\Commerce\Domain\Product\ProductImageRepository

@@ -58,20 +58,22 @@ class DiscountCodeService
 
 
 	/**
-	 * Marks the currently applied discount code (if any) as used.
+	 * Marks a discount code as used. Without an argument it uses the code
+	 * currently applied to the session (if any); pass the code the order was
+	 * priced with so the usage is recorded for exactly that code.
 	 *
 	 * Returns true when there was nothing to consume, or the usage was
-	 * recorded successfully. Returns false only when a code was applied
-	 * but a concurrent request has just exhausted its usage limit in the
-	 * meantime — the caller should treat this as a failed checkout
-	 * attempt (e.g. roll back the order) rather than silently ignoring it.
+	 * recorded successfully. Returns false when the code can no longer be
+	 * used (limit reached, deactivated or expired in the meantime) — the
+	 * caller should treat this as a failed checkout attempt (e.g. roll back
+	 * the order) rather than silently ignoring it.
 	 *
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	public function consume(): bool
+	public function consume(?DiscountCodeEntity $discountCode = null): bool
 	{
-		$discountCode = $this->getCode();
+		$discountCode ??= $this->getCode();
 		if ($discountCode === null) {
 			return true;
 		}

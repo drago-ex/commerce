@@ -77,6 +77,7 @@ Assert::same('delivery', $redirectResolver->getRedirectTargetForAction('summary'
 $carrier = new Carrier(1, 'DPD', Money::of(100, 'CZK'));
 $payment = new Payment(1, 'Online', Money::of(0, 'CZK'));
 $orderSession->setCarrier($carrier);
+Assert::same('delivery', $redirectResolver->getRedirectTargetForAction('customer'));
 $orderSession->setPayment($payment);
 
 Assert::same(['shoppingCart', 'delivery'], $stepResolver->getCompletedSteps());

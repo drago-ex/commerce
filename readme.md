@@ -7,124 +7,65 @@ Storefront and checkout components for Nette applications.
 [![Tests](https://github.com/drago-ex/commerce/actions/workflows/tests.yml/badge.svg)](https://github.com/drago-ex/commerce/actions/workflows/tests.yml)
 [![Coding Style](https://github.com/drago-ex/commerce/actions/workflows/coding-style.yml/badge.svg)](https://github.com/drago-ex/commerce/actions/workflows/coding-style.yml)
 
-The package provides a product catalog and detail view, a session-based shopping cart, and a guided checkout. Customers can select product variants, use discount codes, choose delivery and payment options, enter their details, and submit an order. Commerce stores the order and updates stock in a database transaction.
+## What it does
 
-Included features:
+- Product listing and detail with variants (own stock, optional own price, extra images).
+- Percentage discounts per product and discount codes (percent or fixed amount, validity dates, usage limit, minimum order amount).
+- Session cart with mini cart, quantity changes and item removal.
+- Checkout: cart, delivery and payment, customer details, summary.
+- The order is saved in one transaction with an atomic stock update. Prices are re-checked right before saving: if a price changed since the item was added, the customer sees the new price and confirms again.
+- Events for custom behavior in your application.
 
-- Product variants with their own stock, optional price overrides, and additional product images.
-- Product percentage discounts and discount codes with percentage or fixed values, validity dates, usage limits, and optional minimum order amounts.
-- A mini cart, quantity changes, item removal, and a checkout summary with carrier and payment prices.
-- Order and cart events for custom behavior in the host application.
-
-Commerce records the selected payment method but does not process payments through a gateway, arrange shipping, send order emails, or include a shop administration interface. The host application provides product, carrier, payment, and discount-code records, and can add those integrations using Commerce events.
+Not included: payment gateway, shipping integration, order e-mails, shop administration. Your application provides the product, carrier, payment and discount-code records.
 
 ## Requirements
 
-- PHP >= 8.3
-- Nette Framework
-- Composer
-- A configured Dibi database connection
-- Node.js and Vite for the optional frontend assets
+PHP >= 8.3, Nette Framework, a Dibi connection, Composer. Node.js and Vite for the optional frontend assets.
 
 ## Installation
-
-Install the package with Composer:
 
 ```bash
 composer require drago-ex/commerce
 ```
 
-## Database Setup
+### 1. Database
 
-The `migrations/` directory contains one migration per table, followed by a single example-data migration. The table definitions use the same format as the other Drago packages. With [drago-ex/migration](https://github.com/drago-ex/migration), run the directory so the files are applied in filename order:
+Run the migrations with [drago-ex/migration](https://github.com/drago-ex/migration):
 
 ```bash
 php vendor/bin/migration db:migrate vendor/drago-ex/commerce/migrations
 ```
 
-Files `001`–`013` create carriers, customers, payment methods, product categories, products, discount codes, product attributes and values, variants and their values, orders and order lines, and product images. `014_commerce_seed.sql` imports the example carriers, payments, customers, products, orders, discount codes, variants, and images. It is intended for development or demo databases; omit it if you do not want example records.
+Optional example data (carriers, payments, products, variants, discount codes). Development only:
 
-This migration sequence replaces the earlier development files. Reset a development database that already used the old sequence before running these migrations. Once the package is used in a shared or production database, keep applied migration files unchanged and add a new file for each future schema change; the migration tool records filenames and checksums.
+```bash
+php vendor/bin/migration db:migrate vendor/drago-ex/commerce/migrations-demo
+```
 
-## Configuration
+Once the package is used in a shared or production database, never edit applied migration files; add a new one for each schema change.
 
-Register the phone input bridge and Commerce extension in `config.neon`:
+### 2. Configuration
 
 ```neon
 extensions:
 	- Nepada\Bridges\PhoneNumberInputDI\PhoneNumberInputExtension
 	commerce: Drago\Commerce\DI\CommerceExtension
-```
 
-Configure currency, formatting, and phone-number defaults:
-
-```neon
 commerce:
 	currency: CZK
 	moneyFormat: cs_CZ
-	moneySymbol: ''
 	moneyFractionDigits: 0
-	defaultRegionCode: ['autoDetect', 'CZ']
-	allowedRegionPhoneNumber: CZ
-	postCodeOnRegionPhone: true
-	# geoLite2Path: %appDir%/../data/GeoLite2-City.mmdb
-```
 
-`geoLite2Path` is optional. It enables automatic phone region detection when the host application provides a MaxMind GeoLite2 City database.
-
-Register the checkout services so Nette DI can create the checkout flow:
-
-```neon
 services:
 	- Drago\Commerce\Domain\Checkout\CheckoutProcess
 	- Drago\Commerce\Domain\Checkout\CheckoutSteps
 ```
 
-The default `CheckoutSteps` defines the actions used by the checkout: `shoppingCart`, `delivery`, `customer`, `summary`, and `done`.
+Set the Nette session expiration to at least 1 day (`session: expiration: 14 days`); the cart, discount code and order data expire after 1 day, and Nette warns when the session expires sooner.
 
-## Frontend Assets
+### 3. Presenter
 
-Add the Composer package as a local npm dependency:
-
-```json
-{
-	"type": "module",
-	"dependencies": {
-		"drago-commerce": "file:vendor/drago-ex/commerce"
-	}
-}
-```
-
-Install dependencies and import Commerce in the Vite entry point:
-
-```bash
-npm install
-```
-
-```js
-import naja from 'naja';
-import Commerce from 'drago-commerce';
-import 'drago-commerce/styles';
-
-naja.initialize();
-new Commerce().initialize(naja);
-```
-
-This integration submits cart quantity changes through Naja and displays a loading spinner during AJAX requests.
-
-## Presenter Setup
-
-### 1. Add the Commerce trait
-
-Use `CommerceControl` in the presenter that renders the shop. The trait injects these controls and configures checkout-step navigation automatically:
-
-- `miniCartControl` — cart summary for the page layout.
-- `productControl` — product listing.
-- `productDetailControl` — selected product detail and variant selection.
-- `shoppingCartControl` — cart contents, quantity updates, and discount code form.
-- `deliveryControl` — carrier and payment selection.
-- `customerControl` — contact and billing details.
-- `summaryOrderControl` — final order review and submission.
+Use the trait. It injects all controls and sets up checkout navigation:
 
 ```php
 use Drago\Commerce\UI\CommerceControl;
@@ -135,18 +76,32 @@ final class HomePresenter extends BasePresenter
 }
 ```
 
-The trait's Nette injection method receives the controls and `CheckoutProcess`; they do not need to be added to the presenter's constructor.
+Create a component factory for each control you render. Set the translator if you use one:
 
-### 2. Add the checkout guard
-
-Inject `CheckoutProcess` into the presenter only if it should prevent visitors from opening checkout steps before meeting their prerequisites. Call the resolver from `startup()` so it checks every action:
+| Factory | Control | Renders |
+| --- | --- | --- |
+| `createComponentMiniCart()` | `miniCartControl` | Cart link and item count |
+| `createComponentProduct()` | `productControl` | Product listing |
+| `createComponentProductDetail()` | `productDetailControl` | Product detail, variants, add to cart (call `setProductId()` first) |
+| `createComponentShoppingCart()` | `shoppingCartControl` | Cart, quantities, discount code |
+| `createComponentDelivery()` | `deliveryControl` | Carrier and payment |
+| `createComponentCustomer()` | `customerControl` | Customer details |
+| `createComponentSummaryOrder()` | `summaryOrderControl` | Review and submit |
 
 ```php
-use Drago\Commerce\Domain\Checkout\CheckoutProcess;
+protected function createComponentDelivery(): DeliveryControl
+{
+	$control = $this->deliveryControl;
+	$control->translator = $this->getTranslator();
+	return $control;
+}
+```
 
-public function __construct(
-	protected CheckoutProcess $checkoutProcess,
-) {
+Optional checkout guard: it redirects a step to the first missing prerequisite (for example, the customer form with an empty cart).
+
+```php
+public function __construct(protected CheckoutProcess $checkoutProcess)
+{
 	parent::__construct();
 }
 
@@ -160,121 +115,67 @@ public function startup(): void
 }
 ```
 
-The guard redirects delivery, customer, or summary actions to the first missing prerequisite. For example, a customer with an empty cart cannot jump directly to the customer form.
+### 4. Templates
 
-### 3. Create the component factories you use
+```latte
+{snippet cart}{control miniCart}{/snippet}          {* layout *}
 
-Nette creates a component when its `{control ...}` is rendered. Each factory returns the corresponding control injected by `CommerceControl`. Set its translator if the application uses `drago-ex/translator` or another compatible translator; otherwise the bundled templates use their default English labels.
+{control product}                                   {* listing *}
+{control productDetail}                             {* detail *}
+{snippet shoppingCart}{control shoppingCart}{/snippet}
+{snippet delivery}{control delivery}{/snippet}
+{snippet customer}{control customer}{/snippet}
+{snippet summaryOrder}{control summaryOrder}{/snippet}
+```
 
-| Factory method | Control | What it renders |
-| --- | --- | --- |
-| `createComponentMiniCart()` | `MiniCartControl` | Cart link and item count, usually in the layout. |
-| `createComponentProduct()` | `ProductControl` | Active product catalog. |
-| `createComponentProductDetail()` | `ProductDetailControl` | Selected product, variants, and add-to-cart form. Set the product ID first. |
-| `createComponentShoppingCart()` | `SummaryCartControl` | Cart contents, quantity changes, and discount code form. |
-| `createComponentDelivery()` | `DeliveryControl` | Carrier and payment selection. |
-| `createComponentCustomer()` | `CustomerControl` | Contact, billing, and optional order note. |
-| `createComponentSummaryOrder()` | `SummaryOrderControl` | Order review and order submission. |
+The completion page (action `done`) is your own template.
 
-For example, a regular component factory can set the translator before returning the injected control:
+### 5. Frontend (optional)
 
-```php
-protected function createComponentDelivery(): DeliveryControl
+AJAX quantity changes and a loading spinner. In `package.json`:
+
+```json
 {
-	$control = $this->deliveryControl;
-	$control->translator = $this->getTranslator();
-	return $control;
+	"type": "module",
+	"dependencies": {
+		"drago-commerce": "file:vendor/drago-ex/commerce"
+	}
 }
 ```
 
-For a product detail component, pass the selected product ID before rendering it. Declare an `id` presenter parameter for the product identifier:
+```js
+import naja from 'naja';
+import Commerce from 'drago-commerce';
+import 'drago-commerce/styles';
 
-```php
-use Drago\Commerce\UI\Product\ProductDetailControl;
-use Nette\Application\Attributes\Persistent;
-
-#[Persistent]
-public int $id;
-
-protected function createComponentProductDetail(): ProductDetailControl
-{
-	$control = $this->productDetailControl;
-	$control->setProductId($this->id);
-	$control->translator = $this->getTranslator();
-	return $control;
-}
+naja.initialize();
+new Commerce().initialize(naja);
 ```
 
-`ProductRepository` is only needed in the presenter when the presenter itself queries products; the bundled product controls already use the repository internally.
+## Configuration options
 
-## Latte Templates
-
-Render the mini cart in the site layout so it is available throughout the shop:
-
-```latte
-{snippet cart}
-	{control miniCart}
-{/snippet}
-```
-
-Add the relevant control to each page template:
-
-| Page | Latte |
-| --- | --- |
-| Product listing | `{control product}` |
-| Product detail | `{control productDetail}` |
-| Shopping cart | `{snippet shoppingCart}{control shoppingCart}{/snippet}` |
-| Delivery and payment | `{snippet delivery}{control delivery}{/snippet}` |
-| Customer details | `{snippet customer}{control customer}{/snippet}` |
-| Order review | `{snippet summaryOrder}{control summaryOrder}{/snippet}` |
-
-The completion page is part of the host application's presenter. For example:
-
-```latte
-{block content}
-	<h1>{_'Order completed'}</h1>
-	<p class="alert alert-success">{_'Thank you, your order has been successfully submitted.'}</p>
-{/block}
-```
-
-## Events
-
-Listeners are registered in `services.neon` with `addListener(EventClass, @listener)`. A listener must be callable (a class with `__invoke`), otherwise registering it throws. Listeners run synchronously in the request, and an exception in a listener reaches the code that dispatched the event. The exception is `OrderPlaced`, where the order is already saved, so a failure is only logged.
-
-| Event | Fired when | Variant data |
+| Option | Default | Meaning |
 | --- | --- | --- |
-| `ProductAddedToCart` | An item is added to the cart, before it is stored. A listener can change the price with `setPrice()`. | `variantId`, `variantLabel`, `amount` |
-| `CartItemChanged` | The quantity of a line already in the cart changes. `amount` is the new quantity. | `variantId`, `variantLabel` |
-| `CartItemRemoved` | A line is removed from the cart. | `variantId`, `variantLabel` |
-| `CustomerUpdated` | The customer step is completed. | – |
-| `DeliveryOptionsChanged` | Carrier and payment are chosen. | – |
-| `OrderPlaced` | The order is saved and stock is taken. | `items` (snapshot of the ordered lines) |
+| `currency` | `EUR` | Currency code |
+| `moneyFormat` | `de_DE` | Locale used to format prices |
+| `moneySymbol` | `''` | Overrides the currency symbol |
+| `moneyFractionDigits` | `2` | Decimal places shown |
+| `defaultRegionCode` | none | Default phone region: a code (`CZ`), or `['autoDetect', 'CZ']` to detect it and fall back to `CZ` |
+| `allowedRegionPhoneNumber` | any | Allowed phone region code or list of codes |
+| `postCodeOnRegionPhone` | `false` | Validate the postal code against the phone region |
+| `geoLite2Path` | none | MaxMind GeoLite2 City database for phone region detection |
 
-`ProductAddedToCart::$product->price` is the price before the product's percentage discount: the variant's own price if it has one, otherwise the product price. The discount is applied afterwards, only if no listener changed the price and the variant has no own price. `OrderPlaced` empties the cart right after the listeners run, so a listener that defers its work should read `items`, not the cart session. `OrderLoggerListener` writes the placed order, including variants, to the Tracy log `order`; it contains customer contact details, so mind how long you keep that log. `CartUpdated` is never dispatched and is deprecated.
+### Templates
 
-## Product Variants
-
-- A product with at least one active variant is bought only through a variant. Its own `stock` and `price` are not used for ordering; the listing shows the summed variant stock, the lowest price, and a link to the detail page.
-- A variant with `price = NULL` inherits the product price and its percentage discount. A variant with its own price is sold at that price and the product discount does not apply to it.
-- Cart quantity changes only affect lines already in the cart, and the stock check counts what the cart already holds.
-- Checkout re-validates every line against the database inside the order transaction (`StockReservation`): the product and variant must exist and be active, variants must belong to the product, and stock is decremented atomically. Unexpected errors are logged with `Debugger::log()`; a sold-out or unavailable item is reported to the customer by name.
-- The schema does not prevent duplicate attribute combinations within one product or several values of one attribute on a variant. Keep that consistent in whatever manages the data.
-
-## Optional Customization
-
-### Custom templates
-
-Every UI control has a `templateControl` property. Set it in the component factory to render your own Latte file instead of the bundled template:
+Every control has a `templateControl` property for your own Latte file:
 
 ```php
-$control = $this->deliveryControl;
-$control->templateControl = __DIR__ . '/templates/Delivery/customTemplate.latte';
-return $control;
+$control->templateControl = __DIR__ . '/templates/Delivery/custom.latte';
 ```
 
 ### Checkout step names
 
-To change default checkout action names, provide a custom `CheckoutSteps` service and inject it into `CheckoutProcess`. The names must match the presenter actions and the corresponding page templates. For example:
+Defaults: `products` (`default`), `shoppingCart`, `delivery`, `customer`, `summary`, `orderDone` (`done`). Override them with a custom `CheckoutSteps`; the names must match your presenter actions:
 
 ```neon
 services:
@@ -290,4 +191,23 @@ services:
 			- @checkoutSteps
 ```
 
-The constructor keys can override `products`, `delivery`, `customer`, `summary`, `shoppingCart`, and `orderDone`. Checkout controls are configured by the trait using these step names.
+### Events
+
+Register listeners in `services.neon` with `addListener(EventClass, @listener)`. A listener must be callable. Listeners run synchronously; an exception reaches the dispatching code, except for `OrderPlaced`, where the order is already saved and the failure is only logged.
+
+| Event | Fired when |
+| --- | --- |
+| `ProductAddedToCart` | An item is added, before it is stored. `setPrice()` changes the price. Dispatched again when checkout reprices a line. |
+| `CartItemChanged` | The quantity of a cart line changes. |
+| `CartItemRemoved` | A cart line is removed. |
+| `CustomerUpdated` | The customer step is completed. |
+| `DeliveryOptionsChanged` | Carrier and payment are chosen. |
+| `OrderPlaced` | The order is saved. Read `items`, because the cart is emptied right after the listeners run. |
+
+`ProductAddedToCart::$product->price` is the price before the product discount: the variant's own price, otherwise the product price. The discount is applied afterwards, only if no listener changed the price and the variant has no own price. `OrderLoggerListener` writes placed orders, including customer contact details, to the Tracy log `order`.
+
+### Prices and variants
+
+- A product with an active variant is bought only through a variant. The listing shows the summed variant stock and the lowest price.
+- A variant without a price inherits the product price and discount. A variant with its own price is sold at that price without the product discount.
+- The schema does not prevent duplicate attribute combinations on a product; keep them consistent in whatever manages the data.

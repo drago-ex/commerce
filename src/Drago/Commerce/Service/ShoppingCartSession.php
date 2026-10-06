@@ -8,6 +8,7 @@ use Brick\Math\BigInteger;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
+use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Domain\Product\ProductCart;
 use InvalidArgumentException;
@@ -44,12 +45,13 @@ class ShoppingCartSession
 	/**
 	 * Calculates total price of all items in the basket, after per-product
 	 * discounts and after the discount code (voucher), if any is applied.
+	 * Pass an already loaded code to avoid looking it up again.
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
 	 */
-	public function getTotalPrice(): Money
+	public function getTotalPrice(?DiscountCodeEntity $discountCode = null): Money
 	{
-		return $this->discountCodeService->applyTo($this->getSubtotalPrice());
+		return $this->discountCodeService->applyTo($this->getSubtotalPrice(), $discountCode);
 	}
 
 
@@ -117,6 +119,9 @@ class ShoppingCartSession
 	 * for a product without variants). Two lines with the same product but
 	 * a different $variantId are kept as separate cart items — matching is
 	 * by product ID *and* variant ID together, not product ID alone.
+	 *
+	 * Adding to a line that already exists also replaces its product, so the
+	 * line always carries the price from the latest add.
 	 */
 	public function addItem(
 		Product $product,
@@ -134,6 +139,7 @@ class ShoppingCartSession
 
 		foreach ($items as $item) {
 			if ($item->product->id === $product->id && $item->variantId === $variantId) {
+				$item->product = $product;
 				if ($dontCount) {
 					$item->amount = BigInteger::of($amount);
 				} else {
@@ -148,6 +154,25 @@ class ShoppingCartSession
 
 		$items[] = new ProductCart($product, BigInteger::of($amount), $variantId, $variantLabel);
 		$this->sessionSection->set(self::Items, $items);
+	}
+
+
+	/**
+	 * Replaces the product of an existing cart line (e.g. after a price change),
+	 * keeping its quantity and variant label. Unknown lines are ignored.
+	 */
+	public function replaceProduct(Product $product, ?int $variantId = null): void
+	{
+		$items = $this->getItems();
+
+		foreach ($items as $item) {
+			if ($item->product->id === $product->id && $item->variantId === $variantId) {
+				$item->product = $product;
+				$this->sessionSection->set(self::Items, $items);
+
+				return;
+			}
+		}
 	}
 
 

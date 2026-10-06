@@ -6,10 +6,8 @@ namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
-use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Order\ExpectedTotal;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
@@ -22,6 +20,8 @@ use Drago\Commerce\Service\OrderService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Drago\Commerce\UI\BaseForm;
+use Drago\Commerce\UI\Factory;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\HiddenField;
 use Tracy\Debugger;
@@ -39,6 +39,7 @@ class SummaryOrderControl extends BaseControl
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
 		private readonly CheckoutPricing $checkoutPricing,
+		private readonly Factory $factory,
 	) {
 	}
 
@@ -53,15 +54,12 @@ class SummaryOrderControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Summary.latte');
 		$template->setTranslator($this->translator);
-		$template->shoppingCart = $this->shoppingCartSession->getItems();
-		$template->amountItems = $this->shoppingCartSession->getAmountItems();
-		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
-		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$discountCode = $this->discountCodeService->getCode();
-		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
-		$template->discountCode = $discountCode?->code;
-		$template->totalPrice = $this->getTotalPrice($discountCode);
+		$this->prepareShoppingCartSummary(
+			$template,
+			$this->shoppingCartSession,
+			$this->discountCodeService,
+			$this->orderSession,
+		);
 
 		$expectedTotal = ExpectedTotal::format($template->totalPrice);
 		$this->orderSession->setExpectedTotal($expectedTotal);
@@ -91,18 +89,9 @@ class SummaryOrderControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 */
-	private function getTotalPrice(?DiscountCodeEntity $discountCode = null): Money
+	protected function createComponentSendOrder(): BaseForm
 	{
-		return $this->shoppingCartSession->getTotalPrice($discountCode)
-			->plus($this->orderSession->getCarrierPrice())
-			->plus($this->orderSession->getPaymentPrice());
-	}
-
-
-	protected function createComponentSendOrder(): Form
-	{
-		$form = new Form;
-		$form->setTranslator($this->translator);
+		$form = $this->factory->create($this->translator);
 		$form->addHidden('expectedTotal');
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
@@ -152,7 +141,12 @@ class SummaryOrderControl extends BaseControl
 		$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
 		$discountCode = $this->discountCodeService->getCode();
 		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
-		$totalPrice = $this->getTotalPrice($discountCode);
+		$totalPrice = $this->calculateTotalPrice(
+			$this->shoppingCartSession,
+			$this->discountCodeService,
+			$this->orderSession,
+			$discountCode,
+		);
 
 		// The server-side total is authoritative; the hidden field is never trusted.
 		if (!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)) {

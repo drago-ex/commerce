@@ -18,6 +18,8 @@ use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Drago\Commerce\UI\BaseForm;
+use Drago\Commerce\UI\Factory;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -37,6 +39,7 @@ class DeliveryControl extends BaseControl
 		private readonly PaymentMapper $paymentMapper,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
+		private readonly Factory $factory,
 	) {
 	}
 
@@ -52,7 +55,6 @@ class DeliveryControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Delivery.latte');
 		$template->setTranslator($this->translator);
-		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->carrier = $this->carrierRepository->getCarrierItems();
 		$template->payment = $this->paymentRepository->getPaymentItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
@@ -60,16 +62,12 @@ class DeliveryControl extends BaseControl
 		$template->selectedCarrier = $delivery->carrier;
 		$template->selectedPayment = $delivery->payment;
 
-		$template->amountItems = $this->shoppingCartSession->getAmountItems();
-		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
-		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$template->discountCode = $this->discountCodeService->getCode()?->code;
-		$cartTotalPrice = $this->shoppingCartSession->getTotalPrice();
-		$template->discountAmount = $template->subtotalPrice->minus($cartTotalPrice);
-		$template->totalPrice = $cartTotalPrice
-			->plus($this->orderSession->getCarrierPrice())
-			->plus($this->orderSession->getPaymentPrice());
+		$this->prepareShoppingCartSummary(
+			$template,
+			$this->shoppingCartSession,
+			$this->discountCodeService,
+			$this->orderSession,
+		);
 
 		if ($delivery->carrier !== null && $delivery->payment !== null) {
 			$form = $this->getComponent('delivery');
@@ -95,10 +93,9 @@ class DeliveryControl extends BaseControl
 	/**
 	 * @throws AttributeDetectionException
 	 */
-	protected function createComponentDelivery(): Form
+	protected function createComponentDelivery(): BaseForm
 	{
-		$form = new Form;
-		$form->setTranslator($this->translator);
+		$form = $this->factory->create($this->translator);
 		$carrierItems = $this->carrierRepository->getOnlyIds();
 		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $carrierItems)
 			->setRequired('Please select a carrier.');

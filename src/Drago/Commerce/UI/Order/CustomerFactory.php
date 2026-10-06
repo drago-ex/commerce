@@ -13,6 +13,7 @@ use Drago\Form\Autocomplete;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
 use Nette\Http\Request;
+use Nette\Localization\Translator;
 
 
 /**
@@ -32,9 +33,9 @@ class CustomerFactory
 	/**
 	 * @throws InvalidDatabaseException
 	 */
-	public function addCustomer(): BaseForm
+	public function addCustomer(?Translator $translator = null): BaseForm
 	{
-		$form = $this->factory->create();
+		$form = $this->factory->create($translator);
 		$form->addEmailInput(CustomerValues::Email, 'Email')
 			->setAutocomplete(Autocomplete::Email)
 			->addRule($form::Email);

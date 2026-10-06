@@ -52,22 +52,16 @@ class CustomerControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Customer.latte');
 		$template->setTranslator($this->translator);
-		$template->shoppingCart = $this->shoppingCartSession->getItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
 		$orderState = $this->orderSession->getItems();
 		$template->carrier = $orderState->carrier;
 		$template->payment = $orderState->payment;
-
-		$template->amountItems = $this->shoppingCartSession->getAmountItems();
-		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
-		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$template->discountCode = $this->discountCodeService->getCode()?->code;
-		$cartTotalPrice = $this->shoppingCartSession->getTotalPrice();
-		$template->discountAmount = $template->subtotalPrice->minus($cartTotalPrice);
-		$template->totalPrice = $cartTotalPrice
-			->plus($this->orderSession->getCarrierPrice())
-			->plus($this->orderSession->getPaymentPrice());
+		$this->prepareShoppingCartSummary(
+			$template,
+			$this->shoppingCartSession,
+			$this->discountCodeService,
+			$this->orderSession,
+		);
 
 		$customer = $this->orderSession
 			->getItems()
@@ -91,7 +85,7 @@ class CustomerControl extends BaseControl
 	 */
 	protected function createComponentCustomer(): BaseForm
 	{
-		$form = $this->customerFactory->addCustomer();
+		$form = $this->customerFactory->addCustomer($this->translator);
 		$form->onSuccess[] = $this->success(...);
 
 		return $form;

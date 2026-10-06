@@ -6,6 +6,7 @@ namespace Drago\Commerce;
 
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
+use NumberFormatter;
 
 
 /**
@@ -54,6 +55,21 @@ class Commerce
 	public function moneyOf(float $amount): Money
 	{
 		return Money::of($amount, self::$currency);
+	}
+
+
+	public static function formatMoney(Money $money): string
+	{
+		$formatter = new NumberFormatter(self::$moneyFormat, NumberFormatter::CURRENCY);
+
+		if (self::$moneySymbol !== '') {
+			$formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, self::$moneySymbol);
+		}
+
+		$formatter->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, self::$moneyFractionDigits);
+		$formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, self::$moneyFractionDigits);
+
+		return $money->formatWith($formatter);
 	}
 
 

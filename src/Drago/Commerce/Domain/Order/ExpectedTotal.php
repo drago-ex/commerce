@@ -22,13 +22,12 @@ final class ExpectedTotal
 
 
 	/**
-	 * True when the total equals what the customer saw. A missing value (a custom
-	 * template without the field) skips the check.
+	 * True when the total equals the value shown to the customer.
 	 */
 	public static function matches(?string $expected, Money $total): bool
 	{
 		if ($expected === null || $expected === '') {
-			return true;
+			return false;
 		}
 
 		try {

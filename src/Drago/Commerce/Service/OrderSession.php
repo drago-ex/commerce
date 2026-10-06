@@ -21,7 +21,8 @@ class OrderSession
 	private const string
 		Carrier = 'carrier',
 		Payment = 'payment',
-		Customer = 'customer';
+		Customer = 'customer',
+		ExpectedTotal = 'expectedTotal';
 
 	private SessionSection $sessionSection;
 
@@ -124,10 +125,24 @@ class OrderSession
 	}
 
 
+	public function setExpectedTotal(string $total): void
+	{
+		$this->sessionSection->set(self::ExpectedTotal, $total);
+	}
+
+
+	public function getExpectedTotal(): ?string
+	{
+		$total = $this->sessionSection->get(self::ExpectedTotal);
+		return is_string($total) ? $total : null;
+	}
+
+
 	public function remove(): void
 	{
 		foreach ($this->items() as $item) {
 			$this->sessionSection->remove($item);
 		}
+		$this->sessionSection->remove(self::ExpectedTotal);
 	}
 }

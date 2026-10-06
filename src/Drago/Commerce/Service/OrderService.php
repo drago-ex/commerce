@@ -132,6 +132,7 @@ readonly class OrderService
 
 
 	/**
+	 * @param ProductCart[] $items
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */

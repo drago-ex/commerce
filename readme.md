@@ -113,19 +113,13 @@ final class ShopPresenter extends BasePresenter
 }
 ```
 
-Create a component factory for each control you render:
+Create a component factory only for controls you want to display. Each factory returns the matching property injected by `CommerceControl`:
 
-| Factory | Injected property | Purpose |
-| --- | --- | --- |
-| `createComponentMiniCart()` | `$this->miniCartControl` | Cart link and item count |
-| `createComponentProduct()` | `$this->productControl` | Product listing |
-| `createComponentProductDetail()` | `$this->productDetailControl` | Product detail and variants; call `setProductId()` |
-| `createComponentShoppingCart()` | `$this->shoppingCartControl` | Cart and discount code |
-| `createComponentDelivery()` | `$this->deliveryControl` | Carrier and payment selection |
-| `createComponentCustomer()` | `$this->customerControl` | Customer details |
-| `createComponentSummaryOrder()` | `$this->summaryOrderControl` | Order review and confirmation |
+- **Storefront:** `createComponentProduct()` for the product listing and `createComponentProductDetail()` for a product detail page. Set the product ID on the detail control before returning it.
+- **Cart:** `createComponentMiniCart()` for the cart link and `createComponentShoppingCart()` for the cart page.
+- **Checkout:** `createComponentDelivery()`, `createComponentCustomer()`, and `createComponentSummaryOrder()` for delivery and payment, customer details, and final order review.
 
-Set the control's `translator` when the application uses translations. For example:
+When you use translations, set the control's `translator` in its factory. A product detail factory can also select the product from a presenter parameter:
 
 ```php
 protected function createComponentProductDetail(): ProductDetailControl
@@ -186,6 +180,22 @@ public function startup(): void
 		$this->redirect($target);
 	}
 }
+```
+
+To use different presenter action names, replace the default `CheckoutSteps` and `CheckoutProcess` service entries with named definitions. The action names must match the actions in your presenter:
+
+```neon
+services:
+	checkoutSteps:
+		factory: Drago\Commerce\Domain\Checkout\CheckoutSteps
+		arguments:
+			- {delivery: shipping, customer: billing}
+	checkoutProcess:
+		factory: Drago\Commerce\Domain\Checkout\CheckoutProcess
+		arguments:
+			- @Drago\Commerce\Service\ShoppingCartSession
+			- @Drago\Commerce\Service\OrderSession
+			- @checkoutSteps
 ```
 
 Products with active variants must be purchased through a variant. A variant can use the product price and discount, or have its own price; variant-specific prices do not receive the product discount. Checkout refreshes catalog and delivery prices before order placement and asks the customer to review changes.

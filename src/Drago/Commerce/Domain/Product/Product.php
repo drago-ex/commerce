@@ -16,4 +16,7 @@ class Product extends Item
 	use Discount;
 
 	public ?string $photo = null;
+
+	/** Catalog price the item was added to the cart at (null when unknown). */
+	public ?CatalogPrice $catalog = null;
 }

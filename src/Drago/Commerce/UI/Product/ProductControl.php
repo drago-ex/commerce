@@ -6,17 +6,14 @@ namespace Drago\Commerce\UI\Product;
 
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
-use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
-use Drago\Commerce\Domain\Product\Product;
+use Drago\Commerce\Domain\Product\PriceResolver;
 use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
-use Drago\Commerce\Event\EventDispatcher;
-use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
@@ -36,7 +33,7 @@ class ProductControl extends BaseControl
 		private readonly ShoppingCartSession $shoppingCartSession,
 		private readonly Commerce $commerce,
 		private readonly Factory $factory,
-		private readonly EventDispatcher $eventDispatcher,
+		private readonly PriceResolver $priceResolver,
 	) {
 	}
 
@@ -111,14 +108,7 @@ class ProductControl extends BaseControl
 			return;
 		}
 
-		$product = $this->createProductEntity($entity, $this->commerce->moneyOf($entity->price));
-
-		$event = new ProductAddedToCart($product, $product->price);
-		$this->eventDispatcher->dispatch($event);
-
-		$item = $this->createProductEntity($entity, $event->getPrice());
-
-		$this->shoppingCartSession->addItem($item);
+		$this->shoppingCartSession->addItem($this->priceResolver->forCart($entity, null, null, 1));
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);
 		$this->finish();
 	}
@@ -159,29 +149,5 @@ class ProductControl extends BaseControl
 			$this->getPresenter()->flashMessage('The product is out of stock.', Alert::Warning);
 			$this->getPresenter()->redirect('this');
 		}
-	}
-
-
-	/**
-	 * Creates a Product domain object from an entity and the given price.
-	 *
-	 * @throws MoneyMismatchException
-	 */
-	private function createProductEntity(ProductEntity $entity, Money $price): Product
-	{
-		$product = new Product(
-			id: $entity->id,
-			name: $entity->name,
-			price: $price,
-		);
-
-		// Only apply the standard % discount when nothing else already produced
-		// a custom final price via the ProductAddedToCart event — otherwise
-		// getDiscountedPrice() would discount an already-final price again.
-		if ($price->isEqualTo($this->commerce->moneyOf($entity->price))) {
-			$product->setDiscount($entity->discount);
-		}
-
-		return $product;
 	}
 }

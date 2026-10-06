@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\MoneyMismatchException;
+use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OutOfStockException;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
+use Drago\Commerce\Service\CheckoutPricing;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderService;
 use Drago\Commerce\Service\OrderSession;
@@ -33,6 +36,7 @@ class SummaryOrderControl extends BaseControl
 		private readonly OrderService $orderService,
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
+		private readonly CheckoutPricing $checkoutPricing,
 	) {
 	}
 
@@ -52,9 +56,10 @@ class SummaryOrderControl extends BaseControl
 		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
 		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
 		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
-		$template->discountCode = $this->discountCodeService->getCode()?->code;
-		$template->totalPrice = $this->getTotalPrice();
+		$discountCode = $this->discountCodeService->getCode();
+		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
+		$template->discountCode = $discountCode?->code;
+		$template->totalPrice = $this->getTotalPrice($discountCode);
 		$template->carrier = $this->getOrderItem('carrier');
 		$template->customer = $this->getOrderItem('customer');
 		$template->payment = $this->getOrderItem('payment');
@@ -73,9 +78,9 @@ class SummaryOrderControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 */
-	private function getTotalPrice(): Money
+	private function getTotalPrice(?DiscountCodeEntity $discountCode = null): Money
 	{
-		return $this->shoppingCartSession->getTotalPrice()
+		return $this->shoppingCartSession->getTotalPrice($discountCode)
 			->plus($this->orderSession->getCarrierPrice())
 			->plus($this->orderSession->getPaymentPrice());
 	}
@@ -95,9 +100,25 @@ class SummaryOrderControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws MoneyMismatchException
+	 * @throws UnknownCurrencyException
 	 */
 	public function processOrder(Form $form): void
 	{
+		// Prices kept in the session may be outdated; show the customer any change before charging it.
+		$changed = $this->checkoutPricing->refreshCart();
+		$deliveryChanged = $this->checkoutPricing->refreshDelivery();
+		if ($changed !== [] || $deliveryChanged) {
+			foreach ($changed as $name) {
+				$form->addError($this->translate('The price of %s has changed, please review your order.', $name), false);
+			}
+
+			if ($deliveryChanged) {
+				$form->addError($this->translate('The delivery or payment option has changed, please review your order.'), false);
+			}
+
+			return;
+		}
+
 		$order = $this->orderSession->getItems();
 		$customer = $order->customer;
 		$carrier = $order->carrier;
@@ -115,9 +136,9 @@ class SummaryOrderControl extends BaseControl
 		}
 
 		$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice());
-		$discountCode = $this->discountCodeService->getCode()?->code;
-		$totalPrice = $this->getTotalPrice();
+		$discountCode = $this->discountCodeService->getCode();
+		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
+		$totalPrice = $this->getTotalPrice($discountCode);
 
 		try {
 			$placement = $this->orderService->place(

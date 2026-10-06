@@ -25,23 +25,21 @@ final readonly class CheckoutRedirectResolver
 	{
 		$orderDraft = $this->orderSession->getItems();
 		$hasItems = $this->shoppingCartSession->getAmountItems() > 0;
-		$carrier = $orderDraft->carrier;
 		$customer = $orderDraft->customer;
+		$deliveryMissing = $orderDraft->carrier === null || $orderDraft->payment === null;
 
 		$step = $this->checkoutSteps;
 
 		return match ($action) {
-			$step->delivery => (!$hasItems && $action !== $step->products)
-				? $step->products
-				: null,
+			$step->delivery => $hasItems ? null : $step->products,
 
 			$step->customer => match (true) {
-				$carrier === null => $hasItems ? $step->delivery : $step->products,
+				$deliveryMissing => $hasItems ? $step->delivery : $step->products,
 				default => null,
 			},
 
 			$step->summary => match (true) {
-				$carrier === null => $hasItems ? $step->delivery : $step->products,
+				$deliveryMissing => $hasItems ? $step->delivery : $step->products,
 				$customer === null => $step->customer,
 				default => null,
 			},

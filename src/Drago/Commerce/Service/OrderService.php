@@ -15,6 +15,7 @@ use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
+use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OrderPlacement;
 use Drago\Commerce\Domain\Order\OrderProduct;
@@ -47,6 +48,8 @@ readonly class OrderService
 
 	/**
 	 * Persists a complete order in one database transaction.
+	 * $discountCode is the code the totals were calculated with; its usage is
+	 * recorded in the same transaction.
 	 *
 	 * @param ProductCart[] $items
 	 * @throws OrderException
@@ -60,7 +63,7 @@ readonly class OrderService
 		Money $subtotalPrice,
 		Money $discountAmount,
 		Money $totalPrice,
-		?string $discountCode,
+		?DiscountCodeEntity $discountCode,
 	): OrderPlacement
 	{
 		$connection = $this->orderRepository->getConnection();
@@ -77,7 +80,7 @@ readonly class OrderService
 				payment_price: $this->getAmountPrice($payment->price),
 				subtotal_price: $this->getAmountPrice($subtotalPrice),
 				total_price: $this->getAmountPrice($totalPrice),
-				discount_code: $discountCode,
+				discount_code: $discountCode?->code,
 				discount_amount: $this->getAmountPrice($discountAmount),
 				created_at: new DateTimeImmutable,
 			);
@@ -88,8 +91,8 @@ readonly class OrderService
 			$this->stockReservation->reserve($items);
 			$this->saveProducts($orderId, $items);
 
-			if (!$this->discountCodeService->consume()) {
-				throw new OrderException('The discount code has just reached its usage limit, please try again without the code.');
+			if ($discountCode !== null && !$this->discountCodeService->consume($discountCode)) {
+				throw new OrderException('The discount code can no longer be used, please try again without the code.');
 			}
 
 			$connection->commit();

@@ -1,4 +1,4 @@
--- Drago Commerce example data. Run after all schema migrations.
+-- Drago Commerce example data. Import after all schema migrations; never on a production database.
 
 --
 --  Drago commerce data sql (Expanded with diverse product catalog)

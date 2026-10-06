@@ -12,15 +12,13 @@ use Dibi\Exception;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
-use Drago\Commerce\Domain\Product\Product;
+use Drago\Commerce\Domain\Product\PriceResolver;
 use Drago\Commerce\Domain\Product\ProductEntity;
 use Drago\Commerce\Domain\Product\ProductImageRepository;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantMapper;
 use Drago\Commerce\Domain\Product\ProductVariantOption;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
-use Drago\Commerce\Event\EventDispatcher;
-use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
@@ -48,8 +46,7 @@ class ProductDetailControl extends BaseControl
 		private readonly ProductVariantRepository $variantRepository,
 		private readonly ProductVariantMapper $variantMapper,
 		private readonly ShoppingCartSession $shoppingCartSession,
-		private readonly Commerce $commerce,
-		private readonly EventDispatcher $eventDispatcher,
+		private readonly PriceResolver $priceResolver,
 	) {
 	}
 
@@ -297,8 +294,7 @@ class ProductDetailControl extends BaseControl
 
 		$availableStock = $entity->stock;
 		$variantLabel = null;
-		$price = $this->commerce->moneyOf($entity->price);
-		$applyDiscount = true;
+		$variantEntity = null;
 
 		if ($variantId === null) {
 			// A product with variants is bought through one of them, never as a whole.
@@ -314,11 +310,6 @@ class ProductDetailControl extends BaseControl
 
 			$availableStock = $variantEntity->stock;
 			$variantLabel = implode(', ', $this->variantRepository->getLabels($variantEntity->id));
-
-			if ($variantEntity->hasPriceOverride()) {
-				$price = $this->commerce->moneyOf((float) $variantEntity->price);
-				$applyDiscount = false;
-			}
 		}
 
 		$inCart = $this->shoppingCartSession->getAmount($entity->id, $variantId);
@@ -329,16 +320,7 @@ class ProductDetailControl extends BaseControl
 			return;
 		}
 
-		$product = new Product(id: $entity->id, name: $entity->name, price: $price);
-
-		$event = new ProductAddedToCart($product, $product->price, $variantId, $variantLabel, $amount);
-		$this->eventDispatcher->dispatch($event);
-
-		$item = new Product(id: $entity->id, name: $entity->name, price: $event->getPrice());
-		if ($applyDiscount && $event->getPrice()->isEqualTo($price)) {
-			$item->setDiscount($entity->discount);
-		}
-
+		$item = $this->priceResolver->forCart($entity, $variantEntity, $variantLabel, $amount);
 		$this->shoppingCartSession->addItem($item, $amount, variantId: $variantId, variantLabel: $variantLabel);
 
 		$this->getPresenter()->flashMessage('The product has been added to the cart.', Alert::Success);

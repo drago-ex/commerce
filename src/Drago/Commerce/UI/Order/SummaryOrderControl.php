@@ -6,13 +6,12 @@ namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
-use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Order\ExpectedTotal;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
+use Drago\Commerce\Domain\Order\OrderFingerprint;
 use Drago\Commerce\Domain\Order\OutOfStockException;
 use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
@@ -22,8 +21,11 @@ use Drago\Commerce\Service\OrderService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
+use Drago\Commerce\UI\BaseForm;
+use Drago\Commerce\UI\Factory;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\HiddenField;
+use Random\RandomException;
 use Tracy\Debugger;
 
 
@@ -39,6 +41,7 @@ class SummaryOrderControl extends BaseControl
 		private readonly EventDispatcher $eventDispatcher,
 		private readonly DiscountCodeService $discountCodeService,
 		private readonly CheckoutPricing $checkoutPricing,
+		private readonly Factory $factory,
 	) {
 	}
 
@@ -47,30 +50,45 @@ class SummaryOrderControl extends BaseControl
 	 * @throws MoneyMismatchException
 	 * @throws AttributeDetectionException
 	 * @throws Exception
+	 * @throws RandomException
 	 */
 	public function render(): void
 	{
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Summary.latte');
 		$template->setTranslator($this->translator);
-		$template->shoppingCart = $this->shoppingCartSession->getItems();
-		$template->amountItems = $this->shoppingCartSession->getAmountItems();
-		$template->originalPrice = $this->shoppingCartSession->getOriginalPrice();
-		$template->subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$discountCode = $this->discountCodeService->getCode();
-		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
-		$template->discountCode = $discountCode?->code;
-		$template->totalPrice = $this->getTotalPrice($discountCode);
+		$this->prepareShoppingCartSummary(
+			$template,
+			$this->shoppingCartSession,
+			$this->discountCodeService,
+			$this->orderSession,
+		);
 
 		$expectedTotal = ExpectedTotal::format($template->totalPrice);
 		$this->orderSession->setExpectedTotal($expectedTotal);
+		$order = $this->orderSession->getItems();
+		$discountCode = $this->discountCodeService->getCode();
+		$this->orderSession->setOrderFingerprint(OrderFingerprint::create(
+			$template->shoppingCart,
+			$order,
+			$discountCode,
+			$template->subtotalPrice,
+			$template->discountAmount,
+			$template->totalPrice,
+		));
+		$orderToken = bin2hex(random_bytes(32));
+		$this->orderSession->setOrderToken($orderToken);
 
-		// Keep the displayed total in the form and verify it against the server-side session value.
+		// Bind the form to the order version that was displayed on this page.
 		$sendOrder = $this->getComponent('sendOrder');
-		$field = $sendOrder->getComponent('expectedTotal');
-		if ($field instanceof HiddenField) {
-			$field->setValue($expectedTotal);
+		$totalField = $sendOrder->getComponent('expectedTotal');
+		if ($totalField instanceof HiddenField) {
+			$totalField->setValue($expectedTotal);
+		}
+
+		$tokenField = $sendOrder->getComponent('orderToken');
+		if ($tokenField instanceof HiddenField) {
+			$tokenField->setValue($orderToken);
 		}
 
 		$template->carrier = $this->getOrderItem('carrier');
@@ -91,19 +109,11 @@ class SummaryOrderControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 */
-	private function getTotalPrice(?DiscountCodeEntity $discountCode = null): Money
+	protected function createComponentSendOrder(): BaseForm
 	{
-		return $this->shoppingCartSession->getTotalPrice($discountCode)
-			->plus($this->orderSession->getCarrierPrice())
-			->plus($this->orderSession->getPaymentPrice());
-	}
-
-
-	protected function createComponentSendOrder(): Form
-	{
-		$form = new Form;
-		$form->setTranslator($this->translator);
+		$form = $this->factory->create($this->translator);
 		$form->addHidden('expectedTotal');
+		$form->addHidden('orderToken');
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
 		return $form;
@@ -152,10 +162,37 @@ class SummaryOrderControl extends BaseControl
 		$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
 		$discountCode = $this->discountCodeService->getCode();
 		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
-		$totalPrice = $this->getTotalPrice($discountCode);
+		$totalPrice = $this->calculateTotalPrice(
+			$this->shoppingCartSession,
+			$this->discountCodeService,
+			$this->orderSession,
+			$discountCode,
+		);
 
-		// The server-side total is authoritative; the hidden field is never trusted.
-		if (!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)) {
+		// Match the submitted page version and current order to the server-side snapshot.
+		$totalField = $form->getComponent('expectedTotal');
+		$tokenField = $form->getComponent('orderToken');
+		$expectedFingerprint = $this->orderSession->getOrderFingerprint();
+		$expectedToken = $this->orderSession->getOrderToken();
+		$currentFingerprint = OrderFingerprint::create(
+			$items,
+			$order,
+			$discountCode,
+			$subtotalPrice,
+			$discountAmount,
+			$totalPrice,
+		);
+		if (
+			!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)
+			|| !$totalField instanceof HiddenField
+			|| !ExpectedTotal::matches($totalField->getValue(), $totalPrice)
+			|| !$tokenField instanceof HiddenField
+			|| !is_string($tokenField->getValue())
+			|| $expectedToken === null
+			|| !hash_equals($expectedToken, $tokenField->getValue())
+			|| $expectedFingerprint === null
+			|| !hash_equals($expectedFingerprint, $currentFingerprint)
+		) {
 			$form->addError(
 				$this->translate('The order total has changed to %s, please review your order.', $this->template->money($totalPrice)),
 				false,

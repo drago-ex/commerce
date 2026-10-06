@@ -60,14 +60,7 @@ class SummaryCartControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/SummaryCart.latte');
 		$template->setTranslator($this->translator);
-		$template->originalPrice = $this->shoppingCart->getOriginalPrice();
-		$template->subtotalPrice = $this->shoppingCart->getSubtotalPrice();
-		$template->totalPrice = $this->shoppingCart->getTotalPrice();
-		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$template->discountAmount = $template->subtotalPrice->minus($template->totalPrice);
-		$template->discountCode = $this->discountCodeService->getCode()?->code;
-		$template->amountItems = $this->shoppingCart->getAmountItems();
-		$template->shoppingCart = $this->shoppingCart->getItems();
+		$this->prepareShoppingCartSummary($template, $this->shoppingCart, $this->discountCodeService);
 		$template->linkOrderDelivery = $this->getPresenter()->link($this->linkRedirectTarget);
 		$template->breadcrumbs = $this->getBreadcrumbs();
 		$template->render();
@@ -111,8 +104,7 @@ class SummaryCartControl extends BaseControl
 		return new Multiplier(function (string $key) {
 			[$productId, $variantId] = self::splitCartItemKey($key);
 
-			$form = $this->factory->addChangeAmountInCart($productId, $variantId);
-			$form->setTranslator($this->translator);
+			$form = $this->factory->addChangeAmountInCart($productId, $variantId, $this->translator);
 			$form->onSuccess[] = $this->changeQuantity(...);
 			return $form;
 		});
@@ -121,8 +113,7 @@ class SummaryCartControl extends BaseControl
 
 	protected function createComponentDiscountCode(): BaseForm
 	{
-		$form = $this->factory->addDiscountCode();
-		$form->setTranslator($this->translator);
+		$form = $this->factory->addDiscountCode($this->translator);
 		$form->onSuccess[] = $this->applyDiscountCode(...);
 		return $form;
 	}

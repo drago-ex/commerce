@@ -22,10 +22,10 @@ use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
+use Drago\Commerce\UI\Factory;
 use Drago\Commerce\UI\FactoryValues;
 use JsonException;
 use Nette\Application\UI\Form;
-use NumberFormatter;
 
 
 /**
@@ -47,6 +47,7 @@ class ProductDetailControl extends BaseControl
 		private readonly ProductVariantMapper $variantMapper,
 		private readonly ShoppingCartSession $shoppingCartSession,
 		private readonly PriceResolver $priceResolver,
+		private readonly Factory $factory,
 	) {
 	}
 
@@ -217,20 +218,7 @@ class ProductDetailControl extends BaseControl
 	 */
 	public function formatMoney(?Money $money): string
 	{
-		if ($money === null) {
-			return '';
-		}
-
-		$formatter = new NumberFormatter(Commerce::$moneyFormat, NumberFormatter::CURRENCY);
-
-		if (Commerce::$moneySymbol) {
-			$formatter->setSymbol(NumberFormatter::CURRENCY_SYMBOL, Commerce::$moneySymbol);
-		}
-
-		$formatter->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, Commerce::$moneyFractionDigits);
-		$formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, Commerce::$moneyFractionDigits);
-
-		return $money->formatWith($formatter);
+		return $money === null ? '' : Commerce::formatMoney($money);
 	}
 
 
@@ -244,24 +232,12 @@ class ProductDetailControl extends BaseControl
 		$entity = $this->productRepository->getOne($this->productId) ?? $this->error('Product not found.');
 		$variants = $this->getVariantOptions($entity);
 
-		$form = new BaseForm;
-		if ($this->translator !== null) {
-			$form->setTranslator($this->translator);
-		}
-
-		$form->addHidden(FactoryValues::ProductId, (string) $this->productId)
-			->addRule($form::Integer);
-
 		$selected = $this->pickSelectedVariant($variants);
-		if ($selected !== null) {
-			$form->addHidden(FactoryValues::VariantId, (string) $selected->id);
-		}
-
-		$form->addIntegerInput(FactoryValues::Amount)
-			->setDefaultValue(1)
-			->setMin(1)
-			->addRule($form::Integer)
-			->setRequired();
+		$form = $this->factory->addChangeAmountInCart(
+			(string) $this->productId,
+			$selected?->id,
+			$this->translator,
+		);
 
 		$form->addSubmit('add', 'Add to cart');
 		$form->onSuccess[] = $this->success(...);

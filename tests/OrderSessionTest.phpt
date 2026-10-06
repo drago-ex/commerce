@@ -34,6 +34,8 @@ Assert::null($emptyOrder->carrier);
 Assert::null($emptyOrder->payment);
 Assert::null($emptyOrder->customer);
 Assert::null($orderSession->getExpectedTotal());
+Assert::null($orderSession->getOrderFingerprint());
+Assert::null($orderSession->getOrderToken());
 Assert::true($orderSession->getCarrierPrice()->isEqualTo(Money::of(0, 'CZK')));
 Assert::true($orderSession->getPaymentPrice()->isEqualTo(Money::of(0, 'CZK')));
 
@@ -55,12 +57,16 @@ $orderSession->setCarrier($carrier);
 $orderSession->setPayment($payment);
 $orderSession->setCustomer($customer);
 $orderSession->setExpectedTotal('135.00');
+$orderSession->setOrderFingerprint('fingerprint');
+$orderSession->setOrderToken('token');
 
 $order = $orderSession->getItems();
 Assert::same($carrier, $order->carrier);
 Assert::same($payment, $order->payment);
 Assert::same($customer, $order->customer);
 Assert::same('135.00', $orderSession->getExpectedTotal());
+Assert::same('fingerprint', $orderSession->getOrderFingerprint());
+Assert::same('token', $orderSession->getOrderToken());
 Assert::true($orderSession->getCarrierPrice()->isEqualTo(Money::of(120, 'CZK')));
 Assert::true($orderSession->getPaymentPrice()->isEqualTo(Money::of(15, 'CZK')));
 
@@ -70,5 +76,7 @@ Assert::null($clearedOrder->carrier);
 Assert::null($clearedOrder->payment);
 Assert::null($clearedOrder->customer);
 Assert::null($orderSession->getExpectedTotal());
+Assert::null($orderSession->getOrderFingerprint());
+Assert::null($orderSession->getOrderToken());
 Assert::true($orderSession->getCarrierPrice()->isEqualTo(Money::of(0, 'CZK')));
 Assert::true($orderSession->getPaymentPrice()->isEqualTo(Money::of(0, 'CZK')));

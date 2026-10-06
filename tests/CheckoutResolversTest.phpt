@@ -78,6 +78,7 @@ $carrier = new Carrier(1, 'DPD', Money::of(100, 'CZK'));
 $payment = new Payment(1, 'Online', Money::of(0, 'CZK'));
 $orderSession->setCarrier($carrier);
 Assert::same('delivery', $redirectResolver->getRedirectTargetForAction('customer'));
+Assert::same(['shoppingCart'], $stepResolver->getCompletedSteps());
 $orderSession->setPayment($payment);
 
 Assert::same(['shoppingCart', 'delivery'], $stepResolver->getCompletedSteps());
@@ -102,6 +103,13 @@ Assert::same(['shoppingCart', 'delivery', 'customer', 'summary'], $stepResolver-
 Assert::null($redirectResolver->getRedirectTargetForAction('delivery'));
 Assert::null($redirectResolver->getRedirectTargetForAction('customer'));
 Assert::null($redirectResolver->getRedirectTargetForAction('summary'));
+
+// Missing delivery or payment cannot mark checkout steps as complete.
+$orderSession->removeCarrier();
+Assert::same(['shoppingCart'], $stepResolver->getCompletedSteps());
+$orderSession->setCarrier($carrier);
+$orderSession->removePayment();
+Assert::same(['shoppingCart'], $stepResolver->getCompletedSteps());
 
 // Clean up session
 $cartSession->remove();

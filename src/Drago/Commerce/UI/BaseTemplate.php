@@ -10,7 +10,6 @@ use Drago\Application\UI\ExtraTemplate;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Latte\Attributes\TemplateFilter;
-use NumberFormatter;
 
 
 class BaseTemplate extends ExtraTemplate
@@ -24,6 +23,21 @@ class BaseTemplate extends ExtraTemplate
 
 	public Breadcrumbs $breadcrumbs;
 
+	/** Full cart price before product discounts, when available. */
+	public ?Money $originalPrice = null;
+
+	/** Cart subtotal after product discounts, before discount codes. */
+	public Money $subtotalPrice;
+
+	/** Savings from product discounts. */
+	public Money $productDiscountAmount;
+
+	/** Savings from the applied discount code. */
+	public Money $discountAmount;
+
+	/** Applied discount code, or null when none is active. */
+	public ?string $discountCode = null;
+
 
 	/**
 	 * Formats a Money object to a localized currency string.
@@ -31,28 +45,7 @@ class BaseTemplate extends ExtraTemplate
 	#[TemplateFilter]
 	public function money(Money $money): string
 	{
-		$formatter = new NumberFormatter(
-			Commerce::$moneyFormat,
-			NumberFormatter::CURRENCY,
-		);
-
-		if (Commerce::$moneySymbol) {
-			$formatter->setSymbol(
-				NumberFormatter::CURRENCY_SYMBOL,
-				Commerce::$moneySymbol,
-			);
-		}
-
-		$formatter->setAttribute(
-			NumberFormatter::MIN_FRACTION_DIGITS,
-			Commerce::$moneyFractionDigits,
-		);
-		$formatter->setAttribute(
-			NumberFormatter::MAX_FRACTION_DIGITS,
-			Commerce::$moneyFractionDigits,
-		);
-
-		return $money->formatWith($formatter);
+		return Commerce::formatMoney($money);
 	}
 
 

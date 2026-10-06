@@ -93,8 +93,7 @@ class ProductControl extends BaseControl
 	protected function createComponentAddToCart(): Multiplier
 	{
 		return new Multiplier(function (string $productId) {
-			$form = $this->factory->addHiddenProductId($productId);
-			$form->setTranslator($this->translator);
+			$form = $this->factory->addHiddenProductId($productId, translator: $this->translator);
 			$form->addSubmit('add', 'Add to cart');
 			$form->onSuccess[] = $this->success(...);
 			return $form;

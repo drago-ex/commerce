@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
 
+use Brick\Money\Exception\MoneyMismatchException;
+use Brick\Money\Money;
+use Dibi\Exception;
 use Drago\Application\UI\ExtraControl;
+use Drago\Attr\AttributeDetectionException;
+use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
+use Drago\Commerce\Service\DiscountCodeService;
+use Drago\Commerce\Service\OrderSession;
+use Drago\Commerce\Service\ShoppingCartSession;
 use function vsprintf;
 
 
@@ -63,6 +71,62 @@ class BaseControl extends ExtraControl
 			completedSteps: $this->completedSteps,
 			currentStep: $this->currentStep,
 		);
+	}
+
+
+	/**
+	 * Populates the shared cart totals used by checkout templates.
+	 *
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 * @throws MoneyMismatchException
+	 */
+	protected function prepareShoppingCartSummary(
+		BaseTemplate $template,
+		ShoppingCartSession $shoppingCart,
+		DiscountCodeService $discountCodeService,
+		?OrderSession $orderSession = null,
+	): void
+	{
+		$discountCode = $discountCodeService->getCode();
+		$template->shoppingCart = $shoppingCart->getItems();
+		$template->amountItems = $shoppingCart->getAmountItems();
+		$template->originalPrice = $shoppingCart->getOriginalPrice();
+		$template->subtotalPrice = $shoppingCart->getSubtotalPrice();
+		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
+		$template->discountCode = $discountCode?->code;
+
+		$cartTotalPrice = $shoppingCart->getTotalPrice($discountCode);
+		$template->discountAmount = $template->subtotalPrice->minus($cartTotalPrice);
+		$template->totalPrice = $this->calculateTotalPrice(
+			$shoppingCart,
+			$discountCodeService,
+			$orderSession,
+			$discountCode,
+		);
+	}
+
+
+	/**
+	 * Calculates the cart total, including delivery and payment when present.
+	 *
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 * @throws MoneyMismatchException
+	 */
+	protected function calculateTotalPrice(
+		ShoppingCartSession $shoppingCart,
+		DiscountCodeService $discountCodeService,
+		?OrderSession $orderSession = null,
+		?DiscountCodeEntity $discountCode = null,
+	): Money
+	{
+		$totalPrice = $shoppingCart->getTotalPrice($discountCode ?? $discountCodeService->getCode());
+		if ($orderSession === null) {
+			return $totalPrice;
+		}
+
+		return $totalPrice->plus($orderSession->getCarrierPrice())->plus($orderSession->getPaymentPrice());
 	}
 
 

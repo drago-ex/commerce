@@ -124,3 +124,8 @@
 "The delivery or payment option has changed, please review your order.": "Doprava nebo platba se změnily, zkontrolujte prosím objednávku."
 "Choose variant": "Vybrat variantu"
 "from": "od"
+"Pagination": "Stránkování"
+"Previous": "Předchozí"
+"Next": "Další"
+"The order total has changed to %s, please review your order.": "Celková cena objednávky se změnila na %s, zkontrolujte prosím objednávku."
+"The discount code is valid, but the order is below its minimum amount, so no discount applies yet.": "Slevový kód je platný, ale hodnota objednávky je pod jeho minimem, sleva se zatím neuplatní."

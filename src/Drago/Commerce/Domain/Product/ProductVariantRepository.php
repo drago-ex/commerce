@@ -79,20 +79,31 @@ class ProductVariantRepository
 	/**
 	 * Returns a stock and price summary of the active variants of every product
 	 * that has any, keyed by product ID. One query for the whole product listing.
+	 * With $productIds, only the summaries of those products are loaded.
 	 *
+	 * @param list<int>|null $productIds
 	 * @return array<int, ProductVariantSummary>
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */
-	public function getSummaries(): array
+	public function getSummaries(?array $productIds = null): array
 	{
-		$rows = $this->command()
+		if ($productIds === []) {
+			return [];
+		}
+
+		$query = $this->command()
 			->select('%n', ProductVariantEntity::ProductId)
 			->select('%n', ProductVariantEntity::Price)
 			->select('%n', ProductVariantEntity::Stock)
 			->from(ProductVariantEntity::Table)
-			->where('%n = ?', ProductVariantEntity::Active, 1)
-			->fetchAll();
+			->where('%n = ?', ProductVariantEntity::Active, 1);
+
+		if ($productIds !== null) {
+			$query->where('%n IN %in', ProductVariantEntity::ProductId, $productIds);
+		}
+
+		$rows = $query->fetchAll();
 
 		$summaries = [];
 		foreach ($rows as $row) {

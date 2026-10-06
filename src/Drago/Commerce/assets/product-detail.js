@@ -1,3 +1,28 @@
+const STOCK_STATES = {
+	many: {tone: 'text-success', icon: 'fa-circle-check'},
+	few: {tone: 'text-warning-emphasis', icon: 'fa-triangle-exclamation'},
+	none: {tone: 'text-danger', icon: 'fa-circle-xmark'},
+};
+
+// Builds the stock message with DOM nodes and textContent, so texts are never parsed as HTML.
+function renderStock(box, state, text) {
+	const {tone, icon} = STOCK_STATES[state];
+
+	const paragraph = document.createElement('p');
+	paragraph.className = `small ${tone} mb-0 d-flex align-items-center gap-1`;
+
+	const iconEl = document.createElement('i');
+	iconEl.className = `fa-solid ${icon}`;
+	iconEl.setAttribute('aria-hidden', 'true');
+
+	const label = document.createElement('span');
+	label.textContent = text;
+
+	paragraph.append(iconEl, label);
+	box.replaceChildren(paragraph);
+}
+
+
 export default class ProductDetail {
 	initialize(naja) {
 		const initializeProductDetail = (root) => {
@@ -138,23 +163,11 @@ export default class ProductDetail {
 
 					if (stockBox) {
 						if (matched.stock > 5) {
-							stockBox.innerHTML = `
-								<p class="small text-success mb-0 d-flex align-items-center gap-1">
-									<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-									<span>${container.dataset.stockMany}</span>
-								</p>`;
+							renderStock(stockBox, 'many', container.dataset.stockMany);
 						} else if (matched.stock > 0) {
-							stockBox.innerHTML = `
-								<p class="small text-warning-emphasis mb-0 d-flex align-items-center gap-1">
-									<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-									<span>${container.dataset.stockFew}: ${ matched.stock} ${container.dataset.stockPcs}</span>
-								</p>`;
+							renderStock(stockBox, 'few', `${container.dataset.stockFew}: ${matched.stock} ${container.dataset.stockPcs}`);
 						} else {
-							stockBox.innerHTML = `
-								<p class="small text-danger mb-0 d-flex align-items-center gap-1">
-									<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-									<span>${container.dataset.stockNone}</span>
-								</p>`;
+							renderStock(stockBox, 'none', container.dataset.stockNone);
 						}
 					}
 
@@ -167,11 +180,7 @@ export default class ProductDetail {
 					if (variantInput) variantInput.value = '';
 					if (addBtn) addBtn.disabled = true;
 					if (stockBox) {
-						stockBox.innerHTML = `
-							<p class="small text-danger mb-0 d-flex align-items-center gap-1">
-								<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-								<span>${container.dataset.stockUnavailable}</span>
-							</p>`;
+						renderStock(stockBox, 'none', container.dataset.stockUnavailable);
 					}
 				}
 			}

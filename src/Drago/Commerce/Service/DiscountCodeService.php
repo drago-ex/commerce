@@ -22,6 +22,14 @@ class DiscountCodeService
 
 	private SessionSection $sessionSection;
 
+	/**
+	 * The code lookup made during this request, so rendering several controls
+	 * does not query the database again for the same code.
+	 *
+	 * @var array{string, ?DiscountCodeEntity}|null
+	 */
+	private ?array $lookup = null;
+
 
 	public function __construct(
 		Session $session,
@@ -41,6 +49,7 @@ class DiscountCodeService
 	 */
 	public function apply(string $code): bool
 	{
+		$this->lookup = null;
 		$discountCode = $this->repository->findValid($code);
 		if ($discountCode === null || $discountCode->value <= 0) {
 			return false;
@@ -53,6 +62,7 @@ class DiscountCodeService
 
 	public function remove(): void
 	{
+		$this->lookup = null;
 		$this->sessionSection->remove(self::Code);
 	}
 
@@ -93,7 +103,11 @@ class DiscountCodeService
 			return null;
 		}
 
-		$discountCode = $this->repository->findValid($code);
+		if ($this->lookup === null || $this->lookup[0] !== $code) {
+			$this->lookup = [$code, $this->repository->findValid($code)];
+		}
+
+		$discountCode = $this->lookup[1];
 		if ($discountCode === null || $discountCode->value <= 0) {
 			$this->remove();
 			return null;

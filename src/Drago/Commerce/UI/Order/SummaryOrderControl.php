@@ -10,6 +10,7 @@ use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
+use Drago\Commerce\Domain\Order\ExpectedTotal;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OutOfStockException;
@@ -22,6 +23,7 @@ use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\HiddenField;
 use Tracy\Debugger;
 
 
@@ -60,6 +62,14 @@ class SummaryOrderControl extends BaseControl
 		$template->discountAmount = $template->subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
 		$template->discountCode = $discountCode?->code;
 		$template->totalPrice = $this->getTotalPrice($discountCode);
+
+		// The confirmation form carries the total shown here and is checked against it on submit.
+		$sendOrder = $this->getComponent('sendOrder');
+		$field = $sendOrder instanceof Form ? $sendOrder->getComponent('expectedTotal') : null;
+		if ($field instanceof HiddenField) {
+			$field->setValue(ExpectedTotal::format($template->totalPrice));
+		}
+
 		$template->carrier = $this->getOrderItem('carrier');
 		$template->customer = $this->getOrderItem('customer');
 		$template->payment = $this->getOrderItem('payment');
@@ -90,6 +100,7 @@ class SummaryOrderControl extends BaseControl
 	{
 		$form = new Form;
 		$form->setTranslator($this->translator);
+		$form->addHidden('expectedTotal');
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
 		return $form;
@@ -139,6 +150,16 @@ class SummaryOrderControl extends BaseControl
 		$discountCode = $this->discountCodeService->getCode();
 		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
 		$totalPrice = $this->getTotalPrice($discountCode);
+
+		// The customer must pay what the summary showed; a changed total (expired code, cart edited elsewhere) is shown first.
+		$expected = $form->getComponent('expectedTotal');
+		if ($expected instanceof HiddenField && !ExpectedTotal::matches($expected->getValue(), $totalPrice)) {
+			$form->addError(
+				$this->translate('The order total has changed to %s, please review your order.', $this->template->money($totalPrice)),
+				false,
+			);
+			return;
+		}
 
 		try {
 			$placement = $this->orderService->place(

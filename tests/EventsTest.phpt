@@ -149,7 +149,9 @@ $order = new OrderPlaced(
 $log = (new OrderLoggerListener)->toArray($order);
 
 Assert::same(77, $log['Order ID']);
-Assert::same('Jan Novák', $log['Customer']['name']);
+Assert::same(1, $log['Customer ID']);
+Assert::false(isset($log['Customer']));
+Assert::notContains('Novák', json_encode($log, JSON_UNESCAPED_UNICODE));
 Assert::same('2026-10-05 10:00:00', $log['Created at']);
 Assert::same([
 	[

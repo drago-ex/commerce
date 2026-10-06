@@ -169,6 +169,10 @@ try {
 		)->fetchSingle(),
 	);
 	Assert::same(
+		'Pánské tričko Classic',
+		$connection->query('SELECT product_name FROM orders_products WHERE order_id = %i', $successOrderId)->fetchSingle(),
+	);
+	Assert::same(
 		1,
 		(int) $connection->query(
 			'SELECT COUNT(*) FROM customers WHERE id = %i',

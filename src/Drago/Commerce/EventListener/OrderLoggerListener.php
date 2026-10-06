@@ -10,8 +10,9 @@ use Tracy\Debugger;
 
 /**
  * A listener that responds to the OrderPlaced event and writes
- * detailed order information to the log (including customer,
- * shipping, payment, items with their variants, price, and creation time).
+ * order information to the log: ID, shipping, payment, items with their variants,
+ * prices and creation time. Customer contact details are deliberately not logged;
+ * the order is linked to its customer by ID.
  */
 class OrderLoggerListener
 {
@@ -30,11 +31,7 @@ class OrderLoggerListener
 
 		return [
 			'Order ID' => $event->orderId,
-			'Customer' => [
-				'name'  => $event->customer->name . ' ' . $event->customer->surname,
-				'email' => $event->customer->email,
-				'phone' => (string) $event->customer->phone,
-			],
+			'Customer ID' => $event->orderSummary->customer_id,
 			'Carrier' => [
 				'name'  => $event->carrier->name ?? '',
 				'price' => $event->orderSummary->carrier_price,

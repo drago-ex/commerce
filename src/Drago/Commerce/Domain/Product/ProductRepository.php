@@ -41,6 +41,39 @@ class ProductRepository
 
 
 	/**
+	 * Returns the number of active products.
+	 *
+	 * @throws Exception
+	 */
+	public function countActive(): int
+	{
+		return (int) $this->command()
+			->select('COUNT(*)')
+			->from(ProductEntity::Table)
+			->where('%n = ?', ProductEntity::Active, 1)
+			->fetchSingle();
+	}
+
+
+	/**
+	 * Returns one page of active products in a stable order.
+	 *
+	 * @return list<ProductEntity>
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 */
+	public function getPage(int $limit, int $offset): array
+	{
+		return $this->read('*')
+			->where(ProductEntity::Active, '= ?', 1)
+			->orderBy(ProductEntity::PrimaryKey)
+			->limit($limit)
+			->offset($offset)
+			->recordAll();
+	}
+
+
+	/**
 	 * Returns all active products.
 	 *
 	 * @return ProductEntity[]

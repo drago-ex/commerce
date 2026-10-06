@@ -18,8 +18,10 @@ use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
+use Nette\Utils\Paginator;
 
 
 /**
@@ -27,6 +29,11 @@ use Nette\Application\UI\Multiplier;
  */
 class ProductControl extends BaseControl
 {
+	/** Current page of the listing. */
+	#[Persistent]
+	public int $page = 1;
+
+
 	public function __construct(
 		private readonly ProductRepository $productRepository,
 		private readonly ProductVariantRepository $variantRepository,
@@ -48,8 +55,23 @@ class ProductControl extends BaseControl
 		$template = $this->template;
 		$template->setFile($this->templateControl ?: __DIR__ . '/Product.latte');
 		$template->setTranslator($this->translator);
-		$template->products = $this->productRepository->getAll();
-		$template->variantSummaries = $this->variantRepository->getSummaries();
+
+		$perPage = $this->commerce->getItemsPerPage();
+		if ($perPage > 0) {
+			$paginator = new Paginator;
+			$paginator->setItemsPerPage($perPage);
+			$paginator->setItemCount($this->productRepository->countActive());
+			$paginator->setPage($this->page);
+			$template->paginator = $paginator;
+			$template->products = $this->productRepository->getPage($paginator->getLength(), $paginator->getOffset());
+		} else {
+			$template->paginator = null;
+			$template->products = $this->productRepository->getAll();
+		}
+
+		$template->variantSummaries = $this->variantRepository->getSummaries(
+			array_values(array_map(static fn(ProductEntity $product): int => $product->id, $template->products)),
+		);
 
 		$template->lowestPrices = [];
 		foreach ($template->products as $product) {

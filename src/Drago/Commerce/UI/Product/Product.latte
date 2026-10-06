@@ -97,3 +97,19 @@
 		</div>
 	{/foreach}
 </div>
+
+<nav n:if="$paginator && $paginator->getPageCount() > 1" aria-label="{_'Pagination'}" class="mt-4">
+	<ul class="pagination justify-content-center">
+		<li n:class="page-item, $paginator->isFirst() ? disabled">
+			<a class="page-link" href="{link this, page: max(1, $paginator->getPage() - 1)}" n:attr="tabindex => $paginator->isFirst() ? -1 : null">{_'Previous'}</a>
+		</li>
+		{for $i = 1; $i <= $paginator->getPageCount(); $i++}
+			<li n:class="page-item, $i === $paginator->getPage() ? active">
+				<a class="page-link" href="{link this, page: $i}" n:attr="aria-current => $i === $paginator->getPage() ? 'page' : null">{$i}</a>
+			</li>
+		{/for}
+		<li n:class="page-item, $paginator->isLast() ? disabled">
+			<a class="page-link" href="{link this, page: min($paginator->getPageCount(), $paginator->getPage() + 1)}" n:attr="tabindex => $paginator->isLast() ? -1 : null">{_'Next'}</a>
+		</li>
+	</ul>
+</nav>

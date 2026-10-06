@@ -9,11 +9,12 @@ Storefront and checkout components for Nette applications.
 
 ## What it does
 
-- Product listing and detail with variants (own stock, optional own price, extra images).
+- Paged product listing and detail with variants (own stock, optional own price, extra images).
 - Percentage discounts per product and discount codes (percent or fixed amount, validity dates, usage limit, minimum order amount).
 - Session cart with mini cart, quantity changes and item removal.
 - Checkout: cart, delivery and payment, customer details, summary.
-- The order is saved in one transaction with an atomic stock update. Prices are re-checked right before saving: if a price changed since the item was added, the customer sees the new price and confirms again.
+- The order is saved in one transaction with an atomic stock update. Prices are re-checked right before saving: if a price changed since the item was added, or the total differs from the one shown on the summary (for example an expired discount code), the customer sees the new price and confirms again.
+- Order lines keep the product name and variant label as they were at purchase, and every order stores its own copy of the customer details.
 - Events for custom behavior in your application.
 
 Not included: payment gateway, shipping integration, order e-mails, shop administration. Your application provides the product, carrier, payment and discount-code records.
@@ -36,7 +37,7 @@ Run the migrations with [drago-ex/migration](https://github.com/drago-ex/migrati
 php vendor/bin/migration db:migrate vendor/drago-ex/commerce/migrations
 ```
 
-Optional example data (carriers, payments, products, variants, discount codes). Development only:
+Optional example data (carriers, payments, products, variants, discount codes, example orders). Development only:
 
 ```bash
 php vendor/bin/migration db:migrate vendor/drago-ex/commerce/migrations-demo
@@ -163,6 +164,7 @@ new Commerce().initialize(naja);
 | `defaultRegionCode` | none | Default phone region: a code (`CZ`), or `['autoDetect', 'CZ']` to detect it and fall back to `CZ` |
 | `allowedRegionPhoneNumber` | any | Allowed phone region code or list of codes |
 | `postCodeOnRegionPhone` | `false` | Validate the postal code against the phone region |
+| `itemsPerPage` | `12` | Products per page in the listing; `0` shows all |
 | `geoLite2Path` | none | MaxMind GeoLite2 City database for phone region detection |
 
 ### Templates
@@ -204,7 +206,7 @@ Register listeners in `services.neon` with `addListener(EventClass, @listener)`.
 | `DeliveryOptionsChanged` | Carrier and payment are chosen. |
 | `OrderPlaced` | The order is saved. Read `items`, because the cart is emptied right after the listeners run. |
 
-`ProductAddedToCart::$product->price` is the price before the product discount: the variant's own price, otherwise the product price. The discount is applied afterwards, only if no listener changed the price and the variant has no own price. `OrderLoggerListener` writes placed orders, including customer contact details, to the Tracy log `order`.
+`ProductAddedToCart::$product->price` is the price before the product discount: the variant's own price, otherwise the product price. The discount is applied afterwards, only if no listener changed the price and the variant has no own price. `OrderLoggerListener` writes placed orders to the Tracy log `order`: order ID, customer ID, items, prices and delivery. Customer contact details are not logged.
 
 ### Prices and variants
 

@@ -91,6 +91,16 @@ class Commerce
 
 
 	/**
+	 * Returns how many products the listing shows on one page (12 when not configured).
+	 * Zero turns paging off and shows all active products.
+	 */
+	public function getItemsPerPage(): int
+	{
+		return max(0, (int) ($this->config['itemsPerPage'] ?? 12));
+	}
+
+
+	/**
 	 * Returns the absolute path to a MaxMind GeoLite2 City database, or null
 	 * when none is configured. GeoIP-based features (e.g. auto-detecting the
 	 * phone region from the visitor's IP) are simply skipped when this is null —

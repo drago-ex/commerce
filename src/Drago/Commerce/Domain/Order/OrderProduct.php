@@ -18,6 +18,8 @@ class OrderProduct
 		public ?int $variant_id,
 		public int $amount,
 		public float $unit_price,
+		public string $product_name = '',
+		public ?string $variant_label = null,
 	) {
 	}
 
@@ -30,6 +32,8 @@ class OrderProduct
 			variant_id: $item->variantId,
 			amount: $item->amount->toInt(),
 			unit_price: $item->getUnitPrice()->getAmount()->toFloat(),
+			product_name: mb_substr($item->product->name, 0, 100),
+			variant_label: $item->variantLabel !== null ? mb_substr($item->variantLabel, 0, 255) : null,
 		);
 	}
 }

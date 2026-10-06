@@ -25,6 +25,8 @@ $repository = new class extends DiscountCodeRepository {
 
 	public bool $usageResult = true;
 
+	public int $lookups = 0;
+
 
 	public function __construct()
 	{
@@ -33,6 +35,8 @@ $repository = new class extends DiscountCodeRepository {
 
 	public function findValid(string $code): ?DiscountCodeEntity
 	{
+		$this->lookups++;
+
 		return $this->codes[strtoupper(trim($code))] ?? null;
 	}
 
@@ -134,3 +138,18 @@ Assert::same([11], $repository->consumedIds);
 $repository->usageResult = false;
 Assert::false($service->consume($fixedCode));
 Assert::same([11, 12], $repository->consumedIds);
+
+// The code is looked up once per request, however many controls ask for it.
+$service->remove();
+$repository->codes = [$fixedCode->code => $fixedCode];
+Assert::true($service->apply('FIXED500'));
+$repository->lookups = 0;
+Assert::same($fixedCode, $service->getCode());
+Assert::same($fixedCode, $service->getCode());
+Assert::true($service->applyTo(Money::of(100, 'CZK'))->isEqualTo(Money::of(0, 'CZK')));
+Assert::same(1, $repository->lookups);
+
+// Applying a code again forgets the remembered lookup.
+Assert::true($service->apply('FIXED500'));
+$repository->codes = [];
+Assert::null($service->getCode());

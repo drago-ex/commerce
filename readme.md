@@ -254,7 +254,7 @@ translator:
 		- %appDir%/Translate
 ```
 
-The current request's translator determines the email language. Emails are sent synchronously during checkout, so SMTP latency delays the response; a queue can be added by listening to `OrderPlaced` and storing its item snapshot for later processing.
+The language is read from the presenter's `lang` URL parameter and passed to the translator's `setTranslate()` method when supported. Emails are sent synchronously during checkout, so SMTP latency delays the response; a queue can be added by listening to `OrderPlaced` and storing its item snapshot for later processing.
 
 Migration `016_order_delivery_snapshots.sql` stores the carrier and payment names with each order, so confirmation data does not change when those options are renamed.
 

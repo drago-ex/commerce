@@ -191,6 +191,7 @@ class SummaryOrderControl extends BaseControl
 		}
 
 		try {
+			$lang = $this->getPresenter()->getParameter('lang');
 			$this->eventDispatcher->dispatch(
 				new OrderPlaced(
 					orderId: $placement->orderId,
@@ -200,6 +201,7 @@ class SummaryOrderControl extends BaseControl
 					payment: $payment,
 					shoppingCartSession: $this->shoppingCartSession,
 					items: $cart->items,
+					lang: is_string($lang) ? $lang : 'en',
 				),
 			);
 		} catch (\Throwable $e) {

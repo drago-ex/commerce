@@ -53,7 +53,7 @@ readonly class OrderConfirmationListener
 				carrierPrice: $formatAmount($event->orderSummary->carrier_price),
 				paymentPrice: $formatAmount($event->orderSummary->payment_price),
 				totalPrice: $formatAmount($event->orderSummary->total_price),
-			));
+			), $event->lang);
 		} catch (Throwable $e) {
 			Debugger::log($e, 'commerce-order-email');
 		}

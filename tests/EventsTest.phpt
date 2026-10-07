@@ -168,6 +168,7 @@ $order = new OrderPlaced(
 	payment: new Payment(1, 'Dobírka', $czk(0)),
 	shoppingCartSession: $cart,
 	items: [$plain, $variant],
+	lang: 'cs',
 );
 
 $log = (new OrderLoggerListener)->toArray($order);
@@ -213,13 +214,22 @@ $templateFactory = new TemplateFactory(new class implements LatteFactory {
 	}
 });
 $translator = new class implements Translator {
+	public string $lang = 'en';
+
+
+	public function setTranslate(string $lang): void
+	{
+		$this->lang = $lang;
+	}
+
+
 	public function translate(string|\Stringable $message, mixed ...$parameters): string
 	{
-		$translated = match ((string) $message) {
+		$translated = $this->lang === 'cs' ? match ((string) $message) {
 			'Order confirmation #%d' => 'Potvrzení objednávky č. %d',
 			'Thank you for your order' => 'Děkujeme za objednávku',
 			default => (string) $message,
-		};
+		} : (string) $message;
 		return $parameters === [] ? $translated : sprintf($translated, ...$parameters);
 	}
 };
@@ -233,9 +243,11 @@ $confirmationMailer = new OrderConfirmationMailer(
 );
 (new OrderConfirmationListener($confirmationMailer))($order);
 
+Assert::same('cs', $translator->lang);
 Assert::count(1, $mailer->messages);
 Assert::same('Potvrzení objednávky č. 77', $mailer->messages[0]->getSubject());
 Assert::contains('a@example.com', (string) json_encode($mailer->messages[0]->getHeader('To')));
+Assert::contains('<html lang="cs">', $mailer->messages[0]->getHtmlBody());
 Assert::contains('#77', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Děkujeme za objednávku', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Pánské tričko Classic', $mailer->messages[0]->getHtmlBody());

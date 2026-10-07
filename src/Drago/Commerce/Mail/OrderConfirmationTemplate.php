@@ -9,6 +9,8 @@ use Nette\Bridges\ApplicationLatte\Template;
 
 class OrderConfirmationTemplate extends Template
 {
+	public string $lang;
+
 	public OrderConfirmation $order;
 
 	public string $storeName;

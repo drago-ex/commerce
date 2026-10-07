@@ -26,14 +26,19 @@ readonly class OrderConfirmationMailer
 	}
 
 
-	public function send(OrderConfirmation $order): void
+	public function send(OrderConfirmation $order, string $lang = 'en'): void
 	{
 		try {
 			$translator = $this->translator;
+			if ($translator !== null && method_exists($translator, 'setTranslate')) {
+				$translator->setTranslate($lang);
+			}
+
 			$template = $this->templateFactory->createTemplate(class: OrderConfirmationTemplate::class);
 			$template->setFile($this->templateFile ?? __DIR__ . '/order-confirmation.latte');
 			$template->setTranslator($translator);
 			$template->order = $order;
+			$template->lang = $lang;
 			$template->storeName = $this->storeName;
 			$template->storeEmail = $this->storeEmail;
 

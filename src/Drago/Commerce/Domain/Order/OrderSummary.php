@@ -24,6 +24,8 @@ class OrderSummary
 		public float $discount_amount,
 		public DateTimeImmutable $created_at,
 		public string $currency = '',
+		public string $carrier_name = '',
+		public string $payment_name = '',
 	) {
 	}
 }

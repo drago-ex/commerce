@@ -218,6 +218,46 @@ Register callable listeners on the `EventDispatcher` service to customize behavi
 
 Listeners run synchronously. An `OrderPlaced` listener failure is logged and does not undo the saved order.
 
+### Order confirmation email
+
+Order confirmation emails are optional. Install `nette/mail`, configure its SMTP transport, then set `commerce.orderEmail.from` to enable the built-in listener:
+
+```bash
+composer require nette/mail
+```
+
+```neon
+mail:
+	smtp: true
+	host: localhost
+	port: 25
+	username: ''
+	password: ''
+	encryption: null
+
+commerce:
+	orderEmail:
+		from: 'Shop <shop@example.com>'
+		mailer: mail.mailer
+		storeName: 'My Shop'
+		storeEmail: support@example.com
+		# templateFile: %appDir%/Mail/order-confirmation.latte
+```
+
+The optional `mailer` setting selects the service implementing `Nette\Mail\Mailer`. `templateFile` can point to a custom Latte template; its type is `Drago\Commerce\Mail\OrderConfirmationTemplate`. If using `drago-ex/translator`, add the package translation directory to `translateDirs` so Czech emails use the included translations:
+
+```neon
+translator:
+	autoFinder: false
+	translateDirs:
+		- %vendorDir%/drago-ex/commerce/src/Drago/Commerce/Translate
+		- %appDir%/Translate
+```
+
+The current request's translator determines the email language. Emails are sent synchronously during checkout, so SMTP latency delays the response; a queue can be added by listening to `OrderPlaced` and storing its item snapshot for later processing.
+
+Migration `016_order_delivery_snapshots.sql` stores the carrier and payment names with each order, so confirmation data does not change when those options are renamed.
+
 ## Frontend assets (optional)
 
 Add the package to your `package.json`, then import its assets and initialize the Naja integration:

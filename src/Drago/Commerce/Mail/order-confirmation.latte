@@ -1,0 +1,128 @@
+{templateType Drago\Commerce\Mail\OrderConfirmationTemplate}
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{_'Order confirmation #%d', $order->orderId}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f1f4f8; color:#243247; font-family:Arial,Helvetica,sans-serif;">
+	<div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent;">
+		{_'We have received your order #%d.', $order->orderId}
+	</div>
+	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#f1f4f8;">
+		<tr>
+			<td align="center" style="padding:32px 12px;">
+				<table role="presentation" width="640" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:640px; background-color:#ffffff; border:1px solid #e2e8f0;">
+					<tr>
+						<td style="padding:28px 32px; background-color:#173b57; color:#ffffff;">
+							<p style="margin:0 0 8px; color:#b9d7e9; font-size:12px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase;">
+								{_'Order confirmation'}
+							</p>
+							<h1 style="margin:0; color:#ffffff; font-size:26px; line-height:1.3;">
+								{_'Thank you for your order'}
+							</h1>
+							<p style="margin:12px 0 0; color:#e2edf5; font-size:15px; line-height:1.6;">
+								{_'Order number'} <strong>#{$order->orderId}</strong>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:28px 32px 8px;">
+							<p style="margin:0; color:#526276; font-size:15px; line-height:1.7;">
+								{_'We have received your order #%d.', $order->orderId}
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:20px 32px 8px;">
+							<h2 style="margin:0 0 14px; color:#173b57; font-size:18px;">{_'Ordered items'}</h2>
+							<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; border-collapse:collapse; font-size:14px;">
+								<thead>
+									<tr style="background-color:#f5f8fb;">
+										<th align="left" style="padding:12px 10px; border-bottom:1px solid #dce4ec; color:#526276; font-size:12px; text-transform:uppercase;">{_'Product'}</th>
+										<th align="center" style="padding:12px 10px; border-bottom:1px solid #dce4ec; color:#526276; font-size:12px; text-transform:uppercase;">{_'Quantity'}</th>
+										<th align="right" style="padding:12px 10px; border-bottom:1px solid #dce4ec; color:#526276; font-size:12px; text-transform:uppercase;">{_'Unit price'}</th>
+										<th align="right" style="padding:12px 10px; border-bottom:1px solid #dce4ec; color:#526276; font-size:12px; text-transform:uppercase;">{_'Line total'}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr n:foreach="$order->items as $item">
+										<td style="padding:13px 10px; border-bottom:1px solid #e8edf2; color:#243247; line-height:1.5;">
+											<strong>{$item->productName}</strong>
+											<br n:if="$item->variantLabel">
+											<span n:if="$item->variantLabel" style="color:#718096; font-size:12px;">{$item->variantLabel}</span>
+										</td>
+										<td align="center" style="padding:13px 10px; border-bottom:1px solid #e8edf2; color:#526276;">{$item->quantity}</td>
+										<td align="right" style="padding:13px 10px; border-bottom:1px solid #e8edf2; color:#243247; white-space:nowrap;">{$item->unitPrice}</td>
+										<td align="right" style="padding:13px 10px; border-bottom:1px solid #e8edf2; color:#243247; white-space:nowrap;">{$item->rowTotal}</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:20px 32px 8px;">
+							<h2 style="margin:0 0 12px; color:#173b57; font-size:18px;">{_'Order summary'}</h2>
+							<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; font-size:14px; line-height:1.5;">
+								<tr>
+									<td style="padding:6px 0; color:#526276;">{_'Subtotal'}</td>
+									<td align="right" style="padding:6px 0; color:#243247; white-space:nowrap;">{$order->subtotalPrice}</td>
+								</tr>
+								<tr n:if="$order->discountCode">
+									<td style="padding:6px 0; color:#526276;">{_'Discount code %s', $order->discountCode}</td>
+									<td align="right" style="padding:6px 0; color:#22845a; white-space:nowrap;">-{$order->discountAmount}</td>
+								</tr>
+								<tr>
+									<td style="padding:6px 0; color:#526276;">{_'Shipping (%s)', $order->carrierName}</td>
+									<td align="right" style="padding:6px 0; color:#243247; white-space:nowrap;">{$order->carrierPrice}</td>
+								</tr>
+								<tr>
+									<td style="padding:6px 0; color:#526276;">{_'Payment (%s)', $order->paymentName}</td>
+									<td align="right" style="padding:6px 0; color:#243247; white-space:nowrap;">{$order->paymentPrice}</td>
+								</tr>
+								<tr>
+									<td style="padding:13px 0 6px; border-top:2px solid #dce4ec; color:#173b57; font-size:16px; font-weight:bold;">{_'Total'}</td>
+									<td align="right" style="padding:13px 0 6px; border-top:2px solid #dce4ec; color:#173b57; font-size:18px; font-weight:bold; white-space:nowrap;">{$order->totalPrice}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:20px 32px 30px;">
+							<h2 style="margin:0 0 12px; color:#173b57; font-size:18px;">{_'Customer details'}</h2>
+							<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#f5f8fb;">
+								<tr>
+									<td style="padding:16px 18px; color:#526276; font-size:14px; line-height:1.7;">
+										<strong style="color:#243247;">{$order->customer->name} {$order->customer->surname}</strong><br>
+										{$order->customer->street}<br>
+										{$order->customer->postal_code} {$order->customer->city}<br>
+										{$order->customer->country}<br>
+										<a href="mailto:{$order->customer->email}" style="color:#176b9a; text-decoration:none;">{$order->customer->email}</a>
+										<p n:if="$order->customer->note" style="margin:12px 0 0; padding-top:12px; border-top:1px solid #dce4ec;">
+											<strong style="color:#243247;">{_'Note'}:</strong><br>
+											{$order->customer->note|breakLines}
+										</p>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr n:if="$storeName || $storeEmail">
+						<td align="center" style="padding:16px 24px; border-top:1px solid #e8edf2; color:#8491a1; font-size:12px; line-height:1.6;">
+							<strong n:if="$storeName" style="color:#526276;">{$storeName}</strong>
+							<br n:if="$storeName && $storeEmail">
+							<a n:if="$storeEmail" href="mailto:{$storeEmail}" style="color:#176b9a; text-decoration:none;">{$storeEmail}</a>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" style="padding:12px 24px; border-top:1px solid #e8edf2; color:#8491a1; font-size:11px; line-height:1.5;">
+							{_'This is an automatic confirmation of your order.'}
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

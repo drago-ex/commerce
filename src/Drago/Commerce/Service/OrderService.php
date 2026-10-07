@@ -95,6 +95,8 @@ readonly class OrderService
 				discount_amount: $this->getAmountPrice($discountAmount),
 				created_at: new DateTimeImmutable,
 				currency: $totalPrice->getCurrency()->getCurrencyCode(),
+				carrier_name: mb_substr($carrier->name, 0, 100),
+				payment_name: mb_substr($payment->name, 0, 100),
 			);
 
 			$this->orderRepository->save((array) $orderData);

@@ -7,10 +7,10 @@ namespace Drago\Commerce\Mail;
 use Drago\Commerce\Domain\Customer\Customer;
 
 
-final readonly class OrderConfirmation
+final readonly class OrderEmailData
 {
 	/**
-	 * @param list<OrderConfirmationItem> $items
+	 * @param list<OrderEmailItem> $items
 	 */
 	public function __construct(
 		public int $orderId,

@@ -201,7 +201,7 @@ class SummaryOrderControl extends BaseControl
 					payment: $payment,
 					shoppingCartSession: $this->shoppingCartSession,
 					items: $cart->items,
-					lang: is_string($lang) ? $lang : 'en',
+					lang: is_string($lang) ? $lang : null,
 				),
 			);
 		} catch (\Throwable $e) {

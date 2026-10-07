@@ -7,11 +7,11 @@ namespace Drago\Commerce\Mail;
 use Nette\Bridges\ApplicationLatte\Template;
 
 
-class OrderConfirmationTemplate extends Template
+class OrderEmailTemplate extends Template
 {
-	public string $lang;
+	public ?string $lang;
 
-	public OrderConfirmation $order;
+	public OrderEmailData $order;
 
 	public string $storeName;
 

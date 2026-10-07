@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drago\Commerce\Mail;
 
 
-final readonly class OrderConfirmationItem
+final readonly class OrderEmailItem
 {
 	public function __construct(
 		public string $productName,

@@ -6,8 +6,8 @@ namespace Drago\Commerce\DI;
 
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Event\OrderPlaced;
-use Drago\Commerce\Mail\OrderConfirmationListener;
-use Drago\Commerce\Mail\OrderConfirmationMailer;
+use Drago\Commerce\Mail\OrderEmail;
+use Drago\Commerce\Mail\OrderEmailListener;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -58,8 +58,8 @@ class CommerceExtension extends CompilerExtension
 		$orderEmail = (array) ((array) $this->config)['orderEmail'];
 		$sender = $orderEmail['from'] ?? null;
 		if (is_string($sender)) {
-			$builder->addDefinition($this->prefix('orderConfirmationMailer'))
-				->setType(OrderConfirmationMailer::class)
+			$builder->addDefinition($this->prefix('orderEmail'))
+				->setType(OrderEmail::class)
 				->setArguments([
 					'mailer' => new Reference(ltrim($orderEmail['mailer'], '@')),
 					'sender' => $sender,
@@ -68,10 +68,10 @@ class CommerceExtension extends CompilerExtension
 					'storeEmail' => $orderEmail['storeEmail'],
 				]);
 
-			$builder->addDefinition($this->prefix('orderConfirmationListener'))
-				->setType(OrderConfirmationListener::class)
+			$builder->addDefinition($this->prefix('orderEmailListener'))
+				->setType(OrderEmailListener::class)
 				->setArguments([
-					'mailer' => new Reference($this->prefix('orderConfirmationMailer')),
+					'orderEmail' => new Reference($this->prefix('orderEmail')),
 				]);
 
 			$eventDispatcher = $builder->getDefinition('eventDispatcher');
@@ -81,7 +81,7 @@ class CommerceExtension extends CompilerExtension
 
 			$eventDispatcher->addSetup('addListener', [
 				OrderPlaced::class,
-				new Reference($this->prefix('orderConfirmationListener')),
+				new Reference($this->prefix('orderEmailListener')),
 			]);
 		}
 	}

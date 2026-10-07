@@ -21,8 +21,8 @@ use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\EventListener\OrderLoggerListener;
-use Drago\Commerce\Mail\OrderConfirmationListener;
-use Drago\Commerce\Mail\OrderConfirmationMailer;
+use Drago\Commerce\Mail\OrderEmail;
+use Drago\Commerce\Mail\OrderEmailListener;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Latte\Engine;
@@ -250,7 +250,7 @@ $translator = new class implements Translator {
 		return $parameters === [] ? $translated : sprintf($translated, ...$parameters);
 	}
 };
-$confirmationMailer = new OrderConfirmationMailer(
+$confirmationMailer = new OrderEmail(
 	$mailer,
 	$templateFactory,
 	'orders@example.cz',
@@ -258,7 +258,7 @@ $confirmationMailer = new OrderConfirmationMailer(
 	storeName: 'Test Shop',
 	storeEmail: 'support@example.cz',
 );
-(new OrderConfirmationListener($confirmationMailer))($order);
+(new OrderEmailListener($confirmationMailer))($order);
 
 Assert::same('cs', $translator->lang);
 Assert::count(1, $mailer->messages);
@@ -280,7 +280,7 @@ $emailBody = substr($mailer->messages[0]->getHtmlBody(), strpos($mailer->message
 Assert::true(strpos($emailBody, 'Test Shop') < strpos($emailBody, 'Potvrzení objednávky'));
 Assert::contains('Zavolat předem.<br', $mailer->messages[0]->getHtmlBody());
 
-$fallbackMailer = new OrderConfirmationMailer($mailer, $templateFactory, 'orders@example.cz');
+$fallbackMailer = new OrderEmail($mailer, $templateFactory, 'orders@example.cz');
 Debugger::setLogger(new class implements ILogger {
 	/** @var list<mixed> */
 	public array $entries = [];
@@ -291,9 +291,27 @@ Debugger::setLogger(new class implements ILogger {
 		$this->entries[] = $value;
 	}
 });
-(new OrderConfirmationListener($fallbackMailer))($order);
+(new OrderEmailListener($fallbackMailer))($order);
 Assert::same([], Debugger::getLogger()->entries);
 Assert::same('Order confirmation #77', $mailer->messages[1]->getSubject());
+
+// Without a language the translator keeps its current one and the html lang attribute is omitted.
+$withoutLang = clone $order;
+$withoutLang->lang = null;
+(new OrderEmailListener($confirmationMailer))($withoutLang);
+Assert::same('cs', $translator->lang);
+Assert::notContains(' lang=', $mailer->messages[2]->getHtmlBody());
+
+// A failing mailer is logged once by the listener and does not escape it.
+$failingMailer = new class implements Mailer {
+	public function send(Message $mail): void
+	{
+		throw new \RuntimeException('SMTP down');
+	}
+};
+(new OrderEmailListener(new OrderEmail($failingMailer, $templateFactory, 'orders@example.cz')))($order);
+Assert::count(1, Debugger::getLogger()->entries);
+Assert::type(\RuntimeException::class, Debugger::getLogger()->entries[0]);
 
 // Without a snapshot, the log falls back to the cart session.
 $cart->addItem($product, 1);

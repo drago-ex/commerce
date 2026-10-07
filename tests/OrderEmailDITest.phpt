@@ -6,8 +6,8 @@ namespace Drago\Commerce\Tests;
 
 use Drago\Commerce\DI\CommerceExtension;
 use Drago\Commerce\Event\OrderPlaced;
-use Drago\Commerce\Mail\OrderConfirmationListener;
-use Drago\Commerce\Mail\OrderConfirmationMailer;
+use Drago\Commerce\Mail\OrderEmail;
+use Drago\Commerce\Mail\OrderEmailListener;
 use Nette\DI\Compiler;
 use Nette\DI\Definitions\ServiceDefinition;
 use Tester\Assert;
@@ -17,7 +17,7 @@ require __DIR__ . '/bootstrap.php';
 $disabledCompiler = new Compiler;
 $disabledCompiler->addExtension('commerce', new CommerceExtension);
 $disabledCompiler->processExtensions();
-Assert::false($disabledCompiler->getContainerBuilder()->hasDefinition('commerce.orderConfirmationMailer'));
+Assert::false($disabledCompiler->getContainerBuilder()->hasDefinition('commerce.orderEmail'));
 
 $compiler = new Compiler;
 $compiler->addExtension('commerce', new CommerceExtension);
@@ -34,13 +34,13 @@ $compiler->addConfig([
 $compiler->processExtensions();
 
 $builder = $compiler->getContainerBuilder();
-$mailer = $builder->getDefinition('commerce.orderConfirmationMailer');
-Assert::same(OrderConfirmationMailer::class, $mailer->getType());
+$mailer = $builder->getDefinition('commerce.orderEmail');
+Assert::same(OrderEmail::class, $mailer->getType());
 Assert::same('Shop <shop@example.test>', $mailer->getCreator()->arguments['sender']);
 Assert::same('mail.mailer', $mailer->getCreator()->arguments['mailer']->getValue());
 
-$listener = $builder->getDefinition('commerce.orderConfirmationListener');
-Assert::same(OrderConfirmationListener::class, $listener->getType());
+$listener = $builder->getDefinition('commerce.orderEmailListener');
+Assert::same(OrderEmailListener::class, $listener->getType());
 
 $dispatcher = $builder->getDefinition('eventDispatcher');
 Assert::true($dispatcher instanceof ServiceDefinition);

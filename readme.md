@@ -220,35 +220,25 @@ Listeners run synchronously. An `OrderPlaced` listener failure is logged and doe
 
 ### Order confirmation email
 
-Order confirmation emails are optional. Install `nette/mail`, configure its SMTP transport, then set `commerce.orderEmail.from` to enable the built-in listener:
+Optional. Install `nette/mail`, configure its mailer and set `commerce.orderEmail.from` to enable it:
 
 ```bash
 composer require nette/mail
 ```
 
 ```neon
-mail:
-	smtp: true
-	host: localhost
-	port: 25
-	username: ''
-	password: ''
-	encryption: null
-
 commerce:
 	orderEmail:
 		from: 'Shop <shop@example.com>'
-		mailer: mail.mailer
-		storeName: 'My Shop' # displayed prominently in the email header
+		mailer: mail.mailer # service implementing Nette\Mail\Mailer
+		storeName: 'My Shop'
 		storeEmail: support@example.com
-		# templateFile: %appDir%/Mail/order-confirmation.latte
+		# templateFile: %appDir%/Mail/order-email.latte
 ```
 
-The optional `mailer` setting selects the service implementing `Nette\Mail\Mailer`. `templateFile` can point to a custom Latte template; its type is `Drago\Commerce\Mail\OrderConfirmationTemplate`. Email text is translated through the configured translator, so add the email keys to the translation catalogues used by your application.
+`templateFile` points to a custom Latte template of type `Drago\Commerce\Mail\OrderEmailTemplate`. Texts go through the configured translator, so add the email keys to your catalogues. The language is taken from the presenter's `lang` parameter and passed to the translator's `setTranslate()` when available.
 
-The language is read from the presenter's `lang` URL parameter and passed to the translator's `setTranslate()` method when supported. Emails are sent synchronously during checkout, so SMTP latency delays the response; a queue can be added by listening to `OrderPlaced` and storing its item snapshot for later processing.
-
-Migration `016_order_delivery_snapshots.sql` stores the carrier and payment names with each order, so confirmation data does not change when those options are renamed.
+The email is sent synchronously; a failure is logged and does not affect the order. Migration `016_order_delivery_snapshots.sql` stores carrier and payment names with each order.
 
 ## Frontend assets (optional)
 

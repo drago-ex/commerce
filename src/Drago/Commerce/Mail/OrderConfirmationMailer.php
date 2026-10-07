@@ -34,10 +34,9 @@ readonly class OrderConfirmationMailer
 				$translator->setTranslate($lang);
 			}
 
-			$emailTranslator = new OrderConfirmationTranslator($translator, $lang);
 			$template = $this->templateFactory->createTemplate(class: OrderConfirmationTemplate::class);
 			$template->setFile($this->templateFile ?? __DIR__ . '/order-confirmation.latte');
-			$template->setTranslator($emailTranslator);
+			$template->setTranslator($translator);
 			$template->order = $order;
 			$template->lang = $lang;
 			$template->storeName = $this->storeName;
@@ -46,7 +45,7 @@ readonly class OrderConfirmationMailer
 			$message = new Message;
 			$message->setFrom($this->sender)
 				->addTo($order->customer->email)
-				->setSubject($emailTranslator->translate('Order confirmation #%d', $order->orderId))
+				->setSubject((string) ($translator?->translate('Order confirmation #%d', $order->orderId) ?? sprintf('Order confirmation #%d', $order->orderId)))
 				->setHtmlBody($template->renderToString());
 
 			$this->mailer->send($message);

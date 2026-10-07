@@ -225,11 +225,28 @@ $translator = new class implements Translator {
 
 	public function translate(string|\Stringable $message, mixed ...$parameters): string
 	{
-		$translated = $this->lang === 'cs' ? match ((string) $message) {
+		$translations = [
 			'Order confirmation #%d' => 'Potvrzení objednávky č. %d',
+			'Order confirmation' => 'Potvrzení objednávky',
 			'Thank you for your order' => 'Děkujeme za objednávku',
-			default => (string) $message,
-		} : (string) $message;
+			'We have received your order #%d.' => 'Vaši objednávku č. %d jsme přijali.',
+			'Ordered items' => 'Objednané zboží',
+			'Order number' => 'Číslo objednávky',
+			'Product' => 'Produkt',
+			'Quantity' => 'Množství',
+			'Unit price' => 'Cena za kus',
+			'Line total' => 'Cena celkem',
+			'Order summary' => 'Souhrn objednávky',
+			'Subtotal' => 'Mezisoučet',
+			'Discount code %s' => 'Slevový kód %s',
+			'Shipping (%s)' => 'Doprava (%s)',
+			'Payment (%s)' => 'Platba (%s)',
+			'Total' => 'Celkem',
+			'Customer details' => 'Údaje zákazníka',
+			'Note' => 'Poznámka',
+			'This is an automatic confirmation of your order.' => 'Toto je automatické potvrzení vaší objednávky.',
+		];
+		$translated = $this->lang === 'cs' ? ($translations[(string) $message] ?? (string) $message) : (string) $message;
 		return $parameters === [] ? $translated : sprintf($translated, ...$parameters);
 	}
 };
@@ -252,8 +269,8 @@ Assert::contains('#77', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Děkujeme za objednávku', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Potvrzení objednávky', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Objednané zboží', $mailer->messages[0]->getHtmlBody());
-Assert::contains('MNOŽSTVÍ', $mailer->messages[0]->getHtmlBody());
-Assert::contains('CENA ZA KUS', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Množství', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Cena za kus', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Pánské tričko Classic', $mailer->messages[0]->getHtmlBody());
 Assert::contains('882,00', $mailer->messages[0]->getHtmlBody());
 Assert::contains('1 100,00', $mailer->messages[0]->getHtmlBody());
@@ -276,7 +293,7 @@ Debugger::setLogger(new class implements ILogger {
 });
 (new OrderConfirmationListener($fallbackMailer))($order);
 Assert::same([], Debugger::getLogger()->entries);
-Assert::same('Potvrzení objednávky č. 77', $mailer->messages[1]->getSubject());
+Assert::same('Order confirmation #77', $mailer->messages[1]->getSubject());
 
 // Without a snapshot, the log falls back to the cart session.
 $cart->addItem($product, 1);

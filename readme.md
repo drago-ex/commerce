@@ -239,7 +239,7 @@ commerce:
 	orderEmail:
 		from: 'Shop <shop@example.com>'
 		mailer: mail.mailer
-		storeName: 'My Shop'
+		storeName: 'My Shop' # displayed prominently in the email header
 		storeEmail: support@example.com
 		# templateFile: %appDir%/Mail/order-confirmation.latte
 ```

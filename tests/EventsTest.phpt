@@ -243,6 +243,8 @@ Assert::contains('882,00', $mailer->messages[0]->getHtmlBody());
 Assert::contains('1 100,00', $mailer->messages[0]->getHtmlBody());
 Assert::contains('PPL', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Test Shop', $mailer->messages[0]->getHtmlBody());
+$emailBody = substr($mailer->messages[0]->getHtmlBody(), strpos($mailer->messages[0]->getHtmlBody(), '<body'));
+Assert::true(strpos($emailBody, 'Test Shop') < strpos($emailBody, 'Order confirmation'));
 Assert::contains('Zavolat předem.<br', $mailer->messages[0]->getHtmlBody());
 
 $fallbackMailer = new OrderConfirmationMailer($mailer, $templateFactory, 'orders@example.cz');

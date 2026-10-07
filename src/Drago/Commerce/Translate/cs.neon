@@ -136,6 +136,8 @@
 "We have received your order #%d.": "Vaši objednávku č. %d jsme přijali."
 "Ordered items": "Objednané zboží"
 "Order number": "Číslo objednávky"
+"Quantity": "Množství"
+"Unit price": "Cena za kus"
 "Line total": "Cena celkem"
 "Customer details": "Údaje zákazníka"
 "This is an automatic confirmation of your order.": "Toto je automatické potvrzení vaší objednávky."

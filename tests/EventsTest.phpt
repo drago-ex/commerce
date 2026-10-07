@@ -252,6 +252,8 @@ Assert::contains('#77', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Děkujeme za objednávku', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Potvrzení objednávky', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Objednané zboží', $mailer->messages[0]->getHtmlBody());
+Assert::contains('MNOŽSTVÍ', $mailer->messages[0]->getHtmlBody());
+Assert::contains('CENA ZA KUS', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Pánské tričko Classic', $mailer->messages[0]->getHtmlBody());
 Assert::contains('882,00', $mailer->messages[0]->getHtmlBody());
 Assert::contains('1 100,00', $mailer->messages[0]->getHtmlBody());

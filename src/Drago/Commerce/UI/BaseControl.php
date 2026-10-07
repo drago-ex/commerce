@@ -6,14 +6,9 @@ namespace Drago\Commerce\UI;
 
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
-use Dibi\Exception;
 use Drago\Application\UI\ExtraControl;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
-use Drago\Commerce\Service\DiscountCodeService;
-use Drago\Commerce\Service\OrderSession;
-use Drago\Commerce\Service\ShoppingCartSession;
-use function vsprintf;
+use Drago\Commerce\Service\CartTotals;
+use Nette\Application\UI\Form;
 
 
 /**
@@ -75,72 +70,49 @@ class BaseControl extends ExtraControl
 
 
 	/**
-	 * Populates the shared cart totals used by checkout templates.
-	 *
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 * @throws MoneyMismatchException
+	 * Sets the template file (a custom one wins) and the translator.
 	 */
-	protected function prepareShoppingCartSummary(
-		BaseTemplate $template,
-		ShoppingCartSession $shoppingCart,
-		DiscountCodeService $discountCodeService,
-		?OrderSession $orderSession = null,
-	): void
+	protected function prepareTemplate(string $defaultFile): void
 	{
-		$discountCode = $discountCodeService->getCode();
-		$template->shoppingCart = $shoppingCart->getItems();
-		$template->amountItems = $shoppingCart->getAmountItems();
-		$template->originalPrice = $shoppingCart->getOriginalPrice();
-		$template->subtotalPrice = $shoppingCart->getSubtotalPrice();
-		$template->productDiscountAmount = $template->originalPrice->minus($template->subtotalPrice);
-		$template->discountCode = $discountCode?->code;
-
-		$cartTotalPrice = $shoppingCart->getTotalPrice($discountCode);
-		$template->discountAmount = $template->subtotalPrice->minus($cartTotalPrice);
-		$template->totalPrice = $this->calculateTotalPrice(
-			$shoppingCart,
-			$discountCodeService,
-			$orderSession,
-			$discountCode,
-		);
+		$this->template->setFile($this->templateControl ?: $defaultFile);
+		$this->template->setTranslator($this->translator);
 	}
 
 
 	/**
-	 * Calculates the cart total, including delivery and payment when present.
+	 * Fills the cart summary shown by every checkout step. The extra prices
+	 * (delivery, payment) are added to the total.
 	 *
-	 * @throws AttributeDetectionException
-	 * @throws Exception
 	 * @throws MoneyMismatchException
 	 */
-	protected function calculateTotalPrice(
-		ShoppingCartSession $shoppingCart,
-		DiscountCodeService $discountCodeService,
-		?OrderSession $orderSession = null,
-		?DiscountCodeEntity $discountCode = null,
-	): Money
+	protected function applyCartTotals(BaseTemplate $template, CartTotals $cart, Money ...$extras): void
 	{
-		$totalPrice = $shoppingCart->getTotalPrice($discountCode ?? $discountCodeService->getCode());
-		if ($orderSession === null) {
-			return $totalPrice;
-		}
-
-		return $totalPrice->plus($orderSession->getCarrierPrice())->plus($orderSession->getPaymentPrice());
+		$template->shoppingCart = $cart->items;
+		$template->amountItems = $cart->amountItems;
+		$template->originalPrice = $cart->originalPrice;
+		$template->subtotalPrice = $cart->subtotalPrice;
+		$template->productDiscountAmount = $cart->productDiscountAmount;
+		$template->discountAmount = $cart->discountAmount;
+		$template->discountCode = $cart->discountCode?->code;
+		$template->totalPrice = $cart->withExtras(...$extras);
 	}
 
 
 	/**
-	 * Translates a message with sprintf-style parameters. Without a translator,
-	 * the message is returned with the parameters filled in.
+	 * Pre-fills a step form with the values kept in the session and relabels its
+	 * button, when the customer returns to the step.
+	 *
+	 * @param array<string, mixed>|object $defaults
 	 */
-	protected function translate(string $message, string|int ...$params): string
+	protected function prefillForm(string $component, array|object $defaults): void
 	{
-		if ($this->translator !== null) {
-			return (string) $this->translator->translate($message, ...$params);
+		$form = $this->getComponent($component);
+		if (!$form instanceof Form || $form->isSubmitted()) {
+			return;
 		}
 
-		return $params === [] ? $message : vsprintf($message, $params);
+		$this->getFormComponent($form, 'send')?->setCaption('Update');
+		$form->setDefaults($defaults);
 	}
 
 

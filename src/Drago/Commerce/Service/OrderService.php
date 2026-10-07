@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Service;
 
+use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Brick\PhoneNumber\PhoneNumber;
 use Brick\PhoneNumber\PhoneNumberFormat;
@@ -24,6 +25,7 @@ use Drago\Commerce\Domain\Order\OrderRepository;
 use Drago\Commerce\Domain\Order\OrderSummary;
 use Drago\Commerce\Domain\Order\StockReservation;
 use Drago\Commerce\Domain\Product\ProductCart;
+use InvalidArgumentException;
 use Throwable;
 use Tracy\Debugger;
 
@@ -51,8 +53,12 @@ readonly class OrderService
 	 * $discountCode is the code the totals were calculated with; its usage is
 	 * recorded in the same transaction.
 	 *
+	 * The totals must add up: subtotal - discount + delivery + payment = total.
+	 *
 	 * @param ProductCart[] $items
 	 * @throws OrderException
+	 * @throws InvalidArgumentException The totals do not add up.
+	 * @throws MoneyMismatchException
 	 * @throws Throwable
 	 */
 	public function place(
@@ -66,6 +72,11 @@ readonly class OrderService
 		?DiscountCodeEntity $discountCode,
 	): OrderPlacement
 	{
+		$expectedTotal = $subtotalPrice->minus($discountAmount)->plus($carrier->price)->plus($payment->price);
+		if (!$expectedTotal->isEqualTo($totalPrice)) {
+			throw new InvalidArgumentException('The order total does not match the subtotal, discount, delivery and payment.');
+		}
+
 		$connection = $this->orderRepository->getConnection();
 		$connection->begin();
 
@@ -83,6 +94,7 @@ readonly class OrderService
 				discount_code: $discountCode?->code,
 				discount_amount: $this->getAmountPrice($discountAmount),
 				created_at: new DateTimeImmutable,
+				currency: $totalPrice->getCurrency()->getCurrencyCode(),
 			);
 
 			$this->orderRepository->save((array) $orderData);

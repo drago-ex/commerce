@@ -23,7 +23,10 @@
 		"brick/money": "^0.5",
 		"brick/postcode": "^0.2",
 		"nepada/phone-number-input": "^1.0",
-		"tracy/tracy": "^2.7"
+		"tracy/tracy": "^2.7",
+		"brick/math": "^0.9.3",
+		"brick/phonenumber": "^0.8.0",
+		"dibi/dibi": "^5.1"
 	},
 	"require-dev": {
 		"nette/tester": "^2.3",

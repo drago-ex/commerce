@@ -8,7 +8,6 @@ use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
-use Drago\Commerce\Domain\Order\ExpectedTotal;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OrderFingerprint;
@@ -48,61 +47,46 @@ class SummaryOrderControl extends BaseControl
 
 	/**
 	 * @throws MoneyMismatchException
-	 * @throws AttributeDetectionException
-	 * @throws Exception
 	 * @throws RandomException
 	 */
 	public function render(): void
 	{
+		$this->prepareTemplate(__DIR__ . '/Summary.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/Summary.latte');
-		$template->setTranslator($this->translator);
-		$this->prepareShoppingCartSummary(
+
+		$cart = $this->shoppingCartSession->getTotals();
+		$order = $this->orderSession->getItems();
+		$this->applyCartTotals(
 			$template,
-			$this->shoppingCartSession,
-			$this->discountCodeService,
-			$this->orderSession,
+			$cart,
+			$this->orderSession->getCarrierPrice(),
+			$this->orderSession->getPaymentPrice(),
 		);
 
-		$expectedTotal = ExpectedTotal::format($template->totalPrice);
-		$this->orderSession->setExpectedTotal($expectedTotal);
-		$order = $this->orderSession->getItems();
-		$discountCode = $this->discountCodeService->getCode();
+		// The form is bound to the order version displayed on this page.
 		$this->orderSession->setOrderFingerprint(OrderFingerprint::create(
-			$template->shoppingCart,
+			$cart->items,
 			$order,
-			$discountCode,
-			$template->subtotalPrice,
-			$template->discountAmount,
+			$cart->discountCode,
+			$cart->subtotalPrice,
+			$cart->discountAmount,
 			$template->totalPrice,
 		));
+
 		$orderToken = bin2hex(random_bytes(32));
 		$this->orderSession->setOrderToken($orderToken);
 
-		// Bind the form to the order version that was displayed on this page.
 		$sendOrder = $this->getComponent('sendOrder');
-		$totalField = $sendOrder->getComponent('expectedTotal');
-		if ($totalField instanceof HiddenField) {
-			$totalField->setValue($expectedTotal);
-		}
-
 		$tokenField = $sendOrder->getComponent('orderToken');
 		if ($tokenField instanceof HiddenField) {
 			$tokenField->setValue($orderToken);
 		}
 
-		$template->carrier = $this->getOrderItem('carrier');
-		$template->customer = $this->getOrderItem('customer');
-		$template->payment = $this->getOrderItem('payment');
+		$template->carrier = $order->carrier;
+		$template->customer = $order->customer;
+		$template->payment = $order->payment;
 		$template->breadcrumbs = $this->getBreadcrumbs();
 		$template->render();
-	}
-
-
-	private function getOrderItem(string $name): mixed
-	{
-		$items = $this->orderSession->getItems();
-		return $items->{$name} ?? null;
 	}
 
 
@@ -112,7 +96,6 @@ class SummaryOrderControl extends BaseControl
 	protected function createComponentSendOrder(): BaseForm
 	{
 		$form = $this->factory->create($this->translator);
-		$form->addHidden('expectedTotal');
 		$form->addHidden('orderToken');
 		$form->addSubmit('send', 'Confirm the purchase');
 		$form->onSuccess[] = $this->processOrder(...);
@@ -153,50 +136,36 @@ class SummaryOrderControl extends BaseControl
 			return;
 		}
 
-		$items = $this->shoppingCartSession->getItems();
-		if ($items === []) {
+		$cart = $this->shoppingCartSession->getTotals();
+		if ($cart->items === []) {
 			$form->addError('Your shopping cart is empty.');
 			return;
 		}
 
-		$subtotalPrice = $this->shoppingCartSession->getSubtotalPrice();
-		$discountCode = $this->discountCodeService->getCode();
-		$discountAmount = $subtotalPrice->minus($this->shoppingCartSession->getTotalPrice($discountCode));
-		$totalPrice = $this->calculateTotalPrice(
-			$this->shoppingCartSession,
-			$this->discountCodeService,
-			$this->orderSession,
-			$discountCode,
-		);
+		$totalPrice = $cart->withExtras($carrier->price, $payment->price);
 
-		// Match the submitted page version and current order to the server-side snapshot.
-		$totalField = $form->getComponent('expectedTotal');
+		// The submitted page version must still match the order as it is now.
 		$tokenField = $form->getComponent('orderToken');
-		$expectedFingerprint = $this->orderSession->getOrderFingerprint();
+		$submittedToken = $tokenField instanceof HiddenField ? $tokenField->getValue() : null;
 		$expectedToken = $this->orderSession->getOrderToken();
+		$expectedFingerprint = $this->orderSession->getOrderFingerprint();
 		$currentFingerprint = OrderFingerprint::create(
-			$items,
+			$cart->items,
 			$order,
-			$discountCode,
-			$subtotalPrice,
-			$discountAmount,
+			$cart->discountCode,
+			$cart->subtotalPrice,
+			$cart->discountAmount,
 			$totalPrice,
 		);
+
 		if (
-			!ExpectedTotal::matches($this->orderSession->getExpectedTotal(), $totalPrice)
-			|| !$totalField instanceof HiddenField
-			|| !ExpectedTotal::matches($totalField->getValue(), $totalPrice)
-			|| !$tokenField instanceof HiddenField
-			|| !is_string($tokenField->getValue())
+			!is_string($submittedToken)
 			|| $expectedToken === null
-			|| !hash_equals($expectedToken, $tokenField->getValue())
+			|| !hash_equals($expectedToken, $submittedToken)
 			|| $expectedFingerprint === null
 			|| !hash_equals($expectedFingerprint, $currentFingerprint)
 		) {
-			$form->addError(
-				$this->translate('The order total has changed to %s, please review your order.', $this->template->money($totalPrice)),
-				false,
-			);
+			$form->addError('The order was changed or opened in another window, please review it and confirm again.');
 			return;
 		}
 
@@ -205,11 +174,11 @@ class SummaryOrderControl extends BaseControl
 				customer: $customer,
 				carrier: $carrier,
 				payment: $payment,
-				items: $items,
-				subtotalPrice: $subtotalPrice,
-				discountAmount: $discountAmount,
+				items: $cart->items,
+				subtotalPrice: $cart->subtotalPrice,
+				discountAmount: $cart->discountAmount,
 				totalPrice: $totalPrice,
-				discountCode: $discountCode,
+				discountCode: $cart->discountCode,
 			);
 		} catch (OrderException $e) {
 			$form->addError($this->describe($e), false);
@@ -230,7 +199,7 @@ class SummaryOrderControl extends BaseControl
 					carrier: $carrier,
 					payment: $payment,
 					shoppingCartSession: $this->shoppingCartSession,
-					items: $items,
+					items: $cart->items,
 				),
 			);
 		} catch (\Throwable $e) {

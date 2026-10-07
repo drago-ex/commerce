@@ -58,7 +58,7 @@ class ProductRepository
 	/**
 	 * Returns one page of active products in a stable order.
 	 *
-	 * @return list<ProductEntity>
+	 * @return ProductEntity[]
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 */

@@ -23,6 +23,7 @@ class OrderSummary
 		public ?string $discount_code,
 		public float $discount_amount,
 		public DateTimeImmutable $created_at,
+		public string $currency = '',
 	) {
 	}
 }

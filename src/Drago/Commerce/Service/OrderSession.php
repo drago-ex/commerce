@@ -22,7 +22,6 @@ class OrderSession
 		Carrier = 'carrier',
 		Payment = 'payment',
 		Customer = 'customer',
-		ExpectedTotal = 'expectedTotal',
 		OrderFingerprint = 'orderFingerprint',
 		OrderToken = 'orderToken';
 
@@ -127,19 +126,6 @@ class OrderSession
 	}
 
 
-	public function setExpectedTotal(string $total): void
-	{
-		$this->sessionSection->set(self::ExpectedTotal, $total);
-	}
-
-
-	public function getExpectedTotal(): ?string
-	{
-		$total = $this->sessionSection->get(self::ExpectedTotal);
-		return is_string($total) ? $total : null;
-	}
-
-
 	public function setOrderFingerprint(string $fingerprint): void
 	{
 		$this->sessionSection->set(self::OrderFingerprint, $fingerprint);
@@ -171,7 +157,6 @@ class OrderSession
 		foreach ($this->items() as $item) {
 			$this->sessionSection->remove($item);
 		}
-		$this->sessionSection->remove(self::ExpectedTotal);
 		$this->sessionSection->remove(self::OrderFingerprint);
 		$this->sessionSection->remove(self::OrderToken);
 	}

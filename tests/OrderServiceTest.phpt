@@ -24,6 +24,7 @@ use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderService;
+use InvalidArgumentException;
 use Nette\Http\Request;
 use Nette\Http\Response;
 use Nette\Http\Session;
@@ -124,6 +125,21 @@ try {
 		variantId: $successVariantId,
 	);
 
+	// 0. Totals that do not add up are rejected before anything is written.
+	Assert::exception(
+		fn() => $orderService->place(
+			$customer,
+			$carrier,
+			$payment,
+			[$item],
+			Money::of(490, 'CZK'),
+			Money::zero('CZK'),
+			Money::of(999, 'CZK'),
+			null,
+		),
+		InvalidArgumentException::class,
+	);
+
 	// 1. Successful placement.
 	$stockBefore = (int) $connection
 		->query('SELECT stock FROM product_variants WHERE id = %i', $successVariantId)
@@ -167,6 +183,10 @@ try {
 			'SELECT COUNT(*) FROM orders_products WHERE order_id = %i',
 			$successOrderId,
 		)->fetchSingle(),
+	);
+	Assert::same(
+		'CZK',
+		$connection->query('SELECT currency FROM orders WHERE id = %i', $successOrderId)->fetchSingle(),
 	);
 	Assert::same(
 		'Pánské tričko Classic',

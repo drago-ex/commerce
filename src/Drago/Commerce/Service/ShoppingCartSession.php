@@ -96,6 +96,31 @@ class ShoppingCartSession
 
 
 	/**
+	 * Returns all prices of the cart at once, looking the discount code up only once.
+	 *
+	 * @throws MoneyMismatchException If currencies don't match during calculation.
+	 */
+	public function getTotals(): CartTotals
+	{
+		$discountCode = $this->discountCodeService->getCode();
+		$originalPrice = $this->getOriginalPrice();
+		$subtotalPrice = $this->getSubtotalPrice();
+		$cartTotalPrice = $this->getTotalPrice($discountCode);
+
+		return new CartTotals(
+			items: $this->getItems(),
+			amountItems: $this->getAmountItems(),
+			originalPrice: $originalPrice,
+			subtotalPrice: $subtotalPrice,
+			productDiscountAmount: $originalPrice->minus($subtotalPrice),
+			discountAmount: $subtotalPrice->minus($cartTotalPrice),
+			cartTotalPrice: $cartTotalPrice,
+			discountCode: $discountCode,
+		);
+	}
+
+
+	/**
 	 * Returns total quantity of all items in the basket.
 	 */
 	public function getAmountItems(): int

@@ -25,9 +25,8 @@ class MiniCartControl extends BaseControl
 	 */
 	public function render(): void
 	{
+		$this->prepareTemplate(__DIR__ . '/MiniCart.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/MiniCart.latte');
-		$template->setTranslator($this->translator);
 		$template->amountItems = $this->shoppingCartSession->getAmountItems();
 		$template->linkShoppingCart = $this->getPresenter()->link($this->linkRedirectTarget);
 		$template->formattedTotalPrice = $template->money($this->shoppingCartSession->getTotalPrice());

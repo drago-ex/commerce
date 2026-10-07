@@ -107,9 +107,8 @@ class ProductDetailControl extends BaseControl
 
 		$pricing = $this->resolvePrice($entity, $selectedVariant);
 
+		$this->prepareTemplate(__DIR__ . '/ProductDetail.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/ProductDetail.latte');
-		$template->setTranslator($this->translator);
 		$template->product = $entity;
 		$template->images = array_values(array_unique(array_filter(
 			[$entity->photo, ...$this->productImageRepository->getForProduct($entity->id)],

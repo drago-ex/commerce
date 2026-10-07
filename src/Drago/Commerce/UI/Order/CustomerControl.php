@@ -14,7 +14,6 @@ use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Event\CustomerUpdated;
 use Drago\Commerce\Event\EventDispatcher;
-use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -35,7 +34,6 @@ class CustomerControl extends BaseControl
 		private readonly Commerce $commerce,
 		private readonly CustomerFactory $customerFactory,
 		private readonly EventDispatcher $eventDispatcher,
-		private readonly DiscountCodeService $discountCodeService,
 	) {
 	}
 
@@ -49,31 +47,21 @@ class CustomerControl extends BaseControl
 	 */
 	public function render(): void
 	{
+		$this->prepareTemplate(__DIR__ . '/Customer.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/Customer.latte');
-		$template->setTranslator($this->translator);
 		$template->breadcrumbs = $this->getBreadcrumbs();
 		$orderState = $this->orderSession->getItems();
 		$template->carrier = $orderState->carrier;
 		$template->payment = $orderState->payment;
-		$this->prepareShoppingCartSummary(
+		$this->applyCartTotals(
 			$template,
-			$this->shoppingCartSession,
-			$this->discountCodeService,
-			$this->orderSession,
+			$this->shoppingCartSession->getTotals(),
+			$this->orderSession->getCarrierPrice(),
+			$this->orderSession->getPaymentPrice(),
 		);
 
-		$customer = $this->orderSession
-			->getItems()
-			->customer;
-
-		if ($customer !== null) {
-			$form = $this->getComponent('customer');
-			if (!$form->isSubmitted()) {
-				$buttonSend = $this->getFormComponent($form, 'send');
-				$buttonSend?->setCaption('Update');
-				$form->setDefaults((array) $customer);
-			}
+		if ($orderState->customer !== null) {
+			$this->prefillForm('customer', (array) $orderState->customer);
 		}
 
 		$template->render();

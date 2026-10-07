@@ -57,10 +57,9 @@ class SummaryCartControl extends BaseControl
 			$form->setDefaults((array) $item);
 		}
 
+		$this->prepareTemplate(__DIR__ . '/SummaryCart.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/SummaryCart.latte');
-		$template->setTranslator($this->translator);
-		$this->prepareShoppingCartSummary($template, $this->shoppingCart, $this->discountCodeService);
+		$this->applyCartTotals($template, $this->shoppingCart->getTotals());
 		$template->linkOrderDelivery = $this->getPresenter()->link($this->linkRedirectTarget);
 		$template->breadcrumbs = $this->getBreadcrumbs();
 		$template->render();

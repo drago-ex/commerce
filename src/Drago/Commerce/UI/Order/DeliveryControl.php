@@ -14,7 +14,6 @@ use Drago\Commerce\Domain\Delivery\PaymentMapper;
 use Drago\Commerce\Domain\Delivery\PaymentRepository;
 use Drago\Commerce\Event\DeliveryOptionsChanged;
 use Drago\Commerce\Event\EventDispatcher;
-use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -38,7 +37,6 @@ class DeliveryControl extends BaseControl
 		private readonly CarrierMapper $carrierMapper,
 		private readonly PaymentMapper $paymentMapper,
 		private readonly EventDispatcher $eventDispatcher,
-		private readonly DiscountCodeService $discountCodeService,
 		private readonly Factory $factory,
 	) {
 	}
@@ -52,9 +50,8 @@ class DeliveryControl extends BaseControl
 	 */
 	public function render(): void
 	{
+		$this->prepareTemplate(__DIR__ . '/Delivery.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/Delivery.latte');
-		$template->setTranslator($this->translator);
 		$template->carrier = $this->carrierRepository->getCarrierItems();
 		$template->payment = $this->paymentRepository->getPaymentItems();
 		$template->breadcrumbs = $this->getBreadcrumbs();
@@ -62,28 +59,18 @@ class DeliveryControl extends BaseControl
 		$template->selectedCarrier = $delivery->carrier;
 		$template->selectedPayment = $delivery->payment;
 
-		$this->prepareShoppingCartSummary(
+		$this->applyCartTotals(
 			$template,
-			$this->shoppingCartSession,
-			$this->discountCodeService,
-			$this->orderSession,
+			$this->shoppingCartSession->getTotals(),
+			$this->orderSession->getCarrierPrice(),
+			$this->orderSession->getPaymentPrice(),
 		);
 
 		if ($delivery->carrier !== null && $delivery->payment !== null) {
-			$form = $this->getComponent('delivery');
-
-			if (!$form->isSubmitted()) {
-
-				$buttonSend = $this->getFormComponent($form, 'send');
-				if ($buttonSend !== null) {
-					$buttonSend->setCaption('Update');
-				}
-
-				$data = new DeliveryValues;
-				$data->carrierId = $delivery->carrier->id;
-				$data->paymentId = $delivery->payment->id;
-				$form->setDefaults($data);
-			}
+			$data = new DeliveryValues;
+			$data->carrierId = $delivery->carrier->id;
+			$data->paymentId = $delivery->payment->id;
+			$this->prefillForm('delivery', $data);
 		}
 
 		$template->render();

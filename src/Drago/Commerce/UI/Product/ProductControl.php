@@ -52,9 +52,8 @@ class ProductControl extends BaseControl
 	 */
 	public function render(): void
 	{
+		$this->prepareTemplate(__DIR__ . '/Product.latte');
 		$template = $this->template;
-		$template->setFile($this->templateControl ?: __DIR__ . '/Product.latte');
-		$template->setTranslator($this->translator);
 
 		$perPage = $this->commerce->getItemsPerPage();
 		if ($perPage > 0) {

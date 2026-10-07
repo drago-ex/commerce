@@ -127,5 +127,6 @@
 "Pagination": "Stránkování"
 "Previous": "Předchozí"
 "Next": "Další"
-"The order total has changed to %s, please review your order.": "Celková cena objednávky se změnila na %s, zkontrolujte prosím objednávku."
 "The discount code is valid, but the order is below its minimum amount, so no discount applies yet.": "Slevový kód je platný, ale hodnota objednávky je pod jeho minimem, sleva se zatím neuplatní."
+"Customer information is incomplete.": "Údaje o zákazníkovi nejsou vyplněné."
+"The order was changed or opened in another window, please review it and confirm again.": "Objednávka se změnila nebo byla otevřena v jiném okně, zkontrolujte ji prosím a potvrďte znovu."

@@ -158,11 +158,13 @@ class ProductControl extends BaseControl
 		if (!$product || !$product->active) {
 			$this->addFlashMessage('The product does not exist or is not active.', Alert::Danger);
 			$this->addRedirect('this');
+			return;
 		}
 
 		if ($this->variantRepository->hasActive($product->id)) {
 			$this->addFlashMessage('Please choose a variant.', Alert::Warning);
 			$this->addRedirect('this');
+			return;
 		}
 
 		if ($product->stock <= 0) {

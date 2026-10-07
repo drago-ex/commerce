@@ -9,6 +9,7 @@ use Brick\Money\Money;
 use Drago\Application\UI\ExtraControl;
 use Drago\Commerce\Service\CartTotals;
 use Nette\Application\UI\Form;
+use stdClass;
 
 
 /**
@@ -102,9 +103,9 @@ class BaseControl extends ExtraControl
 	 * Pre-fills a step form with the values kept in the session and relabels its
 	 * button, when the customer returns to the step.
 	 *
-	 * @param array<string, mixed>|object $defaults
+	 * @param array<string, mixed>|stdClass $defaults
 	 */
-	protected function prefillForm(string $component, array|object $defaults): void
+	protected function prefillForm(string $component, array|stdClass $defaults): void
 	{
 		$form = $this->getComponent($component);
 		if (!$form instanceof Form || $form->isSubmitted()) {

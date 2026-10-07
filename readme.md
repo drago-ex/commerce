@@ -244,15 +244,7 @@ commerce:
 		# templateFile: %appDir%/Mail/order-confirmation.latte
 ```
 
-The optional `mailer` setting selects the service implementing `Nette\Mail\Mailer`. `templateFile` can point to a custom Latte template; its type is `Drago\Commerce\Mail\OrderConfirmationTemplate`. If using `drago-ex/translator`, add the package translation directory to `translateDirs` so Czech emails use the included translations:
-
-```neon
-translator:
-	autoFinder: false
-	translateDirs:
-		- %vendorDir%/drago-ex/commerce/src/Drago/Commerce/Translate
-		- %appDir%/Translate
-```
+The optional `mailer` setting selects the service implementing `Nette\Mail\Mailer`. `templateFile` can point to a custom Latte template; its type is `Drago\Commerce\Mail\OrderConfirmationTemplate`. The current request's translator is used first; missing Czech email strings fall back to Commerce's bundled Czech catalogue.
 
 The language is read from the presenter's `lang` URL parameter and passed to the translator's `setTranslate()` method when supported. Emails are sent synchronously during checkout, so SMTP latency delays the response; a queue can be added by listening to `OrderPlaced` and storing its item snapshot for later processing.
 

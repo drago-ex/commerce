@@ -250,13 +250,15 @@ Assert::contains('a@example.com', (string) json_encode($mailer->messages[0]->get
 Assert::contains('<html lang="cs">', $mailer->messages[0]->getHtmlBody());
 Assert::contains('#77', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Děkujeme za objednávku', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Potvrzení objednávky', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Objednané zboží', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Pánské tričko Classic', $mailer->messages[0]->getHtmlBody());
 Assert::contains('882,00', $mailer->messages[0]->getHtmlBody());
 Assert::contains('1 100,00', $mailer->messages[0]->getHtmlBody());
 Assert::contains('PPL', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Test Shop', $mailer->messages[0]->getHtmlBody());
 $emailBody = substr($mailer->messages[0]->getHtmlBody(), strpos($mailer->messages[0]->getHtmlBody(), '<body'));
-Assert::true(strpos($emailBody, 'Test Shop') < strpos($emailBody, 'Order confirmation'));
+Assert::true(strpos($emailBody, 'Test Shop') < strpos($emailBody, 'Potvrzení objednávky'));
 Assert::contains('Zavolat předem.<br', $mailer->messages[0]->getHtmlBody());
 
 $fallbackMailer = new OrderConfirmationMailer($mailer, $templateFactory, 'orders@example.cz');
@@ -272,7 +274,7 @@ Debugger::setLogger(new class implements ILogger {
 });
 (new OrderConfirmationListener($fallbackMailer))($order);
 Assert::same([], Debugger::getLogger()->entries);
-Assert::same('Order confirmation #77', $mailer->messages[1]->getSubject());
+Assert::same('Potvrzení objednávky č. 77', $mailer->messages[1]->getSubject());
 
 // Without a snapshot, the log falls back to the cart session.
 $cart->addItem($product, 1);

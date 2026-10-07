@@ -37,6 +37,8 @@ use Nette\Localization\Translator;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 use Tester\Assert;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -244,7 +246,18 @@ Assert::contains('Test Shop', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Zavolat předem.<br', $mailer->messages[0]->getHtmlBody());
 
 $fallbackMailer = new OrderConfirmationMailer($mailer, $templateFactory, 'orders@example.cz');
+Debugger::setLogger(new class implements ILogger {
+	/** @var list<mixed> */
+	public array $entries = [];
+
+
+	public function log(mixed $value, string $level = self::INFO): void
+	{
+		$this->entries[] = $value;
+	}
+});
 (new OrderConfirmationListener($fallbackMailer))($order);
+Assert::same([], Debugger::getLogger()->entries);
 Assert::same('Order confirmation #77', $mailer->messages[1]->getSubject());
 
 // Without a snapshot, the log falls back to the cart session.

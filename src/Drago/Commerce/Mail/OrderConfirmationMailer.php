@@ -40,7 +40,8 @@ readonly class OrderConfirmationMailer
 			$message = new Message;
 			$message->setFrom($this->sender)
 				->addTo($order->customer->email)
-				->setSubject((string) $translator->translate('Order confirmation #%d', $order->orderId))
+				->setSubject((string) ($translator?->translate('Order confirmation #%d', $order->orderId)
+					?? sprintf('Order confirmation #%d', $order->orderId)))
 				->setHtmlBody($template->renderToString());
 
 			$this->mailer->send($message);

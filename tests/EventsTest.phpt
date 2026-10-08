@@ -258,7 +258,8 @@ $confirmationMailer = new OrderEmail(
 	storeName: 'Test Shop',
 	storeEmail: 'support@example.cz',
 );
-(new OrderEmailListener($confirmationMailer))($order);
+$confirmationListener = new OrderEmailListener($confirmationMailer);
+$confirmationListener($order);
 
 Assert::same('cs', $translator->lang);
 Assert::count(1, $mailer->messages);
@@ -291,14 +292,15 @@ Debugger::setLogger(new class implements ILogger {
 		$this->entries[] = $value;
 	}
 });
-(new OrderEmailListener($fallbackMailer))($order);
+$fallbackListener = new OrderEmailListener($fallbackMailer);
+$fallbackListener($order);
 Assert::same([], Debugger::getLogger()->entries);
 Assert::same('Order confirmation #77', $mailer->messages[1]->getSubject());
 
 // Without a language the translator keeps its current one and the html lang attribute is omitted.
 $withoutLang = clone $order;
 $withoutLang->lang = null;
-(new OrderEmailListener($confirmationMailer))($withoutLang);
+$confirmationListener($withoutLang);
 Assert::same('cs', $translator->lang);
 Assert::notContains(' lang=', $mailer->messages[2]->getHtmlBody());
 
@@ -309,7 +311,8 @@ $failingMailer = new class implements Mailer {
 		throw new \RuntimeException('SMTP down');
 	}
 };
-(new OrderEmailListener(new OrderEmail($failingMailer, $templateFactory, 'orders@example.cz')))($order);
+$failingListener = new OrderEmailListener(new OrderEmail($failingMailer, $templateFactory, 'orders@example.cz'));
+$failingListener($order);
 Assert::count(1, Debugger::getLogger()->entries);
 Assert::type(\RuntimeException::class, Debugger::getLogger()->entries[0]);
 

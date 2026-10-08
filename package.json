@@ -3,14 +3,14 @@
 	"version": "1.0.0",
 	"type": "module",
 	"files": [
-		"src/Drago/Commerce/assets"
+	  "src/Drago/assets"
 	],
 	"exports": {
-		".": "./src/Drago/Commerce/assets/index.js",
-		"./shopping-cart": "./src/Drago/Commerce/assets/shopping-cart.js",
-		"./product-detail": "./src/Drago/Commerce/assets/product-detail.js",
-		"./spinner": "./src/Drago/Commerce/assets/spinner.js",
-		"./styles": "./src/Drago/Commerce/assets/commerce.scss"
+		".": "./src/Drago/assets/index.js",
+		"./shopping-cart": "./src/Drago/assets/shopping-cart.js",
+		"./product-detail": "./src/Drago/assets/product-detail.js",
+		"./spinner": "./src/Drago/assets/spinner.js",
+		"./styles": "./src/Drago/assets/commerce.scss"
 	},
 	"sideEffects": [
 		"**/*.scss"

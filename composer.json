@@ -35,13 +35,9 @@
 		"geoip2/geoip2": "^2.12"
 	},
 	"autoload": {
+		"classmap": ["src/"],
 		"psr-4": {
-			"Drago\\Commerce\\": "src/Drago/Commerce/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Drago\\Commerce\\Tests\\": "tests/"
+			"Drago\\": "src"
 		}
 	},
 	"suggest": {
@@ -51,7 +47,7 @@
 	},
 	"extra": {
 		"drago-translator": {
-			"translation": "src/Drago/Commerce/Translate"
+			"translation": "src/Commerce/Translate"
 		}
 	},
 	"scripts": {

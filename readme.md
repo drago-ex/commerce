@@ -236,7 +236,7 @@ commerce:
 		# templateFile: %appDir%/Mail/order-email.latte
 ```
 
-`templateFile` points to a custom Latte template of type `Drago\Commerce\Mail\OrderEmailTemplate`. Texts go through the configured translator; `drago-ex/translator` finds the bundled translations automatically, other translators can load `src/Drago/Commerce/Translate`. The language is taken from the presenter's `lang` parameter and passed to the translator's `setTranslate()` when available.
+`templateFile` points to a custom Latte template of type `Drago\Commerce\Mail\OrderEmailTemplate`. Texts go through the configured translator; `drago-ex/translator` finds the bundled translations automatically, other translators can load `src/Commerce`. The language is taken from the presenter's `lang` parameter and passed to the translator's `setTranslate()` when available.
 
 The email is sent synchronously; a failure is logged and does not affect the order. Migration `016_order_delivery_snapshots.sql` stores carrier and payment names with each order.
 

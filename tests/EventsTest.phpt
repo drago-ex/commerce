@@ -21,13 +21,24 @@ use Drago\Commerce\Event\EventDispatcher;
 use Drago\Commerce\Event\OrderPlaced;
 use Drago\Commerce\Event\ProductAddedToCart;
 use Drago\Commerce\EventListener\OrderLoggerListener;
+use Drago\Commerce\Mail\OrderEmail;
+use Drago\Commerce\Mail\OrderEmailListener;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
+use Latte\Engine;
+use Nette\Application\UI\Control;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
+use Nette\Bridges\ApplicationLatte\TemplateFactory;
 use Nette\Http\Request;
 use Nette\Http\Response;
 use Nette\Http\Session;
 use Nette\Http\UrlScript;
+use Nette\Localization\Translator;
+use Nette\Mail\Mailer;
+use Nette\Mail\Message;
 use Tester\Assert;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -138,12 +149,26 @@ $order = new OrderPlaced(
 		discount_code: null,
 		discount_amount: 0,
 		created_at: new \DateTimeImmutable('2026-10-05 10:00:00'),
+		currency: 'CZK',
+		carrier_name: 'PPL',
+		payment_name: 'Dobírka',
 	),
-	customer: new Customer('a@example.com', '+420123456789', 'Jan', 'Novák', 'Ulice 1', 'Praha', '11000', 'CZ'),
+	customer: new Customer(
+		'a@example.com',
+		'+420123456789',
+		'Jan',
+		'Novák',
+		'Ulice 1',
+		'Praha',
+		'11000',
+		'CZ',
+		note: "Zavolat předem.\nNechat u sousedů.",
+	),
 	carrier: new Carrier(1, 'PPL', $czk(100)),
 	payment: new Payment(1, 'Dobírka', $czk(0)),
 	shoppingCartSession: $cart,
 	items: [$plain, $variant],
+	lang: 'cs',
 );
 
 $log = (new OrderLoggerListener)->toArray($order);
@@ -171,6 +196,125 @@ Assert::same([
 		'unit_price' => 441.0,
 	],
 ], $log['Items']);
+
+$mailer = new class implements Mailer {
+	/** @var list<Message> */
+	public array $messages = [];
+
+
+	public function send(Message $mail): void
+	{
+		$this->messages[] = $mail;
+	}
+};
+$templateFactory = new TemplateFactory(new class implements LatteFactory {
+	public function create(?Control $control = null): Engine
+	{
+		return new Engine;
+	}
+});
+$translator = new class implements Translator {
+	public string $lang = 'en';
+
+
+	public function setTranslate(string $lang): void
+	{
+		$this->lang = $lang;
+	}
+
+
+	public function translate(string|\Stringable $message, mixed ...$parameters): string
+	{
+		$translations = [
+			'Order confirmation #%d' => 'Potvrzení objednávky č. %d',
+			'Order confirmation' => 'Potvrzení objednávky',
+			'Thank you for your order' => 'Děkujeme za objednávku',
+			'We have received your order #%d.' => 'Vaši objednávku č. %d jsme přijali.',
+			'Ordered items' => 'Objednané zboží',
+			'Order number' => 'Číslo objednávky',
+			'Product' => 'Produkt',
+			'Quantity' => 'Množství',
+			'Unit price' => 'Cena za kus',
+			'Line total' => 'Cena celkem',
+			'Order summary' => 'Souhrn objednávky',
+			'Subtotal' => 'Mezisoučet',
+			'Discount code %s' => 'Slevový kód %s',
+			'Shipping (%s)' => 'Doprava (%s)',
+			'Payment (%s)' => 'Platba (%s)',
+			'Total' => 'Celkem',
+			'Customer details' => 'Údaje zákazníka',
+			'Note' => 'Poznámka',
+			'This is an automatic confirmation of your order.' => 'Toto je automatické potvrzení vaší objednávky.',
+		];
+		$translated = $this->lang === 'cs' ? ($translations[(string) $message] ?? (string) $message) : (string) $message;
+		return $parameters === [] ? $translated : sprintf($translated, ...$parameters);
+	}
+};
+$confirmationMailer = new OrderEmail(
+	$mailer,
+	$templateFactory,
+	'orders@example.cz',
+	translator: $translator,
+	storeName: 'Test Shop',
+	storeEmail: 'support@example.cz',
+);
+$confirmationListener = new OrderEmailListener($confirmationMailer);
+$confirmationListener($order);
+
+Assert::same('cs', $translator->lang);
+Assert::count(1, $mailer->messages);
+Assert::same('Potvrzení objednávky č. 77', $mailer->messages[0]->getSubject());
+Assert::contains('a@example.com', (string) json_encode($mailer->messages[0]->getHeader('To')));
+Assert::contains('<html lang="cs">', $mailer->messages[0]->getHtmlBody());
+Assert::contains('#77', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Děkujeme za objednávku', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Potvrzení objednávky', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Objednané zboží', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Množství', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Cena za kus', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Pánské tričko Classic', $mailer->messages[0]->getHtmlBody());
+Assert::contains('882,00', $mailer->messages[0]->getHtmlBody());
+Assert::contains('1 100,00', $mailer->messages[0]->getHtmlBody());
+Assert::contains('PPL', $mailer->messages[0]->getHtmlBody());
+Assert::contains('Test Shop', $mailer->messages[0]->getHtmlBody());
+$emailBody = substr($mailer->messages[0]->getHtmlBody(), strpos($mailer->messages[0]->getHtmlBody(), '<body'));
+Assert::true(strpos($emailBody, 'Test Shop') < strpos($emailBody, 'Potvrzení objednávky'));
+Assert::contains('Zavolat předem.<br', $mailer->messages[0]->getHtmlBody());
+
+$fallbackMailer = new OrderEmail($mailer, $templateFactory, 'orders@example.cz');
+Debugger::setLogger(new class implements ILogger {
+	/** @var list<mixed> */
+	public array $entries = [];
+
+
+	public function log(mixed $value, string $level = self::INFO): void
+	{
+		$this->entries[] = $value;
+	}
+});
+$fallbackListener = new OrderEmailListener($fallbackMailer);
+$fallbackListener($order);
+Assert::same([], Debugger::getLogger()->entries);
+Assert::same('Order confirmation #77', $mailer->messages[1]->getSubject());
+
+// Without a language the translator keeps its current one and the html lang attribute is omitted.
+$withoutLang = clone $order;
+$withoutLang->lang = null;
+$confirmationListener($withoutLang);
+Assert::same('cs', $translator->lang);
+Assert::notContains(' lang=', $mailer->messages[2]->getHtmlBody());
+
+// A failing mailer is logged once by the listener and does not escape it.
+$failingMailer = new class implements Mailer {
+	public function send(Message $mail): void
+	{
+		throw new \RuntimeException('SMTP down');
+	}
+};
+$failingListener = new OrderEmailListener(new OrderEmail($failingMailer, $templateFactory, 'orders@example.cz'));
+$failingListener($order);
+Assert::count(1, Debugger::getLogger()->entries);
+Assert::type(\RuntimeException::class, Debugger::getLogger()->entries[0]);
 
 // Without a snapshot, the log falls back to the cart session.
 $cart->addItem($product, 1);

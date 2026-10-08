@@ -33,6 +33,7 @@ class OrderPlaced
 		public Payment $payment,
 		public ShoppingCartSession $shoppingCartSession,
 		public array $items = [],
+		public ?string $lang = null,
 	) {
 	}
 }

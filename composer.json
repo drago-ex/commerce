@@ -17,6 +17,7 @@
 		"latte/latte": "^3.0",
 		"nette/application": "^3.1",
 		"nette/di": "^3.0",
+		"nette/mail": "^4.0",
 		"drago-ex/application": "^3.0",
 		"drago-ex/database": "^3.0",
 		"drago-ex/form": "^2.0",
@@ -34,18 +35,20 @@
 		"geoip2/geoip2": "^2.12"
 	},
 	"autoload": {
+		"classmap": ["src/"],
 		"psr-4": {
-			"Drago\\Commerce\\": "src/Drago/Commerce/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Drago\\Commerce\\Tests\\": "tests/"
+			"Drago\\": "src"
 		}
 	},
 	"suggest": {
-		"drago-ex/translator": "Configures Latte translation support for bundled templates using translation macros.",
+		"drago-ex/translator": "Loads the bundled translations automatically from the directory declared in extra.drago-translator.",
+		"nette/mail": "Enables optional order confirmation emails.",
 		"geoip2/geoip2": "Enables automatic phone-region detection from the visitor's IP via a MaxMind GeoLite2 City database you provide yourself (see README, 'geoLite2Path' config option)."
+	},
+	"extra": {
+		"drago-translator": {
+			"translation": "src/Commerce/Translate"
+		}
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",

@@ -2,9 +2,6 @@
 	"name": "drago-commerce",
 	"version": "1.0.0",
 	"type": "module",
-	"files": [
-	  "src/Drago/assets"
-	],
 	"exports": {
 		".": "./src/Drago/assets/index.js",
 		"./shopping-cart": "./src/Drago/assets/shopping-cart.js",

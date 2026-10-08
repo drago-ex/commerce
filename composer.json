@@ -32,8 +32,7 @@
 	"require-dev": {
 		"nette/tester": "^2.3",
 		"phpstan/phpstan-nette": "^2.0",
-		"geoip2/geoip2": "^2.12",
-		"nette/mail": "^3.1 || ^4.2"
+		"geoip2/geoip2": "^2.12"
 	},
 	"autoload": {
 		"psr-4": {

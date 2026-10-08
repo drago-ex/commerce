@@ -45,9 +45,14 @@
 		}
 	},
 	"suggest": {
-		"drago-ex/translator": "Configures Latte translation support for bundled templates using translation macros.",
+		"drago-ex/translator": "Loads the bundled translations automatically from the directory declared in extra.drago-translator.",
 		"nette/mail": "Enables optional order confirmation emails.",
 		"geoip2/geoip2": "Enables automatic phone-region detection from the visitor's IP via a MaxMind GeoLite2 City database you provide yourself (see README, 'geoLite2Path' config option)."
+	},
+	"extra": {
+		"drago-translator": {
+			"translation": "src/Drago/Commerce/Translate"
+		}
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",

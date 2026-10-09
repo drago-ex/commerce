@@ -1,9 +1,9 @@
 includes:
-    - vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-nette/extension.neon
 
 parameters:
-    level: 8
-    paths:
-        - src
-    ignoreErrors:
-        - '#Trait Drago\\Commerce\\UI\\CommerceControl is used zero times and is not analysed\.#'
+	level: 8
+	paths:
+		- src
+	ignoreErrors:
+		- '#Trait Drago\\Commerce\\UI\\CommerceControl is used zero times and is not analysed\.#'

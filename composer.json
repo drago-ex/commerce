@@ -1,10 +1,8 @@
 {
 	"name": "drago-ex/commerce",
-	"type": "library",
 	"description": "Simple shopping cart.",
-	"license": [
-		"MIT"
-	],
+	"type": "library",
+	"license": ["MIT"],
 	"authors": [
 		{
 			"name": "Zdeněk Papučík",
@@ -29,6 +27,11 @@
 		"brick/phonenumber": "^0.8.0",
 		"dibi/dibi": "^5.1"
 	},
+	"suggest": {
+		"drago-ex/translator": "Loads the bundled translations automatically from the directory declared in extra.drago-translator.",
+		"nette/mail": "Enables optional order confirmation emails.",
+		"geoip2/geoip2": "Enables automatic phone-region detection from the visitor's IP via a MaxMind GeoLite2 City database you provide yourself (see README, 'geoLite2Path' config option)."
+	},
 	"require-dev": {
 		"nette/tester": "^2.3",
 		"phpstan/phpstan-nette": "^2.0",
@@ -40,18 +43,13 @@
 			"Drago\\": "src"
 		}
 	},
-	"suggest": {
-		"drago-ex/translator": "Loads the bundled translations automatically from the directory declared in extra.drago-translator.",
-		"nette/mail": "Enables optional order confirmation emails.",
-		"geoip2/geoip2": "Enables automatic phone-region detection from the visitor's IP via a MaxMind GeoLite2 City database you provide yourself (see README, 'geoLite2Path' config option)."
+	"scripts": {
+		"phpstan": "phpstan analyse",
+		"tester": "tester tests -s"
 	},
 	"extra": {
 		"drago-translator": {
 			"translation": "src/Commerce/Translate"
 		}
-	},
-	"scripts": {
-		"phpstan": "phpstan analyse",
-		"tester": "tester tests -s"
 	}
 }

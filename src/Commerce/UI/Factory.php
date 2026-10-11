@@ -68,8 +68,8 @@ readonly class Factory
 			->setAutocomplete(Autocomplete::Off)
 			->setDefaultValue(1)
 			->setMin(1)
-			->addRule($form::Integer)
-			->setRequired();
+			->setRequired()
+			->addRule($form::Integer);
 
 		return $form;
 	}
@@ -79,10 +79,10 @@ readonly class Factory
 	{
 		$form = $this->create($translator);
 		$form->addTextInput(FactoryValues::Code, 'Discount code')
-			->setRequired('Please enter a discount code.')
 			->setAutocomplete(Autocomplete::Off)
 			->setPlaceholder('Enter discount code')
-			->setHtmlAttribute('aria-label', ($translator ?? $this->translator)?->translate('Discount code') ?? 'Discount code');
+			->setHtmlAttribute('aria-label', ($translator ?? $this->translator)?->translate('Discount code') ?? 'Discount code')
+			->setRequired('Please enter a discount code.');
 		$form->addSubmit('apply', 'Apply');
 
 		return $form;

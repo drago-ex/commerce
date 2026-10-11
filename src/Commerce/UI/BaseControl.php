@@ -71,6 +71,20 @@ class BaseControl extends ExtraControl
 
 
 	/**
+	 * Sets the action used by the control's navigation link.
+	 *
+	 * @throws \InvalidArgumentException The target action is empty.
+	 */
+	public function setLinkRedirectTarget(string $link): void
+	{
+		if (empty($link)) {
+			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
+		}
+		$this->linkRedirectTarget = $link;
+	}
+
+
+	/**
 	 * Sets the template file (a custom one wins) and the translator.
 	 */
 	protected function prepareTemplate(string $defaultFile): void
@@ -114,19 +128,5 @@ class BaseControl extends ExtraControl
 
 		$this->getFormComponent($form, 'send')?->setCaption('Update');
 		$form->setDefaults($defaults);
-	}
-
-
-	/**
-	 * Sets the action used by the control's navigation link.
-	 *
-	 * @throws \InvalidArgumentException The target action is empty.
-	 */
-	public function setLinkRedirectTarget(string $link): void
-	{
-		if (empty($link)) {
-			throw new \InvalidArgumentException('Redirect target link cannot be empty.');
-		}
-		$this->linkRedirectTarget = $link;
 	}
 }

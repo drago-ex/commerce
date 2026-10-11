@@ -33,6 +33,30 @@ class ReaderGeoLite
 
 
 	/**
+	 * Returns city data for the given IP address, or null when unavailable
+	 * (no database configured, unreadable file, or lookup failure).
+	 */
+	public function getCity(string $ip): ?City
+	{
+		try {
+			return $this->reader()?->city($ip);
+		} catch (Throwable) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * Returns the ISO country code for the given IP address, or null if unavailable.
+	 */
+	public function getCountryIsoCode(string $ip): ?string
+	{
+		$city = $this->getCity($ip);
+		return $city?->country->isoCode ?? null;
+	}
+
+
+	/**
 	 * Opens the configured GeoLite2 City database once and reuses the reader.
 	 * Returns null when no path is configured. A database that cannot be opened
 	 * (wrong path, geoip2/geoip2 not installed) is logged once and then skipped,
@@ -61,29 +85,5 @@ class ReaderGeoLite
 		}
 
 		return $this->reader;
-	}
-
-
-	/**
-	 * Returns city data for the given IP address, or null when unavailable
-	 * (no database configured, unreadable file, or lookup failure).
-	 */
-	public function getCity(string $ip): ?City
-	{
-		try {
-			return $this->reader()?->city($ip);
-		} catch (Throwable) {
-			return null;
-		}
-	}
-
-
-	/**
-	 * Returns the ISO country code for the given IP address, or null if unavailable.
-	 */
-	public function getCountryIsoCode(string $ip): ?string
-	{
-		$city = $this->getCity($ip);
-		return $city?->country->isoCode ?? null;
 	}
 }

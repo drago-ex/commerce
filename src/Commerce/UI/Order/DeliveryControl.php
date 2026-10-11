@@ -78,26 +78,6 @@ class DeliveryControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
-	 */
-	protected function createComponentDelivery(): BaseForm
-	{
-		$form = $this->factory->create($this->translator);
-		$carrierItems = $this->carrierRepository->getOnlyIds();
-		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $carrierItems)
-			->setRequired('Please select a carrier.');
-
-		$paymentItems = $this->paymentRepository->getOnlyIds();
-		$form->addRadioList(DeliveryValues::PaymentId, 'Payment', $paymentItems)
-			->setRequired('Please select a payment method.');
-
-		$form->addSubmit('send', 'Continue');
-		$form->onSuccess[] = $this->success(...);
-		return $form;
-	}
-
-
-	/**
 	 * @throws AbortException
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
@@ -121,5 +101,25 @@ class DeliveryControl extends BaseControl
 
 		$this->eventDispatcher->dispatch(new DeliveryOptionsChanged($carrier, $payment));
 		$this->addRedirect($this->linkRedirectTarget);
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 */
+	protected function createComponentDelivery(): BaseForm
+	{
+		$form = $this->factory->create($this->translator);
+		$carrierItems = $this->carrierRepository->getOnlyIds();
+		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $carrierItems)
+			->setRequired('Please select a carrier.');
+
+		$paymentItems = $this->paymentRepository->getOnlyIds();
+		$form->addRadioList(DeliveryValues::PaymentId, 'Payment', $paymentItems)
+			->setRequired('Please select a payment method.');
+
+		$form->addSubmit('send', 'Continue');
+		$form->onSuccess[] = $this->success(...);
+		return $form;
 	}
 }

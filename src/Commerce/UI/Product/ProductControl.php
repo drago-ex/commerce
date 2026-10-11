@@ -85,22 +85,6 @@ class ProductControl extends BaseControl
 
 
 	/**
-	 * Creates an add-to-cart form for each product using Nette Multiplier.
-	 *
-	 * @return Multiplier<BaseForm>
-	 */
-	protected function createComponentAddToCart(): Multiplier
-	{
-		return new Multiplier(function (string $productId) {
-			$form = $this->factory->addHiddenProductId($productId, translator: $this->translator);
-			$form->addSubmit('add', 'Add to cart');
-			$form->onSuccess[] = $this->success(...);
-			return $form;
-		});
-	}
-
-
-	/**
 	 * Handles successful add-to-cart submissions by validating the product,
 	 * calculating its final price, and adding it to the cart.
 	 *
@@ -131,6 +115,22 @@ class ProductControl extends BaseControl
 		$this->shoppingCartSession->addItem($this->priceResolver->forCart($entity, null, null, 1));
 		$this->addFlashMessage('The product has been added to the cart.', Alert::Success);
 		$this->finish();
+	}
+
+
+	/**
+	 * Creates an add-to-cart form for each product using Nette Multiplier.
+	 *
+	 * @return Multiplier<BaseForm>
+	 */
+	protected function createComponentAddToCart(): Multiplier
+	{
+		return new Multiplier(function (string $productId) {
+			$form = $this->factory->addHiddenProductId($productId, translator: $this->translator);
+			$form->addSubmit('add', 'Add to cart');
+			$form->onSuccess[] = $this->success(...);
+			return $form;
+		});
 	}
 
 

@@ -80,45 +80,6 @@ class SummaryCartControl extends BaseControl
 
 
 	/**
-	 * Splits a composite cartItemKey() back into [productId, variantId].
-	 *
-	 * @return array{0: string, 1: ?int}
-	 */
-	private static function splitCartItemKey(string $key): array
-	{
-		$parts = explode('_', $key, 2);
-		$productId = $parts[0];
-		$variantId = isset($parts[1]) && $parts[1] !== '' ? (int) $parts[1] : null;
-		return [$productId, $variantId];
-	}
-
-
-	/**
-	 * Component for adding an item with amount to the cart.
-	 *
-	 * @return Multiplier<BaseForm>
-	 */
-	protected function createComponentChangeQuantity(): Multiplier
-	{
-		return new Multiplier(function (string $key) {
-			[$productId, $variantId] = self::splitCartItemKey($key);
-
-			$form = $this->factory->addChangeAmountInCart($productId, $variantId, $this->translator);
-			$form->onSuccess[] = $this->changeQuantity(...);
-			return $form;
-		});
-	}
-
-
-	protected function createComponentDiscountCode(): BaseForm
-	{
-		$form = $this->factory->addDiscountCode($this->translator);
-		$form->onSuccess[] = $this->applyDiscountCode(...);
-		return $form;
-	}
-
-
-	/**
 	 * @throws AbortException
 	 * @throws Exception
 	 * @throws AttributeDetectionException
@@ -137,22 +98,6 @@ class SummaryCartControl extends BaseControl
 		}
 
 		$this->redrawShoppingCart();
-	}
-
-
-	/**
-	 * Redraw shopping cart on AJAX or redirect otherwise.
-	 *
-	 * @throws AbortException
-	 */
-	private function redrawShoppingCart(): void
-	{
-		if ($this->isAjax()) {
-			$this->addRedraw('shoppingCart');
-			$this->addRedraw('cart');
-		} else {
-			$this->redirect('this');
-		}
 	}
 
 
@@ -205,33 +150,6 @@ class SummaryCartControl extends BaseControl
 
 
 	/**
-	 * Returns how many pieces can currently be bought, or null when the
-	 * product or variant is gone, inactive, or needs a variant that is missing.
-	 *
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
-	private function getAvailableStock(int $productId, ?int $variantId): ?int
-	{
-		$product = $this->productRepository->getOne($productId);
-		if ($product === null || !$product->active) {
-			return null;
-		}
-
-		if ($variantId === null) {
-			return $this->productVariantRepository->hasActive($productId) ? null : $product->stock;
-		}
-
-		$variant = $this->productVariantRepository->getOne($variantId);
-		if ($variant === null || $variant->product_id !== $product->id || !$variant->active) {
-			return null;
-		}
-
-		return $variant->stock;
-	}
-
-
-	/**
 	 * Handles removing an item (a specific variant, if given) from the cart.
 	 * Works on the cart line itself, so an item whose product has since been
 	 * deleted or deactivated can still be removed.
@@ -259,5 +177,87 @@ class SummaryCartControl extends BaseControl
 	{
 		$this->discountCodeService->remove();
 		$this->redrawShoppingCart();
+	}
+
+
+	/**
+	 * Component for adding an item with amount to the cart.
+	 *
+	 * @return Multiplier<BaseForm>
+	 */
+	protected function createComponentChangeQuantity(): Multiplier
+	{
+		return new Multiplier(function (string $key) {
+			[$productId, $variantId] = self::splitCartItemKey($key);
+
+			$form = $this->factory->addChangeAmountInCart($productId, $variantId, $this->translator);
+			$form->onSuccess[] = $this->changeQuantity(...);
+			return $form;
+		});
+	}
+
+
+	protected function createComponentDiscountCode(): BaseForm
+	{
+		$form = $this->factory->addDiscountCode($this->translator);
+		$form->onSuccess[] = $this->applyDiscountCode(...);
+		return $form;
+	}
+
+
+	/**
+	 * Splits a composite cartItemKey() back into [productId, variantId].
+	 *
+	 * @return array{0: string, 1: ?int}
+	 */
+	private static function splitCartItemKey(string $key): array
+	{
+		$parts = explode('_', $key, 2);
+		$productId = $parts[0];
+		$variantId = isset($parts[1]) && $parts[1] !== '' ? (int) $parts[1] : null;
+		return [$productId, $variantId];
+	}
+
+
+	/**
+	 * Redraw shopping cart on AJAX or redirect otherwise.
+	 *
+	 * @throws AbortException
+	 */
+	private function redrawShoppingCart(): void
+	{
+		if ($this->isAjax()) {
+			$this->addRedraw('shoppingCart');
+			$this->addRedraw('cart');
+		} else {
+			$this->redirect('this');
+		}
+	}
+
+
+	/**
+	 * Returns how many pieces can currently be bought, or null when the
+	 * product or variant is gone, inactive, or needs a variant that is missing.
+	 *
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	private function getAvailableStock(int $productId, ?int $variantId): ?int
+	{
+		$product = $this->productRepository->getOne($productId);
+		if ($product === null || !$product->active) {
+			return null;
+		}
+
+		if ($variantId === null) {
+			return $this->productVariantRepository->hasActive($productId) ? null : $product->stock;
+		}
+
+		$variant = $this->productVariantRepository->getOne($variantId);
+		if ($variant === null || $variant->product_id !== $product->id || !$variant->active) {
+			return null;
+		}
+
+		return $variant->stock;
 	}
 }

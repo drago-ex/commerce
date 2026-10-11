@@ -129,6 +129,98 @@ class ProductDetailControl extends BaseControl
 
 
 	/**
+	 * Formats a Money object the same way BaseTemplate::money() does.
+	 */
+	public function formatMoney(?Money $money): string
+	{
+		return $money === null ? '' : Commerce::formatMoney($money);
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 * @throws UnknownCurrencyException
+	 * @throws MoneyMismatchException
+	 */
+	public function success(Form $form, FactoryValues $data): void
+	{
+		$productId = (int) $data->productId;
+		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
+		$amount = (int) $data->amount;
+
+		$entity = $this->productRepository->getOne($productId) ?? $this->error('Product not found.');
+		if (!$entity->active) {
+			$this->addFlashMessage('The product does not exist or is not active.', Alert::Danger);
+			$this->addRedirect('this');
+		}
+
+		if ($amount < 1) {
+			return;
+		}
+
+		$availableStock = $entity->stock;
+		$variantLabel = null;
+		$variantEntity = null;
+
+		if ($variantId === null) {
+			// A product with variants is bought through one of them, never as a whole.
+			if ($this->variantRepository->hasActive($entity->id)) {
+				$this->reject('Please choose a variant.');
+				return;
+			}
+		} else {
+			$variantEntity = $this->variantRepository->getOne($variantId) ?? $this->error('Variant not found.');
+			if ($variantEntity->product_id !== $entity->id || !$variantEntity->active) {
+				$this->error('Variant not found.');
+			}
+
+			$availableStock = $variantEntity->stock;
+			$variantLabel = implode(', ', $this->variantRepository->getLabels($variantEntity->id));
+		}
+
+		$inCart = $this->shoppingCartSession->getAmount($entity->id, $variantId);
+		if ($inCart + $amount > $availableStock) {
+			$this->reject($inCart > 0
+				? $this->translate('The product %s is only %d pcs in stock, %d of them already in your cart.', $entity->name, $availableStock, $inCart)
+				: $this->translate('The product %s is only %d pcs in stock.', $entity->name, $availableStock));
+			return;
+		}
+
+		$item = $this->priceResolver->forCart($entity, $variantEntity, $variantLabel, $amount);
+		$this->shoppingCartSession->addItem($item, $amount, variantId: $variantId, variantLabel: $variantLabel);
+
+		$this->addFlashMessage('The product has been added to the cart.', Alert::Success);
+		$this->addRedraw('message');
+		$this->addRedraw('cart');
+	}
+
+
+	/**
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 * @throws UnknownCurrencyException
+	 */
+	protected function createComponentAddToCart(): BaseForm
+	{
+		$entity = $this->productRepository->getOne($this->productId) ?? $this->error('Product not found.');
+		$variants = $this->getVariantOptions($entity);
+
+		$selected = $this->pickSelectedVariant($variants);
+		$form = $this->factory->addChangeAmountInCart(
+			(string) $this->productId,
+			$selected?->id,
+			$this->translator,
+		);
+
+		$form->addSubmit('add', 'Add to cart');
+		$form->onSuccess[] = $this->success(...);
+
+		return $form;
+	}
+
+
+	/**
 	 * Picks the variant to show as selected: the requested one if it exists,
 	 * otherwise the first one in stock, otherwise the first one.
 	 *
@@ -209,98 +301,6 @@ class ProductDetailControl extends BaseControl
 			$this->variantRepository->getForProduct($entity->id),
 			$entity->price,
 		);
-	}
-
-
-	/**
-	 * Formats a Money object the same way BaseTemplate::money() does.
-	 */
-	public function formatMoney(?Money $money): string
-	{
-		return $money === null ? '' : Commerce::formatMoney($money);
-	}
-
-
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 * @throws UnknownCurrencyException
-	 */
-	protected function createComponentAddToCart(): BaseForm
-	{
-		$entity = $this->productRepository->getOne($this->productId) ?? $this->error('Product not found.');
-		$variants = $this->getVariantOptions($entity);
-
-		$selected = $this->pickSelectedVariant($variants);
-		$form = $this->factory->addChangeAmountInCart(
-			(string) $this->productId,
-			$selected?->id,
-			$this->translator,
-		);
-
-		$form->addSubmit('add', 'Add to cart');
-		$form->onSuccess[] = $this->success(...);
-
-		return $form;
-	}
-
-
-	/**
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 * @throws UnknownCurrencyException
-	 * @throws MoneyMismatchException
-	 */
-	public function success(Form $form, FactoryValues $data): void
-	{
-		$productId = (int) $data->productId;
-		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
-		$amount = (int) $data->amount;
-
-		$entity = $this->productRepository->getOne($productId) ?? $this->error('Product not found.');
-		if (!$entity->active) {
-			$this->addFlashMessage('The product does not exist or is not active.', Alert::Danger);
-			$this->addRedirect('this');
-		}
-
-		if ($amount < 1) {
-			return;
-		}
-
-		$availableStock = $entity->stock;
-		$variantLabel = null;
-		$variantEntity = null;
-
-		if ($variantId === null) {
-			// A product with variants is bought through one of them, never as a whole.
-			if ($this->variantRepository->hasActive($entity->id)) {
-				$this->reject('Please choose a variant.');
-				return;
-			}
-		} else {
-			$variantEntity = $this->variantRepository->getOne($variantId) ?? $this->error('Variant not found.');
-			if ($variantEntity->product_id !== $entity->id || !$variantEntity->active) {
-				$this->error('Variant not found.');
-			}
-
-			$availableStock = $variantEntity->stock;
-			$variantLabel = implode(', ', $this->variantRepository->getLabels($variantEntity->id));
-		}
-
-		$inCart = $this->shoppingCartSession->getAmount($entity->id, $variantId);
-		if ($inCart + $amount > $availableStock) {
-			$this->reject($inCart > 0
-				? $this->translate('The product %s is only %d pcs in stock, %d of them already in your cart.', $entity->name, $availableStock, $inCart)
-				: $this->translate('The product %s is only %d pcs in stock.', $entity->name, $availableStock));
-			return;
-		}
-
-		$item = $this->priceResolver->forCart($entity, $variantEntity, $variantLabel, $amount);
-		$this->shoppingCartSession->addItem($item, $amount, variantId: $variantId, variantLabel: $variantLabel);
-
-		$this->addFlashMessage('The product has been added to the cart.', Alert::Success);
-		$this->addRedraw('message');
-		$this->addRedraw('cart');
 	}
 
 

@@ -91,19 +91,6 @@ class SummaryOrderControl extends BaseControl
 
 
 	/**
-	 * @throws MoneyMismatchException
-	 */
-	protected function createComponentSendOrder(): BaseForm
-	{
-		$form = $this->factory->create($this->translator);
-		$form->addHidden('orderToken');
-		$form->addSubmit('send', 'Confirm the purchase');
-		$form->onSuccess[] = $this->processOrder(...);
-		return $form;
-	}
-
-
-	/**
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws MoneyMismatchException
@@ -213,6 +200,19 @@ class SummaryOrderControl extends BaseControl
 		}
 
 		$this->addRedirect($this->linkRedirectTarget);
+	}
+
+
+	/**
+	 * @throws MoneyMismatchException
+	 */
+	protected function createComponentSendOrder(): BaseForm
+	{
+		$form = $this->factory->create($this->translator);
+		$form->addHidden('orderToken');
+		$form->addSubmit('send', 'Confirm the purchase');
+		$form->onSuccess[] = $this->processOrder(...);
+		return $form;
 	}
 
 

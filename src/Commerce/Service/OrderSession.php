@@ -38,21 +38,6 @@ class OrderSession
 	}
 
 
-	/**
-	 * Returns all keys used in the order (carrier, payment, customer).
-	 *
-	 * @return list<string>
-	 */
-	private function items(): array
-	{
-		return [
-			self::Carrier,
-			self::Payment,
-			self::Customer,
-		];
-	}
-
-
 	public function getItems(): OrderState
 	{
 		$items = [];
@@ -159,5 +144,20 @@ class OrderSession
 		}
 		$this->sessionSection->remove(self::OrderFingerprint);
 		$this->sessionSection->remove(self::OrderToken);
+	}
+
+
+	/**
+	 * Returns all keys used in the order (carrier, payment, customer).
+	 *
+	 * @return list<string>
+	 */
+	private function items(): array
+	{
+		return [
+			self::Carrier,
+			self::Payment,
+			self::Customer,
+		];
 	}
 }

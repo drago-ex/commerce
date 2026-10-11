@@ -68,18 +68,6 @@ class CustomerControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws InvalidDatabaseException
-	 */
-	protected function createComponentCustomer(): BaseForm
-	{
-		$form = $this->customerFactory->addCustomer($this->translator);
-		$form->onSuccess[] = $this->success(...);
-
-		return $form;
-	}
-
-
 	/** @throws AbortException */
 	public function success(Form $form, CustomerValues $data): void
 	{
@@ -108,5 +96,17 @@ class CustomerControl extends BaseControl
 		} catch (InvalidPostcodeException | UnknownCountryException $e) {
 			$form->addError('The postal code does not match the same region as the phone number.');
 		}
+	}
+
+
+	/**
+	 * @throws InvalidDatabaseException
+	 */
+	protected function createComponentCustomer(): BaseForm
+	{
+		$form = $this->customerFactory->addCustomer($this->translator);
+		$form->onSuccess[] = $this->success(...);
+
+		return $form;
 	}
 }

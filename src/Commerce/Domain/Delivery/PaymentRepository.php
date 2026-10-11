@@ -55,20 +55,6 @@ class PaymentRepository
 
 
 	/**
-	 * Returns all payment entities.
-	 *
-	 * @return list<PaymentEntity>
-	 * @throws AttributeDetectionException
-	 * @throws Exception
-	 */
-	private function getAll(): array
-	{
-		return $this->read('*')
-			->recordAll();
-	}
-
-
-	/**
 	 * Returns all payment methods mapped to domain Payment objects.
 	 *
 	 * @return list<Payment>
@@ -84,5 +70,19 @@ class PaymentRepository
 		}
 
 		return $data;
+	}
+
+
+	/**
+	 * Returns all payment entities.
+	 *
+	 * @return list<PaymentEntity>
+	 * @throws AttributeDetectionException
+	 * @throws Exception
+	 */
+	private function getAll(): array
+	{
+		return $this->read('*')
+			->recordAll();
 	}
 }

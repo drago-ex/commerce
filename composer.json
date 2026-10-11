@@ -43,13 +43,13 @@
 			"Drago\\": "src"
 		}
 	},
-	"scripts": {
-		"phpstan": "phpstan analyse",
-		"tester": "tester tests -s"
-	},
 	"extra": {
 		"drago-translator": {
 			"translation": "src/Commerce/Translate"
 		}
+	},
+	"scripts": {
+		"phpstan": "phpstan analyse",
+		"tester": "tester tests -s"
 	}
 }

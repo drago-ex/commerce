@@ -69,7 +69,7 @@ class CustomerControl extends BaseControl
 
 
 	/** @throws AbortException */
-	public function success(Form $form, CustomerValues $data): void
+	public function processCustomerDetailsForm(Form $form, CustomerValues $data): void
 	{
 		try {
 			$regionCode = $data->phone->getRegionCode();
@@ -105,7 +105,7 @@ class CustomerControl extends BaseControl
 	protected function createComponentCustomer(): BaseForm
 	{
 		$form = $this->customerFactory->addCustomer($this->translator);
-		$form->onSuccess[] = $this->success(...);
+		$form->onSuccess[] = $this->processCustomerDetailsForm(...);
 
 		return $form;
 	}

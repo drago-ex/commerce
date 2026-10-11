@@ -143,7 +143,7 @@ class ProductDetailControl extends BaseControl
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
 	 */
-	public function success(Form $form, FactoryValues $data): void
+	public function processAddToCartForm(Form $form, FactoryValues $data): void
 	{
 		$productId = (int) $data->productId;
 		$variantId = $data->variantId !== null && $data->variantId !== '' ? (int) $data->variantId : null;
@@ -214,7 +214,7 @@ class ProductDetailControl extends BaseControl
 		);
 
 		$form->addSubmit('add', 'Add to cart');
-		$form->onSuccess[] = $this->success(...);
+		$form->onSuccess[] = $this->processAddToCartForm(...);
 
 		return $form;
 	}

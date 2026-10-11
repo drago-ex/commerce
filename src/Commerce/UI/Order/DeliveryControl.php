@@ -84,7 +84,7 @@ class DeliveryControl extends BaseControl
 	 * @throws Exception
 	 * @throws BadRequestException
 	 */
-	public function success(Form $form, DeliveryValues $data): void
+	public function processDeliveryOptionsForm(Form $form, DeliveryValues $data): void
 	{
 		$carrierEntity = $this->carrierRepository->getOne($data->carrierId);
 		$paymentEntity = $this->paymentRepository->getOne($data->paymentId);
@@ -119,7 +119,7 @@ class DeliveryControl extends BaseControl
 			->setRequired('Please select a payment method.');
 
 		$form->addSubmit('send', 'Continue');
-		$form->onSuccess[] = $this->success(...);
+		$form->onSuccess[] = $this->processDeliveryOptionsForm(...);
 		return $form;
 	}
 }

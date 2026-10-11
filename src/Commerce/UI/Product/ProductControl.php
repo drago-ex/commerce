@@ -93,7 +93,7 @@ class ProductControl extends BaseControl
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
 	 */
-	public function success(Form $form, ProductData $data): void
+	public function processAddToCartForm(Form $form, ProductData $data): void
 	{
 		$entity = $this->productRepository->getOne($data->productId);
 		$this->validateProduct($entity);
@@ -128,7 +128,7 @@ class ProductControl extends BaseControl
 		return new Multiplier(function (string $productId) {
 			$form = $this->factory->addHiddenProductId($productId, translator: $this->translator);
 			$form->addSubmit('add', 'Add to cart');
-			$form->onSuccess[] = $this->success(...);
+			$form->onSuccess[] = $this->processAddToCartForm(...);
 			return $form;
 		});
 	}

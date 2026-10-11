@@ -66,8 +66,8 @@ readonly class Factory
 		$form = $this->addHiddenProductId($productId, $variantId, $translator);
 		$form->addIntegerInput(FactoryValues::Amount)
 			->setAutocomplete(Autocomplete::Off)
-			->setDefaultValue(1)
 			->setMin(1)
+			->setDefaultValue(1)
 			->setRequired()
 			->addRule($form::Integer);
 

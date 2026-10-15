@@ -17,7 +17,7 @@ Reusable storefront and checkout components for Nette applications.
 
 ## Requirements
 
-- PHP >= 8.3
+- PHP >= 8.3, < 9
 - Nette Framework and Composer
 - A Dibi database connection
 - Node.js and Vite only if you use the optional frontend assets

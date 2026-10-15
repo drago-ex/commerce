@@ -2,7 +2,7 @@
 	"name": "drago-ex/commerce",
 	"description": "Simple shopping cart.",
 	"type": "library",
-	"license": ["MIT"],
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Zdeněk Papučík",
@@ -38,7 +38,9 @@
 		"geoip2/geoip2": "^2.12"
 	},
 	"autoload": {
-		"classmap": ["src/"],
+		"classmap": [
+			"src/"
+		],
 		"psr-4": {
 			"Drago\\": "src"
 		}

@@ -112,3 +112,12 @@ Assert::true($cartSession->getSubtotalPrice()->isEqualTo(Money::of(500, 'CZK')))
 $cartSession->remove();
 Assert::same([], $cartSession->getItems());
 Assert::same(0, $cartSession->getAmountItems());
+
+
+// Items that cannot be restored from the session (e.g. after a class changed in an update) are dropped
+$session->getSection(ShoppingCartSession::class)->set('items', [
+	unserialize('O:25:"Drago\Commerce\OldCartRow":0:{}'),
+	'garbage',
+]);
+Assert::same([], $cartSession->getItems());
+Assert::same(0, $cartSession->getAmountItems());

@@ -29,11 +29,10 @@
 	},
 	"suggest": {
 		"drago-ex/translator": "Loads the bundled translations automatically from the directory declared in extra.drago-translator.",
-		"nette/mail": "Enables optional order confirmation emails.",
 		"geoip2/geoip2": "Enables automatic phone-region detection from the visitor's IP via a MaxMind GeoLite2 City database you provide yourself (see README, 'geoLite2Path' config option)."
 	},
 	"require-dev": {
-		"nette/tester": "^2.3",
+		"nette/tester": "^2.5",
 		"phpstan/phpstan-nette": "^2.0",
 		"geoip2/geoip2": "^2.12"
 	},

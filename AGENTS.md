@@ -17,6 +17,13 @@ Use this file as package-specific guidance when working in this repository. Keep
 - `.github/`: CI workflows; keep their PHP versions and commands consistent with Composer and the package scripts.
 - `composer.json`: package metadata, dependency constraints, autoloading, and available Composer scripts.
 
+## Key Parts
+- Checkout: `Service\OrderService::place()` writes the order in one transaction; `Domain\Order\StockReservation` decrements stock atomically and must run inside that transaction.
+- Prices: `CheckoutPricing` reprices the session cart before an order; `UI\Order\SummaryOrderControl` binds the confirmation form to an order fingerprint and a one-time token.
+- `Service\ShoppingCartSession` stores domain objects in the session and drops items it cannot restore.
+- `OrderSummary` is passed to event listeners (`OrderPlaced`); changing its property types is a breaking change.
+- Database tests need the `COMMERCE_DB_*` variables and the SQL from `migrations/` and `migrations-demo/`.
+
 ## Dependencies
 
 Composer constraints describe the package contract. Before changing integration behavior, inspect the source and the actual call sites in this package; do not infer runtime usage solely from dependency declarations.

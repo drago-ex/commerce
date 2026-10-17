@@ -35,10 +35,19 @@ class ShoppingCartSession
 	}
 
 
-	/** @return ProductCart[] */
+	/**
+	 * Items that cannot be restored from the session (e.g. after a class changed in an update)
+	 * are dropped, so a stale cart does not break the page.
+	 * @return ProductCart[]
+	 */
 	public function getItems(): array
 	{
-		return $this->sessionSection->get(self::Items) ?? [];
+		$items = $this->sessionSection->get(self::Items);
+		if (!is_array($items)) {
+			return [];
+		}
+
+		return array_values(array_filter($items, static fn(mixed $item): bool => $item instanceof ProductCart));
 	}
 
 

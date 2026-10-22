@@ -43,7 +43,7 @@ readonly class OrderEmailListener
 				array_values($event->items),
 			);
 
-			$format = static fn(float $amount): string => Commerce::formatMoney(Money::of($amount, $currency));
+			$format = static fn(float $amount): string => Commerce::formatMoney(Money::of(Commerce::decimal($amount), $currency));
 			$summary = $event->orderSummary;
 
 			$this->orderEmail->send(new OrderEmailData(

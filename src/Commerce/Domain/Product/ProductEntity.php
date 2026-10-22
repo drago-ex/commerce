@@ -43,7 +43,7 @@ class ProductEntity extends Entity
 	 */
 	public function getPrice(): Money
 	{
-		return Money::of($this->price, Commerce::$currency);
+		return Money::of(Commerce::decimal($this->price), Commerce::$currency);
 	}
 
 
@@ -54,8 +54,11 @@ class ProductEntity extends Entity
 	 */
 	public function getDiscountedPrice(): Money
 	{
-		$discountRatio = max(0, min(100, $this->discount ?? 0)) / 100;
-		return $this->getPrice()->multipliedBy(1 - $discountRatio, RoundingMode::HALF_UP);
+		// price × (100 − percent) / 100 in exact decimals, rounded half up to the currency's fraction digits
+		$percent = max(0, min(100, $this->discount ?? 0));
+		return $this->getPrice()
+			->multipliedBy(100 - $percent)
+			->dividedBy(100, RoundingMode::HalfUp);
 	}
 
 

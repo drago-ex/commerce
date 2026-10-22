@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: library
 - **Purpose**: Simple shopping cart.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: ext-intl (*), latte/latte (^3.0), nette/application (^3.1), nette/di (^3.0), nette/mail (^4.0), drago-ex/application (^3.0), drago-ex/database (^3.0), drago-ex/form (^2.0), brick/money (^0.5), brick/postcode (^0.2), nepada/phone-number-input (^1.0), tracy/tracy (^2.7), brick/math (^0.9.3), brick/phonenumber (^0.8.0), dibi/dibi (^5.1)
+- **Runtime dependencies**: ext-intl (*), latte/latte (^3.1), nette/application (^3.2), nette/di (^3.0), nette/mail (^4.0), drago-ex/application (^3.0), drago-ex/database (^3.0.5 || ^4.0), drago-ex/form (^2.0 || ^3.0), brick/money (^0.15), brick/postcode (^0.6), nepada/phone-number-input (^1.0), tracy/tracy (^2.10), brick/math (^1.0), brick/phonenumber (^0.8.0), dibi/dibi (^5.1)
 - **License**: MIT
 
 ## Repository Layout
@@ -22,6 +22,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - Prices: `CheckoutPricing` reprices the session cart before an order; `UI\Order\SummaryOrderControl` binds the confirmation form to an order fingerprint and a one-time token.
 - `Service\ShoppingCartSession` stores domain objects in the session and drops items it cannot restore.
 - `OrderSummary` is passed to event listeners (`OrderPlaced`); changing its property types is a breaking change.
+- Money (brick/money 0.15, brick/math 1.0): `Money::of()` takes no floats, so amounts from the database go through `Commerce::decimal()`; percentage discounts are computed exactly (`× (100 − p) / 100`, a code's percentage through `RationalMoney`) and rounded `RoundingMode::HalfUp` once; `Commerce::formatMoney()` formats with intl `NumberFormatter::formatCurrency()` (formatWith() no longer exists).
 - Database tests need the `COMMERCE_DB_*` variables and the SQL from `migrations/` and `migrations-demo/`.
 
 ## Dependencies

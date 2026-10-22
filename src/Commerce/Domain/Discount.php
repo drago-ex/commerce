@@ -52,8 +52,10 @@ trait Discount
 			return $this->price;
 		}
 
-		$ratio = max(0, min(100, $discount)) / 100;
-		return $this->price->multipliedBy(1 - $ratio, RoundingMode::HALF_UP);
+		// price × (100 − percent) / 100 in exact decimals, rounded half up to the currency's fraction digits
+		return $this->price
+			->multipliedBy(100 - min(100, $discount))
+			->dividedBy(100, RoundingMode::HalfUp);
 	}
 
 

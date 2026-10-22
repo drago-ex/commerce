@@ -10,6 +10,7 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
+use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
 use Nette\Http\Session;
@@ -136,16 +137,19 @@ class DiscountCodeService
 
 		if (
 			$discountCode->minimum_order_amount !== null
-			&& $total->isLessThan(Money::of($discountCode->minimum_order_amount, $total->getCurrency()))
+			&& $total->isLessThan(Money::of(Commerce::decimal($discountCode->minimum_order_amount), $total->getCurrency()))
 		) {
 			return $total;
 		}
 
 		if ($discountCode->type === 'percent') {
-			$discount = $total
-				->multipliedBy($discountCode->value / 100, RoundingMode::HALF_UP);
+			// total × value / 100 exactly, rounded half up only at the end (12.5 % of 33.33 is 4.16625)
+			$discount = $total->toRational()
+				->multipliedBy(Commerce::decimal($discountCode->value))
+				->dividedBy(100)
+				->toContext($total->getContext(), RoundingMode::HalfUp);
 		} else {
-			$discount = Money::of($discountCode->value, $total->getCurrency());
+			$discount = Money::of(Commerce::decimal($discountCode->value), $total->getCurrency());
 		}
 
 		$discount = $discount->isGreaterThan($total) ? $total : $discount;

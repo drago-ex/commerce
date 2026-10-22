@@ -278,10 +278,10 @@ class ProductDetailControl extends BaseControl
 			return ['price' => $base, 'original' => null, 'percent' => 0];
 		}
 
-		$ratio = max(0, min(100, $entity->getDiscountPercent())) / 100;
+		$percent = max(0, min(100, $entity->getDiscountPercent()));
 
 		return [
-			'price' => $base->multipliedBy(1 - $ratio, RoundingMode::HALF_UP),
+			'price' => $base->multipliedBy(100 - $percent)->dividedBy(100, RoundingMode::HalfUp),
 			'original' => $base,
 			'percent' => $entity->getDiscountPercent(),
 		];

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\Order;
 
 use Brick\Money\Exception\MoneyMismatchException;
-use Brick\Postcode\InvalidPostcodeException;
+use Brick\Postcode\Exception\InvalidPostcodeException;
+use Brick\Postcode\Exception\UnknownCountryException;
 use Brick\Postcode\PostcodeFormatter;
-use Brick\Postcode\UnknownCountryException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;

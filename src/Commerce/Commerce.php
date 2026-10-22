@@ -54,7 +54,17 @@ class Commerce
 	 */
 	public function moneyOf(float $amount): Money
 	{
-		return Money::of($amount, self::$currency);
+		return Money::of(self::decimal($amount), self::$currency);
+	}
+
+
+	/**
+	 * A number from the database (DECIMAL columns come as floats) as a decimal string, as brick/money
+	 * does not accept floats. The cast keeps 14 significant digits, so e.g. 1 - 0.07 becomes "0.93".
+	 */
+	public static function decimal(float|int $amount): string
+	{
+		return (string) $amount;
 	}
 
 
@@ -69,7 +79,11 @@ class Commerce
 		$formatter->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, self::$moneyFractionDigits);
 		$formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, self::$moneyFractionDigits);
 
-		return $money->formatWith($formatter);
+		// What Money::formatWith() of brick/money before 0.10 did.
+		return (string) $formatter->formatCurrency(
+			$money->getAmount()->toFloat(),
+			$money->getCurrency()->getCurrencyCode(),
+		);
 	}
 
 

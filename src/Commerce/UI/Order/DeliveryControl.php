@@ -22,6 +22,7 @@ use Drago\Commerce\UI\Factory;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Utils\Html;
 
 
 /**
@@ -110,12 +111,14 @@ class DeliveryControl extends BaseControl
 	protected function createComponentDelivery(): BaseForm
 	{
 		$form = $this->factory->create($this->translator);
-		$carrierItems = $this->carrierRepository->getOnlyIds();
-		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $carrierItems)
+
+		// The template renders the labels of the options; wrapped in Html the IDs are not sent to the translator.
+		$untranslated = fn(array $ids): array => array_map(fn(int|string $id): Html => Html::el()->setText((string) $id), $ids);
+
+		$form->addRadioList(DeliveryValues::CarrierId, 'Carrier', $untranslated($this->carrierRepository->getOnlyIds()))
 			->setRequired('Please select a carrier.');
 
-		$paymentItems = $this->paymentRepository->getOnlyIds();
-		$form->addRadioList(DeliveryValues::PaymentId, 'Payment', $paymentItems)
+		$form->addRadioList(DeliveryValues::PaymentId, 'Payment', $untranslated($this->paymentRepository->getOnlyIds()))
 			->setRequired('Please select a payment method.');
 
 		$form->addSubmit('send', 'Continue');

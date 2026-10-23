@@ -63,26 +63,30 @@ ON DUPLICATE KEY UPDATE
     active = VALUES(active),
     stock = VALUES(stock);
 
-INSERT INTO orders (id, customer_id, carrier_id, payment_id, carrier_price, payment_price, subtotal_price, total_price, discount_code, discount_amount, created_at, status) VALUES
-(1, 1, 1, 2, 150.00, 50.00, 1000.00, 1200.00, NULL, 0.00, '2025-06-01 12:00:00', 'pending'),
-(2, 2, 3, 1, 0.00, 0.00, 399.00, 399.00, NULL, 0.00, '2025-06-02 15:30:00', 'pending')
+INSERT INTO orders (id, customer_id, carrier_id, carrier_name, payment_id, payment_name, carrier_price, payment_price, subtotal_price, total_price, discount_code, discount_amount, currency, created_at, status) VALUES
+(1, 1, 1, 'DHL', 2, 'Dobírka', 150.00, 50.00, 1000.00, 1200.00, NULL, 0.00, 'CZK', '2025-06-01 12:00:00', 'pending'),
+(2, 2, 3, 'Osobní odběr', 1, 'Platba kartou', 0.00, 0.00, 399.00, 399.00, NULL, 0.00, 'CZK', '2025-06-02 15:30:00', 'pending')
 ON DUPLICATE KEY UPDATE
     customer_id = VALUES(customer_id),
     carrier_id = VALUES(carrier_id),
+    carrier_name = VALUES(carrier_name),
     payment_id = VALUES(payment_id),
+    payment_name = VALUES(payment_name),
     carrier_price = VALUES(carrier_price),
     payment_price = VALUES(payment_price),
     subtotal_price = VALUES(subtotal_price),
     total_price = VALUES(total_price),
     discount_code = VALUES(discount_code),
     discount_amount = VALUES(discount_amount),
+    currency = VALUES(currency),
     status = VALUES(status);
 
-INSERT INTO orders_products (order_id, product_id, amount, unit_price) VALUES
-(1, 2, 1, 550.00),
-(2, 3, 1, 399.00),
-(1, 1, 3, 150.00)
+INSERT INTO orders_products (order_id, product_id, product_name, amount, unit_price) VALUES
+(1, 2, 'Mobilní telefon XYZ', 1, 550.00),
+(2, 3, 'Kniha PHP Programování', 1, 399.00),
+(1, 1, 'USB Kabel', 3, 150.00)
 ON DUPLICATE KEY UPDATE
+    product_name = VALUES(product_name),
     amount = VALUES(amount),
     unit_price = VALUES(unit_price);
 

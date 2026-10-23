@@ -1,17 +1,22 @@
 --
 --  Database orders
 -- ----------------
+-- The names of the delivery and payment methods are kept as they were when the order was placed,
+-- and every order records the currency of its amounts.
 CREATE TABLE orders (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     customer_id INT UNSIGNED NOT NULL,
     carrier_id INT UNSIGNED NOT NULL,
+    carrier_name VARCHAR(100) NOT NULL DEFAULT '',
     payment_id INT UNSIGNED NOT NULL,
+    payment_name VARCHAR(100) NOT NULL DEFAULT '',
     carrier_price DECIMAL(10, 2) NOT NULL,
     payment_price DECIMAL(10, 2) NOT NULL,
     subtotal_price DECIMAL(10, 2) NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     discount_code VARCHAR(64) NULL,
     discount_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    currency CHAR(3) NOT NULL DEFAULT '',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
     PRIMARY KEY (id),

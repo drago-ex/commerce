@@ -240,7 +240,7 @@ commerce:
 
 `templateFile` ukazuje na vlastní šablonu Latte typu `Drago\Commerce\Mail\OrderEmailTemplate`. Texty jdou přes nastavený překladač; `drago-ex/translator` dodané překlady najde sám, jiné překladače mohou načíst `src/Commerce`. Jazyk se bere z parametru `lang` presenteru a předá se metodě překladače `setTranslate()`, pokud ji má.
 
-E-mail se odesílá synchronně; chyba se zaloguje a objednávku neovlivní. Migrace `016_order_delivery_snapshots.sql` ukládá k objednávce názvy dopravce a platby.
+E-mail se odesílá synchronně; chyba se zaloguje a objednávku neovlivní. Každá objednávka si ukládá názvy dopravce a platby tak, jak byly při jejím vytvoření.
 
 ## Assety frontendu (volitelné)
 

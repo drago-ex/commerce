@@ -1,12 +1,15 @@
 --
 --  Database order products
 -- ------------------------
+-- Order lines keep the product name and variant label as they were when the order was placed.
 CREATE TABLE orders_products (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     order_id INT UNSIGNED NOT NULL,
     product_id INT UNSIGNED NOT NULL,
     variant_id INT UNSIGNED NULL,
     variant_key INT UNSIGNED GENERATED ALWAYS AS (COALESCE(variant_id, 0)) STORED,
+    product_name VARCHAR(100) NOT NULL DEFAULT '',
+    variant_label VARCHAR(255) NULL,
     amount INT UNSIGNED NOT NULL,
     unit_price DECIMAL(10, 2) NOT NULL,
     PRIMARY KEY (id),

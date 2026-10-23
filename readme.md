@@ -1,5 +1,7 @@
 # Drago Commerce
 
+English | [Čeština](readme.cs.md)
+
 Reusable storefront and checkout components for Nette applications.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/drago-ex/commerce/blob/main/license)

@@ -60,11 +60,18 @@ class Commerce
 
 	/**
 	 * A number from the database (DECIMAL columns come as floats) as a decimal string, as brick/money
-	 * does not accept floats. The cast keeps 14 significant digits, so e.g. 1 - 0.07 becomes "0.93".
+	 * does not accept floats. It keeps 14 significant digits, so e.g. 1 - 0.07 becomes "0.93"; counted here,
+	 * not by a string cast, whose result depends on the precision setting of PHP (17 gives 19.989999999999998).
 	 */
 	public static function decimal(float|int $amount): string
 	{
-		return (string) $amount;
+		if (is_int($amount) || $amount == 0) {
+			return (string) (int) $amount;
+		}
+
+		$integerDigits = max(0, (int) floor(log10(abs($amount))) + 1);
+		$decimal = number_format($amount, max(0, 14 - $integerDigits), '.', '');
+		return str_contains($decimal, '.') ? rtrim(rtrim($decimal, '0'), '.') : $decimal;
 	}
 
 

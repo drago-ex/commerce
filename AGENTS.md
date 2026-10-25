@@ -28,7 +28,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 ## Dependencies
 
 Composer constraints describe the package contract. Before changing integration behavior, inspect the source and the actual call sites in this package; do not infer runtime usage solely from dependency declarations.
-Development dependencies include nette/tester (^2.3), phpstan/phpstan-nette (^2.0), geoip2/geoip2 (^2.12).
+Development dependencies include nette/tester (^2.5), phpstan/phpstan-nette (^2.0), geoip2/geoip2 (^2.12).
 
 ## Essential Commands
 

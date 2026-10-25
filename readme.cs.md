@@ -232,7 +232,7 @@ composer require nette/mail
 commerce:
 	orderEmail:
 		from: 'Shop <shop@example.com>'
-		mailer: mail.mailer # služba implementující Nette\Mail\Mailer
+		mailer: mail.mailer # service implementing Nette\Mail\Mailer
 		storeName: 'My Shop'
 		storeEmail: support@example.com
 		# templateFile: %appDir%/Mail/order-email.latte

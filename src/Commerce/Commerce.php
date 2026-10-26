@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drago\Commerce;
 
+use Brick\Math\RoundingMode;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use NumberFormatter;
@@ -54,7 +55,30 @@ class Commerce
 	 */
 	public function moneyOf(float $amount): Money
 	{
-		return Money::of(self::decimal($amount), self::$currency);
+		return self::money($amount);
+	}
+
+
+	/**
+	 * Creates a Money object from a number from the database, in the configured currency unless another is given.
+	 *
+	 * @throws UnknownCurrencyException
+	 */
+	public static function money(float|int $amount, ?string $currency = null): Money
+	{
+		return Money::of(self::decimal($amount), $currency ?? self::$currency);
+	}
+
+
+	/**
+	 * The price after a percentage discount: price × (100 − percent) / 100 in exact decimals,
+	 * rounded half up to the currency's fraction digits. The percentage is clamped to 0–100.
+	 */
+	public static function percentOff(Money $price, int $percent): Money
+	{
+		return $price
+			->multipliedBy(100 - max(0, min(100, $percent)))
+			->dividedBy(100, RoundingMode::HalfUp);
 	}
 
 

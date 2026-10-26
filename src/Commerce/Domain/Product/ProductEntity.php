@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Product;
 
-use Brick\Math\RoundingMode;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
@@ -43,7 +42,7 @@ class ProductEntity extends Entity
 	 */
 	public function getPrice(): Money
 	{
-		return Money::of(Commerce::decimal($this->price), Commerce::$currency);
+		return Commerce::money($this->price);
 	}
 
 
@@ -54,11 +53,7 @@ class ProductEntity extends Entity
 	 */
 	public function getDiscountedPrice(): Money
 	{
-		// price × (100 − percent) / 100 in exact decimals, rounded half up to the currency's fraction digits
-		$percent = max(0, min(100, $this->discount ?? 0));
-		return $this->getPrice()
-			->multipliedBy(100 - $percent)
-			->dividedBy(100, RoundingMode::HalfUp);
+		return Commerce::percentOff($this->getPrice(), $this->discount ?? 0);
 	}
 
 

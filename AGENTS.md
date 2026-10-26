@@ -22,7 +22,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - Prices: `CheckoutPricing` reprices the session cart before an order; `UI\Order\SummaryOrderControl` binds the confirmation form to an order fingerprint and a one-time token.
 - `Service\ShoppingCartSession` stores domain objects in the session and drops items it cannot restore.
 - `OrderSummary` is passed to event listeners (`OrderPlaced`); changing its property types is a breaking change.
-- Money (brick/money 0.15, brick/math 1.0): `Money::of()` takes no floats, so amounts from the database go through `Commerce::decimal()`; percentage discounts are computed exactly (`× (100 − p) / 100`, a code's percentage through `RationalMoney`) and rounded `RoundingMode::HalfUp` once; `Commerce::formatMoney()` formats with intl `NumberFormatter::formatCurrency()` (formatWith() no longer exists).
+- Money (brick/money 0.15, brick/math 1.0): `Money::of()` takes no floats, so amounts from the database become Money only through `Commerce::money()` (`Commerce::decimal()` inside); a product percentage discount only through `Commerce::percentOff()` (exact `× (100 − p) / 100`), a code's percentage through `RationalMoney`, both rounded `RoundingMode::HalfUp` once; `Commerce::formatMoney()` formats with intl `NumberFormatter::formatCurrency()` (formatWith() no longer exists).
 - Database tests need the `COMMERCE_DB_*` variables and the SQL from `migrations/` and `migrations-demo/`.
 
 ## Dependencies

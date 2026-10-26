@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Product;
 
-use Brick\Math\RoundingMode;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
@@ -278,10 +277,8 @@ class ProductDetailControl extends BaseControl
 			return ['price' => $base, 'original' => null, 'percent' => 0];
 		}
 
-		$percent = max(0, min(100, $entity->getDiscountPercent()));
-
 		return [
-			'price' => $base->multipliedBy(100 - $percent)->dividedBy(100, RoundingMode::HalfUp),
+			'price' => Commerce::percentOff($base, $entity->getDiscountPercent()),
 			'original' => $base,
 			'percent' => $entity->getDiscountPercent(),
 		];

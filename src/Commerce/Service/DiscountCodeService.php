@@ -137,7 +137,7 @@ class DiscountCodeService
 
 		if (
 			$discountCode->minimum_order_amount !== null
-			&& $total->isLessThan(Money::of(Commerce::decimal($discountCode->minimum_order_amount), $total->getCurrency()))
+			&& $total->isLessThan(Commerce::money($discountCode->minimum_order_amount, $total->getCurrency()->getCurrencyCode()))
 		) {
 			return $total;
 		}
@@ -149,7 +149,7 @@ class DiscountCodeService
 				->dividedBy(100)
 				->toContext($total->getContext(), RoundingMode::HalfUp);
 		} else {
-			$discount = Money::of(Commerce::decimal($discountCode->value), $total->getCurrency());
+			$discount = Commerce::money($discountCode->value, $total->getCurrency()->getCurrencyCode());
 		}
 
 		$discount = $discount->isGreaterThan($total) ? $total : $discount;

@@ -34,3 +34,11 @@ foreach (['14', '17', '-1'] as $setting) {
 }
 
 ini_set('precision', (string) $precision);
+
+// One place for database numbers as Money and for percentage discounts (rounded half up, clamped to 0–100).
+Assert::same('19.99', Commerce::money(19.99)->getAmount()->__toString());
+Assert::same('EUR', Commerce::money(5)->getCurrency()->getCurrencyCode());
+Assert::same('CZK', Commerce::money(5, 'CZK')->getCurrency()->getCurrencyCode());
+Assert::same('16.99', Commerce::percentOff(Commerce::money(19.99), 15)->getAmount()->__toString());
+Assert::same('19.99', Commerce::percentOff(Commerce::money(19.99), -5)->getAmount()->__toString());
+Assert::same('0.00', Commerce::percentOff(Commerce::money(19.99), 150)->getAmount()->__toString());

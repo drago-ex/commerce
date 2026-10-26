@@ -57,7 +57,6 @@ class BaseTemplate extends ExtraTemplate
 	#[TemplateFilter]
 	public function price(float|int $amount): string
 	{
-		$money = Money::of(Commerce::decimal($amount), Commerce::$currency);
-		return $this->money($money);
+		return $this->money(Commerce::money($amount));
 	}
 }

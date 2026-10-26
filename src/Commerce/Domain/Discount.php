@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Domain;
 
-use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Drago\Commerce\Commerce;
 
 
 /**
@@ -52,10 +52,7 @@ trait Discount
 			return $this->price;
 		}
 
-		// price × (100 − percent) / 100 in exact decimals, rounded half up to the currency's fraction digits
-		return $this->price
-			->multipliedBy(100 - min(100, $discount))
-			->dividedBy(100, RoundingMode::HalfUp);
+		return Commerce::percentOff($this->price, $discount);
 	}
 
 

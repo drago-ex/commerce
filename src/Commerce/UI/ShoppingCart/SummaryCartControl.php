@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drago\Commerce\UI\ShoppingCart;
 
 use Brick\Money\Exception\MoneyMismatchException;
-use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
 use Drago\Attr\AttributeDetectionException;
@@ -93,7 +92,7 @@ class SummaryCartControl extends BaseControl
 		} else {
 			$minimum = $this->discountCodeService->getCode()?->minimum_order_amount;
 			$subtotal = $this->shoppingCart->getSubtotalPrice();
-			if ($minimum !== null && $subtotal->isLessThan(Money::of(Commerce::decimal($minimum), $subtotal->getCurrency()))) {
+			if ($minimum !== null && $subtotal->isLessThan(Commerce::money($minimum, $subtotal->getCurrency()->getCurrencyCode()))) {
 				$form->addError('The discount code is valid, but the order is below its minimum amount, so no discount applies yet.');
 			}
 		}

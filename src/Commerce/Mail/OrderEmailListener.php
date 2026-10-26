@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drago\Commerce\Mail;
 
-use Brick\Money\Money;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Event\OrderPlaced;
@@ -43,7 +42,7 @@ readonly class OrderEmailListener
 				array_values($event->items),
 			);
 
-			$format = static fn(float $amount): string => Commerce::formatMoney(Money::of(Commerce::decimal($amount), $currency));
+			$format = static fn(float $amount): string => Commerce::formatMoney(Commerce::money($amount, $currency));
 			$summary = $event->orderSummary;
 
 			$this->orderEmail->send(new OrderEmailData(

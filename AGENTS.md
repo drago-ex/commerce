@@ -7,7 +7,7 @@ Use this file as package-specific guidance when working in this repository. Keep
 - **Type**: library
 - **Purpose**: Simple shopping cart.
 - **PHP**: >=8.3 <9
-- **Runtime dependencies**: ext-intl (*), latte/latte (^3.1), nette/application (^3.2), nette/di (^3.0), nette/mail (^4.0), drago-ex/application (^3.0 || ^4.0), drago-ex/database (^3.0.5 || ^4.0), drago-ex/form (^2.0 || ^3.0), brick/money (^0.15), brick/postcode (^0.6), nepada/phone-number-input (^1.0), tracy/tracy (^2.10), brick/math (^1.0), brick/phonenumber (^0.8.0), dibi/dibi (^5.1)
+- **Runtime dependencies**: ext-intl (*), latte/latte (^3.1), nette/application (^3.2), nette/di (^3.0), nette/mail (^4.0), drago-ex/application (^4.0), drago-ex/database (^4.0), drago-ex/form (^3.0), brick/money (^0.15), brick/postcode (^0.6), nepada/phone-number-input (^1.0), tracy/tracy (^2.10), brick/math (^1.0), brick/phonenumber (^0.8.0), dibi/dibi (^5.1)
 - **License**: MIT
 
 ## Repository Layout

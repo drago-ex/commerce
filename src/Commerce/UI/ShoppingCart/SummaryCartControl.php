@@ -92,7 +92,10 @@ class SummaryCartControl extends BaseControl
 		} else {
 			$minimum = $this->discountCodeService->getCode()?->minimum_order_amount;
 			$subtotal = $this->shoppingCart->getSubtotalPrice();
-			if ($minimum !== null && $subtotal->isLessThan(Commerce::money($minimum, $subtotal->getCurrency()->getCurrencyCode()))) {
+			if (
+				$minimum !== null
+				&& $subtotal->isLessThan(Commerce::money($minimum, $subtotal->getCurrency()->getCurrencyCode()))
+			) {
 				$form->addError('The discount code is valid, but the order is below its minimum amount, so no discount applies yet.');
 			}
 		}

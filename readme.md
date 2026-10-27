@@ -240,7 +240,13 @@ commerce:
 
 The email is sent synchronously; a failure is logged and does not affect the order. Each order stores the carrier and payment names as they were when it was placed.
 
-## Frontend assets (optional)
+---
+
+## Optional add-ons
+
+The package works without them. Set them up by hand as described below when the project needs them.
+
+### Frontend assets
 
 Add the package to your `package.json`, then import its assets and initialize the Naja integration:
 

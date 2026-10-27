@@ -240,7 +240,13 @@ commerce:
 
 E-mail se odesílá synchronně; chyba se zaloguje a objednávku neovlivní. Každá objednávka si ukládá názvy dopravce a platby tak, jak byly při jejím vytvoření.
 
-## Assety frontendu (volitelné)
+---
+
+## Volitelné doplňky
+
+Balíček funguje i bez nich. Pokud je projekt potřebuje, nastavte je ručně podle popisu níže.
+
+### Assety frontendu
 
 Přidejte balíček do `package.json`, potom importujte jeho assety a inicializujte zapojení do Naja:
 

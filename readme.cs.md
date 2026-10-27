@@ -1,7 +1,5 @@
 # Drago Commerce
 
-[English](readme.md) | Čeština
-
 Znovupoužitelné komponenty obchodu a objednávky pro aplikace v Nette.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/drago-ex/commerce/blob/main/license)

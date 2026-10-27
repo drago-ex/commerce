@@ -7,14 +7,6 @@ Reusable storefront and checkout components for Nette applications.
 [![Tests](https://github.com/drago-ex/commerce/actions/workflows/tests.yml/badge.svg)](https://github.com/drago-ex/commerce/actions/workflows/tests.yml)
 [![Coding Style](https://github.com/drago-ex/commerce/actions/workflows/coding-style.yml/badge.svg)](https://github.com/drago-ex/commerce/actions/workflows/coding-style.yml)
 
-## What it does
-
-- Product listing and detail pages, including product variants and stock.
-- Session shopping cart with quantity updates and discount codes.
-- Checkout for delivery, payment, customer details, and order confirmation.
-- Transactional order creation with atomic stock reservation and order-line snapshots.
-- Events for customizing product pricing and reacting to checkout changes.
-
 ## Requirements
 
 - PHP >= 8.3, < 9
@@ -41,6 +33,14 @@ php vendor/bin/migration db:migrate vendor/drago-ex/commerce/migrations-demo
 ```
 
 Never edit migrations that have already run on a shared or production database; add a new migration instead.
+
+## What it does
+
+- Product listing and detail pages, including product variants and stock.
+- Session shopping cart with quantity updates and discount codes.
+- Checkout for delivery, payment, customer details, and order confirmation.
+- Transactional order creation with atomic stock reservation and order-line snapshots.
+- Events for customizing product pricing and reacting to checkout changes.
 
 ## Configuration
 

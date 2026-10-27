@@ -7,14 +7,6 @@ Znovupoužitelné komponenty obchodu a objednávky pro aplikace v Nette.
 [![Tests](https://github.com/drago-ex/commerce/actions/workflows/tests.yml/badge.svg)](https://github.com/drago-ex/commerce/actions/workflows/tests.yml)
 [![Coding Style](https://github.com/drago-ex/commerce/actions/workflows/coding-style.yml/badge.svg)](https://github.com/drago-ex/commerce/actions/workflows/coding-style.yml)
 
-## Co balíček dělá
-
-- Výpis a detail produktů včetně variant a skladu.
-- Košík v session se změnou množství a slevovými kódy.
-- Objednávka s dopravou, platbou, údaji zákazníka a potvrzením.
-- Vytvoření objednávky v transakci s atomickou rezervací skladu a uloženými kopiemi položek.
-- Události pro úpravu cen produktů a reakce na změny v objednávce.
-
 ## Požadavky
 
 - PHP >= 8.3, < 9
@@ -41,6 +33,14 @@ php vendor/bin/migration db:migrate vendor/drago-ex/commerce/migrations-demo
 ```
 
 Migrace, které už proběhly na sdílené nebo produkční databázi, nikdy neupravujte; přidejte místo toho novou migraci.
+
+## Co balíček dělá
+
+- Výpis a detail produktů včetně variant a skladu.
+- Košík v session se změnou množství a slevovými kódy.
+- Objednávka s dopravou, platbou, údaji zákazníka a potvrzením.
+- Vytvoření objednávky v transakci s atomickou rezervací skladu a uloženými kopiemi položek.
+- Události pro úpravu cen produktů a reakce na změny v objednávce.
 
 ## Konfigurace
 

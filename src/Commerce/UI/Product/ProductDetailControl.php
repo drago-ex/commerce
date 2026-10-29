@@ -170,7 +170,7 @@ class ProductDetailControl extends BaseControl
 			}
 		} else {
 			$variantEntity = $this->variantRepository->getOne($variantId) ?? $this->error('Variant not found.');
-			if ($variantEntity->product_id !== $entity->id || !$variantEntity->active) {
+			if ($variantEntity->productId !== $entity->id || !$variantEntity->active) {
 				$this->error('Variant not found.');
 			}
 

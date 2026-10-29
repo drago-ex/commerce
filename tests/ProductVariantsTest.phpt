@@ -92,7 +92,7 @@ $mapper = new ProductVariantMapper($commerce, $dummyRepo);
 
 $entityOverride = new ProductVariantEntity;
 $entityOverride->id = 5;
-$entityOverride->product_id = 2;
+$entityOverride->productId = 2;
 $entityOverride->sku = 'XYZ-256-BLK';
 $entityOverride->price = 14500.0;
 $entityOverride->stock = 4;
@@ -107,7 +107,7 @@ Assert::same('Barva: Černá, Kapacita: 256 GB', $optionOverride->getLabel());
 // Variant with price fallback (null price override)
 $entityFallback = new ProductVariantEntity;
 $entityFallback->id = 6;
-$entityFallback->product_id = 2;
+$entityFallback->productId = 2;
 $entityFallback->sku = 'XYZ-128-BLK';
 $entityFallback->price = null;
 $entityFallback->stock = 6;

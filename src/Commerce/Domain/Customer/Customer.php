@@ -18,11 +18,11 @@ class Customer
 		public string $surname,
 		public string $street,
 		public string $city,
-		public string $postal_code,
+		public string $postalCode,
 		public string $country,
 		public ?string $note = null,
-		public ?DateTimeImmutable $created_at = null,
+		public ?DateTimeImmutable $createdAt = null,
 	) {
-		$this->created_at ??= new DateTimeImmutable;
+		$this->createdAt ??= new DateTimeImmutable;
 	}
 }

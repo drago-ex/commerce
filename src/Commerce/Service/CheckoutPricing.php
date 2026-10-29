@@ -61,7 +61,7 @@ class CheckoutPricing
 			$variant = null;
 			if ($line->variantId !== null) {
 				$variant = $this->variantRepository->getOne($line->variantId);
-				if ($variant === null || $variant->product_id !== $entity->id || !$variant->active) {
+				if ($variant === null || $variant->productId !== $entity->id || !$variant->active) {
 					continue;
 				}
 			}

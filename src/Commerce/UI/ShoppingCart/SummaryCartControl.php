@@ -88,7 +88,7 @@ class SummaryCartControl extends BaseControl
 		if (!$this->discountCodeService->apply($data->code)) {
 			$form->addError('The discount code is invalid or expired.');
 		} else {
-			$minimum = $this->discountCodeService->getCode()?->minimum_order_amount;
+			$minimum = $this->discountCodeService->getCode()?->minimumOrderAmount;
 			$subtotal = $this->shoppingCart->getSubtotalPrice();
 			if (
 				$minimum !== null
@@ -255,7 +255,7 @@ class SummaryCartControl extends BaseControl
 		}
 
 		$variant = $this->productVariantRepository->getOne($variantId);
-		if ($variant === null || $variant->product_id !== $product->id || !$variant->active) {
+		if ($variant === null || $variant->productId !== $product->id || !$variant->active) {
 			return null;
 		}
 

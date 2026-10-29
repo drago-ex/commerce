@@ -116,7 +116,7 @@ final class OrderFingerprint
 			'surname' => $customer->surname,
 			'street' => $customer->street,
 			'city' => $customer->city,
-			'postalCode' => $customer->postal_code,
+			'postalCode' => $customer->postalCode,
 			'country' => $customer->country,
 			'note' => $customer->note,
 		];
@@ -133,7 +133,7 @@ final class OrderFingerprint
 			'code' => $discountCode->code,
 			'type' => $discountCode->type,
 			'value' => $discountCode->value,
-			'minimumOrderAmount' => $discountCode->minimum_order_amount,
+			'minimumOrderAmount' => $discountCode->minimumOrderAmount,
 		];
 	}
 

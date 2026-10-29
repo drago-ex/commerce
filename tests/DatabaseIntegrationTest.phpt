@@ -77,7 +77,7 @@ try {
 
 	$variant = $variantRepository->getOne(17);
 	Assert::notNull($variant);
-	Assert::same(4, $variant->product_id);
+	Assert::same(4, $variant->productId);
 	Assert::same([
 		'Procesor: AMD Ryzen 7 8845HS',
 		'Grafická karta: NVIDIA GeForce RTX 5060 8GB',
@@ -112,16 +112,16 @@ try {
 	Assert::same(2, (int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', 17)->fetchSingle());
 
 	$orderRepository->save((array) new OrderSummary(
-		customer_id: 1,
-		carrier_id: 1,
-		payment_id: 1,
-		carrier_price: 150,
-		payment_price: 0,
-		subtotal_price: 107970,
-		total_price: 108120,
-		discount_code: null,
-		discount_amount: 0,
-		created_at: new DateTimeImmutable,
+		customerId: 1,
+		carrierId: 1,
+		paymentId: 1,
+		carrierPrice: 150,
+		paymentPrice: 0,
+		subtotalPrice: 107970,
+		totalPrice: 108120,
+		discountCode: null,
+		discountAmount: 0,
+		createdAt: new DateTimeImmutable,
 	));
 	$orderId = $orderRepository->getInsertId();
 

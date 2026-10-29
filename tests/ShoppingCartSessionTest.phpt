@@ -88,7 +88,7 @@ $discountEntity->id = 1;
 $discountEntity->code = 'DISCOUNT80';
 $discountEntity->type = 'fixed';
 $discountEntity->value = 80.0;
-$discountEntity->minimum_order_amount = null;
+$discountEntity->minimumOrderAmount = null;
 $discountRepo->codes['DISCOUNT80'] = $discountEntity;
 
 Assert::true($discountService->apply('DISCOUNT80'));

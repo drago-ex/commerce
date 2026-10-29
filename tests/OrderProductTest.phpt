@@ -12,39 +12,39 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 $firstVariantLine = new OrderProduct(
-	order_id: 42,
-	product_id: 6,
-	variant_id: 24,
+	orderId: 42,
+	productId: 6,
+	variantId: 24,
 	amount: 2,
-	unit_price: 490.0,
+	unitPrice: 490.0,
 );
 $secondVariantLine = new OrderProduct(
-	order_id: 42,
-	product_id: 6,
-	variant_id: 28,
+	orderId: 42,
+	productId: 6,
+	variantId: 28,
 	amount: 1,
-	unit_price: 490.0,
+	unitPrice: 490.0,
 );
 $nonVariantLine = new OrderProduct(
-	order_id: 42,
-	product_id: 7,
-	variant_id: null,
+	orderId: 42,
+	productId: 7,
+	variantId: null,
 	amount: 1,
-	unit_price: 1250.0,
+	unitPrice: 1250.0,
 );
 
 Assert::same([
-	'order_id' => 42,
-	'product_id' => 6,
-	'variant_id' => 24,
+	'orderId' => 42,
+	'productId' => 6,
+	'variantId' => 24,
 	'amount' => 2,
-	'unit_price' => 490.0,
-	'product_name' => '',
-	'variant_label' => null,
+	'unitPrice' => 490.0,
+	'productName' => '',
+	'variantLabel' => null,
 ], (array) $firstVariantLine);
-Assert::same(28, ((array) $secondVariantLine)['variant_id']);
-Assert::hasKey('variant_id', (array) $nonVariantLine);
-Assert::null(((array) $nonVariantLine)['variant_id']);
+Assert::same(28, ((array) $secondVariantLine)['variantId']);
+Assert::hasKey('variantId', (array) $nonVariantLine);
+Assert::null(((array) $nonVariantLine)['variantId']);
 
 $variantCartItem = new ProductCart(
 	new Product(id: 6, name: 'Notebook', price: Money::of(32490, 'CZK')),
@@ -52,8 +52,8 @@ $variantCartItem = new ProductCart(
 	variantId: 31,
 );
 $persistedVariantLine = OrderProduct::fromCartItem(43, $variantCartItem);
-Assert::same(32490.0, $persistedVariantLine->unit_price);
-Assert::same(31, $persistedVariantLine->variant_id);
+Assert::same(32490.0, $persistedVariantLine->unitPrice);
+Assert::same(31, $persistedVariantLine->variantId);
 
 // The name and variant label are copied from the cart line, so the order keeps reading the same later.
 $labelledLine = OrderProduct::fromCartItem(
@@ -65,7 +65,7 @@ $labelledLine = OrderProduct::fromCartItem(
 		variantLabel: 'Barva: Bílá, Velikost: L',
 	),
 );
-Assert::same('Pánské tričko Classic', $labelledLine->product_name);
-Assert::same('Barva: Bílá, Velikost: L', $labelledLine->variant_label);
-Assert::same('Notebook', $persistedVariantLine->product_name);
-Assert::null($persistedVariantLine->variant_label);
+Assert::same('Pánské tričko Classic', $labelledLine->productName);
+Assert::same('Barva: Bílá, Velikost: L', $labelledLine->variantLabel);
+Assert::same('Notebook', $persistedVariantLine->productName);
+Assert::null($persistedVariantLine->variantLabel);

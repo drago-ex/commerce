@@ -11,19 +11,19 @@ use DateTimeImmutable;
 class OrderSummary
 {
 	public function __construct(
-		public int $customer_id,
-		public int $carrier_id,
-		public int $payment_id,
-		public float $carrier_price,
-		public float $payment_price,
-		public float $subtotal_price,
-		public float $total_price,
-		public ?string $discount_code,
-		public float $discount_amount,
-		public DateTimeImmutable $created_at,
+		public int $customerId,
+		public int $carrierId,
+		public int $paymentId,
+		public float $carrierPrice,
+		public float $paymentPrice,
+		public float $subtotalPrice,
+		public float $totalPrice,
+		public ?string $discountCode,
+		public float $discountAmount,
+		public DateTimeImmutable $createdAt,
 		public string $currency = '',
-		public string $carrier_name = '',
-		public string $payment_name = '',
+		public string $carrierName = '',
+		public string $paymentName = '',
 	) {
 	}
 }

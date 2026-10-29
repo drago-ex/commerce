@@ -29,11 +29,11 @@ $code->id = 1;
 $code->code = 'SAVE200';
 $code->type = 'fixed';
 $code->value = 200;
-$code->valid_from = null;
-$code->valid_to = null;
-$code->usage_limit = null;
-$code->used_count = 0;
-$code->minimum_order_amount = null;
+$code->validFrom = null;
+$code->validTo = null;
+$code->usageLimit = null;
+$code->usedCount = 0;
+$code->minimumOrderAmount = null;
 $code->active = 1;
 
 $repository = new class ($code) extends DiscountCodeRepository {

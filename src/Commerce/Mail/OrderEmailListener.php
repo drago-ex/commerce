@@ -47,14 +47,14 @@ readonly class OrderEmailListener
 				orderId: $event->orderId,
 				customer: $event->customer,
 				items: $items,
-				carrierName: $summary->carrier_name,
-				paymentName: $summary->payment_name,
-				subtotalPrice: $format($summary->subtotal_price),
-				discountCode: $summary->discount_code,
-				discountAmount: $format($summary->discount_amount),
-				carrierPrice: $format($summary->carrier_price),
-				paymentPrice: $format($summary->payment_price),
-				totalPrice: $format($summary->total_price),
+				carrierName: $summary->carrierName,
+				paymentName: $summary->paymentName,
+				subtotalPrice: $format($summary->subtotalPrice),
+				discountCode: $summary->discountCode,
+				discountAmount: $format($summary->discountAmount),
+				carrierPrice: $format($summary->carrierPrice),
+				paymentPrice: $format($summary->paymentPrice),
+				totalPrice: $format($summary->totalPrice),
 			), $event->lang);
 
 		} catch (Throwable $e) {

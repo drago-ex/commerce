@@ -135,8 +135,8 @@ class DiscountCodeService
 		}
 
 		if (
-			$discountCode->minimum_order_amount !== null
-			&& $total->isLessThan(Commerce::money($discountCode->minimum_order_amount, $total->getCurrency()->getCurrencyCode()))
+			$discountCode->minimumOrderAmount !== null
+			&& $total->isLessThan(Commerce::money($discountCode->minimumOrderAmount, $total->getCurrency()->getCurrencyCode()))
 		) {
 			return $total;
 		}

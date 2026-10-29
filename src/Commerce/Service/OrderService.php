@@ -82,19 +82,19 @@ readonly class OrderService
 			$customerId = $this->saveCustomer($customer);
 
 			$orderData = new OrderSummary(
-				customer_id: $customerId,
-				carrier_id: $carrier->id,
-				payment_id: $payment->id,
-				carrier_price: $this->getAmountPrice($carrier->price),
-				payment_price: $this->getAmountPrice($payment->price),
-				subtotal_price: $this->getAmountPrice($subtotalPrice),
-				total_price: $this->getAmountPrice($totalPrice),
-				discount_code: $discountCode?->code,
-				discount_amount: $this->getAmountPrice($discountAmount),
-				created_at: new DateTimeImmutable,
+				customerId: $customerId,
+				carrierId: $carrier->id,
+				paymentId: $payment->id,
+				carrierPrice: $this->getAmountPrice($carrier->price),
+				paymentPrice: $this->getAmountPrice($payment->price),
+				subtotalPrice: $this->getAmountPrice($subtotalPrice),
+				totalPrice: $this->getAmountPrice($totalPrice),
+				discountCode: $discountCode?->code,
+				discountAmount: $this->getAmountPrice($discountAmount),
+				createdAt: new DateTimeImmutable,
 				currency: $totalPrice->getCurrency()->getCurrencyCode(),
-				carrier_name: mb_substr($carrier->name, 0, 100),
-				payment_name: mb_substr($payment->name, 0, 100),
+				carrierName: mb_substr($carrier->name, 0, 100),
+				paymentName: mb_substr($payment->name, 0, 100),
 			);
 
 			$this->orderRepository->save((array) $orderData);
@@ -133,7 +133,7 @@ readonly class OrderService
 			surname: $customer->surname,
 			street: $customer->street,
 			city: $customer->city,
-			postal_code: $customer->postal_code,
+			postalCode: $customer->postalCode,
 			country: $customer->country,
 			note: $customer->note,
 		);

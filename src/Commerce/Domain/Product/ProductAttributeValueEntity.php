@@ -17,6 +17,6 @@ class ProductAttributeValueEntity extends Entity
 		Value = 'value';
 
 	public int $id;
-	public int $attribute_id;
+	public int $attributeId;
 	public string $value;
 }

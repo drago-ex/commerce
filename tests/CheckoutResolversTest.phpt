@@ -92,7 +92,7 @@ $customer = new Customer(
 	surname: 'Novak',
 	street: 'Hlavni 1',
 	city: 'Praha',
-	postal_code: '11000',
+	postalCode: '11000',
 	country: 'CZ',
 );
 $orderSession->setCustomer($customer);

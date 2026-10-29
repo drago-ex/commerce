@@ -15,10 +15,10 @@ class DiscountCodeEntity extends Entity
 	public string $code;
 	public string $type;
 	public float $value;
-	public ?DateTimeImmutable $valid_from;
-	public ?DateTimeImmutable $valid_to;
-	public ?int $usage_limit;
-	public int $used_count;
-	public ?float $minimum_order_amount;
+	public ?DateTimeImmutable $validFrom;
+	public ?DateTimeImmutable $validTo;
+	public ?int $usageLimit;
+	public int $usedCount;
+	public ?float $minimumOrderAmount;
 	public int $active;
 }

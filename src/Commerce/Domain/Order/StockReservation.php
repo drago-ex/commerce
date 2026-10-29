@@ -64,7 +64,7 @@ class StockReservation
 			}
 
 			$variant = $this->variantRepository->getOne($item->variantId);
-			if ($variant === null || $variant->product_id !== $product->id || !$variant->active) {
+			if ($variant === null || $variant->productId !== $product->id || !$variant->active) {
 				throw new ItemUnavailableException($name);
 			}
 

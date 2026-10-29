@@ -22,7 +22,7 @@ class ProductVariantEntity extends Entity
 		Active = 'active';
 
 	public int $id;
-	public int $product_id;
+	public int $productId;
 	public ?string $sku;
 	public ?float $price;
 	public int $stock;

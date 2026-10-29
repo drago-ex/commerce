@@ -72,8 +72,8 @@ class CustomerControl extends BaseControl
 		try {
 			$regionCode = $data->phone->getRegionCode();
 			$postCode = ($this->commerce->getPostCodeOnRegionPhone() && $regionCode !== null)
-				? (new PostcodeFormatter)->format($regionCode, $data->postal_code)
-				: $data->postal_code;
+				? (new PostcodeFormatter)->format($regionCode, $data->postalCode)
+				: $data->postalCode;
 
 			$customer = new Customer(
 				email: $data->email,
@@ -82,7 +82,7 @@ class CustomerControl extends BaseControl
 				surname: $data->surname,
 				street: $data->street,
 				city: $data->city,
-				postal_code: $postCode,
+				postalCode: $postCode,
 				country: $data->country,
 				note: $data->note,
 			);

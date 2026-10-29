@@ -29,14 +29,14 @@ class OrderLoggerListener
 
 		return [
 			'Order ID' => $event->orderId,
-			'Customer ID' => $event->orderSummary->customer_id,
+			'Customer ID' => $event->orderSummary->customerId,
 			'Carrier' => [
 				'name'  => $event->carrier->name ?? '',
-				'price' => $event->orderSummary->carrier_price,
+				'price' => $event->orderSummary->carrierPrice,
 			],
 			'Payment' => [
 				'name'  => $event->payment->name ?? '',
-				'price' => $event->orderSummary->payment_price,
+				'price' => $event->orderSummary->paymentPrice,
 			],
 			'Items' => array_map(static fn($item): array => [
 				'product_id' => $item->product->id,
@@ -46,11 +46,11 @@ class OrderLoggerListener
 				'amount'     => $item->amount->toInt(),
 				'unit_price' => $item->getUnitPrice()->getAmount()->toFloat(),
 			], array_values($items)),
-			'Subtotal'        => $event->orderSummary->subtotal_price,
-			'Discount code'   => $event->orderSummary->discount_code,
-			'Discount amount' => $event->orderSummary->discount_amount,
-			'Total'           => $event->orderSummary->total_price,
-			'Created at'      => $event->orderSummary->created_at->format('Y-m-d H:i:s'),
+			'Subtotal'        => $event->orderSummary->subtotalPrice,
+			'Discount code'   => $event->orderSummary->discountCode,
+			'Discount amount' => $event->orderSummary->discountAmount,
+			'Total'           => $event->orderSummary->totalPrice,
+			'Created at'      => $event->orderSummary->createdAt->format('Y-m-d H:i:s'),
 		];
 	}
 }

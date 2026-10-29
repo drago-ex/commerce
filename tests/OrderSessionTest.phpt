@@ -45,7 +45,7 @@ $customer = new Customer(
 	surname: 'Novak',
 	street: 'Main Street 1',
 	city: 'Prague',
-	postal_code: '11000',
+	postalCode: '11000',
 	country: 'CZ',
 	note: 'Call on arrival',
 );

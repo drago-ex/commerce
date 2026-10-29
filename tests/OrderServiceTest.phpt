@@ -61,7 +61,7 @@ $customer = new Customer(
 	surname: 'Service',
 	street: 'Testovací 1',
 	city: 'Praha',
-	postal_code: '11000',
+	postalCode: '11000',
 	country: 'CZ',
 	note: 'OrderService test',
 );
@@ -155,12 +155,12 @@ try {
 	);
 
 	$successOrderId = $placement->orderId;
-	$successCustomerId = $placement->orderSummary->customer_id;
+	$successCustomerId = $placement->orderSummary->customerId;
 
 	Assert::true($placement->orderId > 0);
-	Assert::same($successCustomerId, $placement->orderSummary->customer_id);
-	Assert::same(490.0, $placement->orderSummary->subtotal_price);
-	Assert::same(640.0, $placement->orderSummary->total_price);
+	Assert::same($successCustomerId, $placement->orderSummary->customerId);
+	Assert::same(490.0, $placement->orderSummary->subtotalPrice);
+	Assert::same(640.0, $placement->orderSummary->totalPrice);
 	Assert::same(
 		$stockBefore - 1,
 		(int) $connection->query(
@@ -214,7 +214,7 @@ try {
 		surname: 'OfStock',
 		street: 'Testovací 2',
 		city: 'Praha',
-		postal_code: '11000',
+		postalCode: '11000',
 		country: 'CZ',
 	);
 	$outOfStockItem = new ProductCart(
@@ -262,7 +262,7 @@ try {
 		surname: 'Rollback',
 		street: 'Testovací 3',
 		city: 'Praha',
-		postal_code: '11000',
+		postalCode: '11000',
 		country: 'CZ',
 	);
 
@@ -283,11 +283,11 @@ try {
 	$rejectedCode->code = 'TEST10';
 	$rejectedCode->type = 'fixed';
 	$rejectedCode->value = 100;
-	$rejectedCode->valid_from = null;
-	$rejectedCode->valid_to = null;
-	$rejectedCode->usage_limit = null;
-	$rejectedCode->used_count = 0;
-	$rejectedCode->minimum_order_amount = null;
+	$rejectedCode->validFrom = null;
+	$rejectedCode->validTo = null;
+	$rejectedCode->usageLimit = null;
+	$rejectedCode->usedCount = 0;
+	$rejectedCode->minimumOrderAmount = null;
 	$rejectedCode->active = 1;
 
 	$rollbackOrderService = new OrderService(

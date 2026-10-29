@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\UI;
 
@@ -12,8 +10,7 @@ use Nette\Utils\ArrayHash;
  */
 class FactoryValues extends ArrayHash
 {
-	public const string
-		ProductId = 'productId',
+	public const string ProductId = 'productId',
 		VariantId = 'variantId',
 		Amount = 'amount',
 		Code = 'code';

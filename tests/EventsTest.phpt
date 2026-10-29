@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
@@ -274,7 +272,7 @@ Assert::contains('Množství', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Cena za kus', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Pánské tričko Classic', $mailer->messages[0]->getHtmlBody());
 Assert::contains('882,00', $mailer->messages[0]->getHtmlBody());
-Assert::contains('1 100,00', $mailer->messages[0]->getHtmlBody());
+Assert::contains("1\u{00A0}100,00", $mailer->messages[0]->getHtmlBody());
 Assert::contains('PPL', $mailer->messages[0]->getHtmlBody());
 Assert::contains('Test Shop', $mailer->messages[0]->getHtmlBody());
 $emailBody = substr($mailer->messages[0]->getHtmlBody(), strpos($mailer->messages[0]->getHtmlBody(), '<body'));
@@ -317,7 +315,7 @@ Assert::count(1, Debugger::getLogger()->entries);
 Assert::type(\RuntimeException::class, Debugger::getLogger()->entries[0]);
 
 // Without a snapshot, the log falls back to the cart session.
-$cart->addItem($product, 1);
+$cart->addItem($product);
 $legacy = new OrderPlaced(
 	orderId: 78,
 	orderSummary: $order->orderSummary,

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
@@ -71,7 +69,7 @@ Assert::true($cartSession->getTotalPrice()->isEqualTo(Money::of(200, 'CZK')));
 // Add product with 10% discount
 $p2 = new Product(2, 'Product 2', Money::of(200, 'CZK'));
 $p2->setDiscount(10); // 180 CZK each
-$cartSession->addItem($p2, 1);
+$cartSession->addItem($p2);
 
 Assert::same(2, count($cartSession->getItems()));
 Assert::same(3, $cartSession->getAmountItems());

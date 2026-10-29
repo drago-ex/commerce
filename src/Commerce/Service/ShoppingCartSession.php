@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Service;
 
@@ -14,6 +12,7 @@ use Drago\Commerce\Domain\Product\ProductCart;
 use InvalidArgumentException;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
+use function is_array;
 
 
 /** Stores cart items in the session and calculates their totals. */

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Product;
 
@@ -25,6 +23,8 @@ use Drago\Commerce\UI\Factory;
 use Drago\Commerce\UI\FactoryValues;
 use JsonException;
 use Nette\Application\UI\Form;
+use function is_string;
+use const JSON_THROW_ON_ERROR, JSON_UNESCAPED_UNICODE;
 
 
 /**
@@ -181,7 +181,12 @@ class ProductDetailControl extends BaseControl
 		$inCart = $this->shoppingCartSession->getAmount($entity->id, $variantId);
 		if ($inCart + $amount > $availableStock) {
 			$this->reject($inCart > 0
-				? $this->translate('The product %s is only %d pcs in stock, %d of them already in your cart.', $entity->name, $availableStock, $inCart)
+				? $this->translate(
+					'The product %s is only %d pcs in stock, %d of them already in your cart.',
+					$entity->name,
+					$availableStock,
+					$inCart,
+				)
 				: $this->translate('The product %s is only %d pcs in stock.', $entity->name, $availableStock));
 			return;
 		}

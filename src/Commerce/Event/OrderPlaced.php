@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Event;
 
@@ -22,9 +20,6 @@ use Drago\Commerce\Service\ShoppingCartSession;
  */
 class OrderPlaced
 {
-	/**
-	 * @param ProductCart[] $items The ordered lines, with variants.
-	 */
 	public function __construct(
 		public int $orderId,
 		public OrderSummary $orderSummary,
@@ -32,6 +27,7 @@ class OrderPlaced
 		public Carrier $carrier,
 		public Payment $payment,
 		public ShoppingCartSession $shoppingCartSession,
+		/** @var ProductCart[] The ordered lines, with variants. */
 		public array $items = [],
 		public ?string $lang = null,
 	) {

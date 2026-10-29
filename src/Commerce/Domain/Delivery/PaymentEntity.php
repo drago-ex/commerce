@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Delivery;
 
@@ -12,8 +10,7 @@ use Drago\Database\Entity;
  */
 class PaymentEntity extends Entity
 {
-	public const string
-		Table = 'payment',
+	public const string Table = 'payment',
 		PrimaryKey = 'id';
 
 	public int $id;

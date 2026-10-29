@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce;
 
@@ -8,6 +6,7 @@ use Brick\Math\RoundingMode;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use NumberFormatter;
+use function is_int;
 
 
 /**
@@ -89,7 +88,7 @@ class Commerce
 	 */
 	public static function decimal(float|int $amount): string
 	{
-		if (is_int($amount) || $amount == 0) {
+		if (is_int($amount) || $amount === 0.0) {
 			return (string) (int) $amount;
 		}
 

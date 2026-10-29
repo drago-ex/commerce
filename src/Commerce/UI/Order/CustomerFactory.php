@@ -1,9 +1,6 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
-
 
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Data\ReaderGeoLite;
@@ -14,6 +11,7 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
 use Nette\Http\Request;
 use Nette\Localization\Translator;
+use function is_array, is_string;
 
 
 /**

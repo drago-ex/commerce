@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
@@ -166,7 +164,7 @@ Assert::true($unitPrice()->isEqualTo($czk(540)));
 
 // ---- Adding the product again refreshes the price of the existing line.
 $entity->discount = null;
-$cart->addItem($resolver->forCart($entity, null, null, 1), 1);
+$cart->addItem($resolver->forCart($entity, null, null, 1));
 Assert::true($unitPrice()->isEqualTo($czk(600)));
 Assert::same(3, $cart->getAmountItems());
 

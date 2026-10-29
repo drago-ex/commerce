@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Service;
 
@@ -15,6 +13,7 @@ use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
+use function is_string;
 
 
 class DiscountCodeService

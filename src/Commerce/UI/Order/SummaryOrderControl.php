@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
@@ -26,6 +24,7 @@ use Nette\Application\UI\Form;
 use Nette\Forms\Controls\HiddenField;
 use Random\RandomException;
 use Tracy\Debugger;
+use function is_string;
 
 
 /**
@@ -222,7 +221,8 @@ class SummaryOrderControl extends BaseControl
 	private function describe(OrderException $e): string
 	{
 		return match (true) {
-			$e instanceof OutOfStockException => $this->translate('The product %s is not in stock in the requested quantity.', $e->productName),
+			$e instanceof OutOfStockException
+				=> $this->translate('The product %s is not in stock in the requested quantity.', $e->productName),
 			$e instanceof ItemUnavailableException => $this->translate('The product %s is no longer available.', $e->productName),
 			default => $this->translate($e->getMessage()),
 		};

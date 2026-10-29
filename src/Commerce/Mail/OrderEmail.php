@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Mail;
 
@@ -9,6 +7,7 @@ use Nette\Localization\Translator;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 use Throwable;
+use function sprintf;
 
 
 /**

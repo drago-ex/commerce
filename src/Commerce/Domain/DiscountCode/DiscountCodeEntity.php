@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\DiscountCode;
 
@@ -10,8 +8,7 @@ use Drago\Database\Entity;
 
 class DiscountCodeEntity extends Entity
 {
-	public const string
-		Table = 'discount_codes',
+	public const string Table = 'discount_codes',
 		PrimaryKey = 'id';
 
 	public int $id;

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Service;
 
@@ -13,13 +11,13 @@ use Drago\Commerce\Domain\Delivery\Payment;
 use Drago\Commerce\Domain\Order\OrderState;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
+use function is_string;
 
 
 /** Stores the selected carrier, payment method, and customer in the session. */
 class OrderSession
 {
-	private const string
-		Carrier = 'carrier',
+	private const string Carrier = 'carrier',
 		Payment = 'payment',
 		Customer = 'customer',
 		OrderFingerprint = 'orderFingerprint',

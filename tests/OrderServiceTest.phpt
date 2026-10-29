@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
@@ -218,7 +216,6 @@ try {
 		city: 'Praha',
 		postal_code: '11000',
 		country: 'CZ',
-		note: null,
 	);
 	$outOfStockItem = new ProductCart(
 		new Product(id: 6, name: 'Pánské tričko Classic', price: Money::of(490, 'CZK')),
@@ -267,7 +264,6 @@ try {
 		city: 'Praha',
 		postal_code: '11000',
 		country: 'CZ',
-		note: null,
 	);
 
 	$rejectingDiscountService = new class extends DiscountCodeService {

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Service;
 
@@ -15,10 +13,8 @@ use Drago\Commerce\Domain\Product\ProductCart;
  */
 final readonly class CartTotals
 {
-	/**
-	 * @param ProductCart[] $items
-	 */
 	public function __construct(
+		/** @var ProductCart[] */
 		public array $items,
 		public int $amountItems,
 		public Money $originalPrice,

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Product;
 
@@ -105,7 +103,12 @@ class ProductControl extends BaseControl
 		$inCart = $this->shoppingCartSession->getAmount($entity->id);
 		if ($inCart + 1 > $entity->stock) {
 			$this->addFlashMessage(
-				$this->translate('The product %s is only %d pcs in stock, %d of them already in your cart.', $entity->name, $entity->stock, $inCart),
+				$this->translate(
+					'The product %s is only %d pcs in stock, %d of them already in your cart.',
+					$entity->name,
+					$entity->stock,
+					$inCart,
+				),
 				Alert::Danger,
 			);
 			$this->finish();

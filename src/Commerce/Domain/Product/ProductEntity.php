@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Product;
 
@@ -12,8 +10,7 @@ use Drago\Database\Entity;
 
 class ProductEntity extends Entity
 {
-	public const string
-		Table = 'products',
+	public const string Table = 'products',
 		PrimaryKey = 'id',
 		Category = 'category',
 		Name = 'name',

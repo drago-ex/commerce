@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\UI\Order;
 
@@ -93,7 +91,7 @@ class CustomerControl extends BaseControl
 			$this->eventDispatcher->dispatch(new CustomerUpdated($customer));
 			$this->addRedirect($this->linkRedirectTarget);
 
-		} catch (InvalidPostcodeException | UnknownCountryException $e) {
+		} catch (InvalidPostcodeException|UnknownCountryException) {
 			$form->addError('The postal code does not match the same region as the phone number.');
 		}
 	}

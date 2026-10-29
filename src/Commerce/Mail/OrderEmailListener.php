@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Mail;
 
@@ -58,6 +56,7 @@ readonly class OrderEmailListener
 				paymentPrice: $format($summary->payment_price),
 				totalPrice: $format($summary->total_price),
 			), $event->lang);
+
 		} catch (Throwable $e) {
 			Debugger::log($e, 'commerce-order-email');
 		}

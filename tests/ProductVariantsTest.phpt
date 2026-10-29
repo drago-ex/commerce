@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
@@ -144,7 +142,6 @@ $cartSession->addItem(
 // Add 1x Variant 6 (Black 128GB - 12500 CZK)
 $cartSession->addItem(
 	product: new Product(id: 2, name: 'Mobilní telefon XYZ', price: Money::of(12500, 'CZK')),
-	amount: 1,
 	variantId: 6,
 	variantLabel: 'Barva: Černá, Kapacita: 128 GB',
 );
@@ -167,7 +164,6 @@ Assert::true($discountedCartItem->getUnitPrice()->isEqualTo(Money::of(900, 'CZK'
 // Update quantity of Variant 5
 $cartSession->addItem(
 	product: new Product(id: 2, name: 'Mobilní telefon XYZ', price: Money::of(14500, 'CZK')),
-	amount: 1,
 	variantId: 5,
 );
 Assert::same(4, $cartSession->getAmountItems()); // 3 * 14500 + 1 * 12500 = 56000 CZK
@@ -188,7 +184,7 @@ Assert::null($cartSession->findItem(2, 5));
 Assert::same(6, $cartSession->findItem(2, 6)?->variantId);
 
 // A non-variant product line stays separate from the same product's variant line.
-$cartSession->addItem($product, 1);
+$cartSession->addItem($product);
 Assert::same(2, count($cartSession->getItems()));
 Assert::same(2, $cartSession->getAmountItems());
 

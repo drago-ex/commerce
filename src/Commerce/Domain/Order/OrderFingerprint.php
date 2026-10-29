@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Domain\Order;
 
@@ -13,6 +11,7 @@ use Drago\Commerce\Domain\Delivery\Payment;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Product\ProductCart;
 use JsonException;
+use const JSON_PRESERVE_ZERO_FRACTION, JSON_THROW_ON_ERROR;
 
 
 /**

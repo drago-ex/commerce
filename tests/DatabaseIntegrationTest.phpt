@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Tests;
 
@@ -183,6 +181,7 @@ try {
 		])->execute(),
 		ForeignKeyConstraintViolationException::class,
 	);
+
 } finally {
 	$connection->rollback();
 	$connection->disconnect();

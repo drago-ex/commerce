@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Drago\Commerce\Mail;
 
@@ -9,12 +7,10 @@ use Drago\Commerce\Domain\Customer\Customer;
 
 final readonly class OrderEmailData
 {
-	/**
-	 * @param list<OrderEmailItem> $items
-	 */
 	public function __construct(
 		public int $orderId,
 		public Customer $customer,
+		/** @var list<OrderEmailItem> */
 		public array $items,
 		public string $carrierName,
 		public string $paymentName,

@@ -14,9 +14,7 @@ use Nette\Schema\Schema;
 use function is_string;
 
 
-/**
- * DI extension registering the Commerce service and loading its configuration.
- */
+/** DI extension registering the Commerce service and loading its configuration. */
 class CommerceExtension extends CompilerExtension
 {
 	public function getConfigSchema(): Schema

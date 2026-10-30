@@ -23,9 +23,7 @@ use Nette\Application\UI\Multiplier;
 use Nette\Utils\Paginator;
 
 
-/**
- * @property-read ProductTemplate $template
- */
+/** @property-read ProductTemplate $template */
 class ProductControl extends BaseControl
 {
 	/** Current page of the listing. */

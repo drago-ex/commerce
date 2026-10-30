@@ -25,9 +25,7 @@ class Commerce
 	private array $config;
 
 
-	/**
-	 * @param array<string, mixed> $config
-	 */
+	/** @param array<string, mixed> $config */
 	public function __construct(array $config)
 	{
 		$this->config = $config;
@@ -39,9 +37,7 @@ class Commerce
 	}
 
 
-	/**
-	 * Returns a zero-value Money object in the configured currency.
-	 */
+	/** Returns a zero-value Money object in the configured currency. */
 	public function moneyZero(): Money
 	{
 		return Money::zero(self::$currency);
@@ -132,9 +128,7 @@ class Commerce
 	}
 
 
-	/**
-	 * Returns whether the postal code should be validated against the phone region.
-	 */
+	/** Returns whether the postal code should be validated against the phone region. */
 	public function getPostCodeOnRegionPhone(): bool
 	{
 		return (bool) ($this->config['postCodeOnRegionPhone'] ?? false);

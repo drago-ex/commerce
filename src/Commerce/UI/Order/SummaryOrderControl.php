@@ -29,9 +29,7 @@ use Tracy\Debugger;
 use function is_string;
 
 
-/**
- * @property-read SummaryOrderTemplate $template
- */
+/** @property-read SummaryOrderTemplate $template */
 class SummaryOrderControl extends BaseControl
 {
 	public function __construct(
@@ -210,9 +208,7 @@ class SummaryOrderControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws MoneyMismatchException
-	 */
+	/** @throws MoneyMismatchException */
 	protected function createComponentSendOrder(): BaseForm
 	{
 		$form = $this->factory->create($this->translator);
@@ -223,9 +219,7 @@ class SummaryOrderControl extends BaseControl
 	}
 
 
-	/**
-	 * Builds the customer-facing message for an order that cannot be completed.
-	 */
+	/** Builds the customer-facing message for an order that cannot be completed. */
 	private function describe(OrderException $e): string
 	{
 		return match (true) {

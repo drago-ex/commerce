@@ -5,9 +5,7 @@ namespace Drago\Commerce\UI\ShoppingCart;
 use Drago\Commerce\UI\BaseTemplate;
 
 
-/**
- * Template data for the mini cart control.
- */
+/** Template data for the mini cart control. */
 class MiniCartTemplate extends BaseTemplate
 {
 	public string $linkShoppingCart;

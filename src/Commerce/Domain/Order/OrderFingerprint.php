@@ -14,9 +14,7 @@ use JsonException;
 use const JSON_PRESERVE_ZERO_FRACTION, JSON_THROW_ON_ERROR;
 
 
-/**
- * Creates a stable fingerprint of the order details shown at checkout.
- */
+/** Creates a stable fingerprint of the order details shown at checkout. */
 final class OrderFingerprint
 {
 	/**
@@ -72,9 +70,7 @@ final class OrderFingerprint
 	}
 
 
-	/**
-	 * @return array{id: int, name: string, price: array{amount: string, currency: string}}|null
-	 */
+	/** @return array{id: int, name: string, price: array{amount: string, currency: string}}|null */
 	private static function carrierData(?Carrier $carrier): ?array
 	{
 		return $carrier === null ? null : [
@@ -85,9 +81,7 @@ final class OrderFingerprint
 	}
 
 
-	/**
-	 * @return array{id: int, name: string, price: array{amount: string, currency: string}}|null
-	 */
+	/** @return array{id: int, name: string, price: array{amount: string, currency: string}}|null */
 	private static function paymentData(?Payment $payment): ?array
 	{
 		return $payment === null ? null : [
@@ -98,9 +92,7 @@ final class OrderFingerprint
 	}
 
 
-	/**
-	 * @return array<string, mixed>|null
-	 */
+	/** @return array<string, mixed>|null */
 	private static function customerData(?Customer $customer): ?array
 	{
 		if ($customer === null) {
@@ -123,9 +115,7 @@ final class OrderFingerprint
 	}
 
 
-	/**
-	 * @return array<string, mixed>|null
-	 */
+	/** @return array<string, mixed>|null */
 	private static function discountCodeData(?DiscountCodeEntity $discountCode): ?array
 	{
 		return $discountCode === null ? null : [
@@ -138,9 +128,7 @@ final class OrderFingerprint
 	}
 
 
-	/**
-	 * @return array{amount: string, currency: string}
-	 */
+	/** @return array{amount: string, currency: string} */
 	private static function moneyData(Money $money): array
 	{
 		return [

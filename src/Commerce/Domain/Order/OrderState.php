@@ -7,9 +7,7 @@ use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
 
 
-/**
- * Stores the selected carrier, payment method, and customer for an order in progress.
- */
+/** Stores the selected carrier, payment method, and customer for an order in progress. */
 class OrderState
 {
 	public function __construct(

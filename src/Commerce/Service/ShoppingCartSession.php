@@ -222,9 +222,7 @@ class ShoppingCartSession
 	}
 
 
-	/**
-	 * Returns the cart line for the product (and variant, if any), or null.
-	 */
+	/** Returns the cart line for the product (and variant, if any), or null. */
 	public function findItem(int $productId, ?int $variantId = null): ?ProductCart
 	{
 		foreach ($this->getItems() as $item) {
@@ -237,9 +235,7 @@ class ShoppingCartSession
 	}
 
 
-	/**
-	 * Returns how many pieces of the product (and variant, if any) are in the cart.
-	 */
+	/** Returns how many pieces of the product (and variant, if any) are in the cart. */
 	public function getAmount(int $productId, ?int $variantId = null): int
 	{
 		return $this->findItem($productId, $variantId)?->amount->toInt() ?? 0;

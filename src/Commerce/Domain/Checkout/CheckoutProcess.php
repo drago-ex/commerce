@@ -8,9 +8,7 @@ use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 
 
-/**
- * Orchestrates the checkout flow by delegating step resolution and redirect logic.
- */
+/** Orchestrates the checkout flow by delegating step resolution and redirect logic. */
 final class CheckoutProcess
 {
 	private CheckoutRedirectResolver $redirectResolver;

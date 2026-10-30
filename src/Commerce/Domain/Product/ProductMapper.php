@@ -7,9 +7,7 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Drago\Commerce\Commerce;
 
 
-/**
- * Converts a ProductEntity to a domain Product object.
- */
+/** Converts a ProductEntity to a domain Product object. */
 class ProductMapper
 {
 	public function __construct(

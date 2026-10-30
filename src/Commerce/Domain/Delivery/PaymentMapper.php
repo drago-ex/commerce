@@ -7,9 +7,7 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Drago\Commerce\Commerce;
 
 
-/**
- * Converts PaymentEntity to a domain Payment object.
- */
+/** Converts PaymentEntity to a domain Payment object. */
 readonly class PaymentMapper
 {
 	public function __construct(

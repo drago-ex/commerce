@@ -11,9 +11,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/**
- * Repository for reading carrier data from the database.
- */
+/** Repository for reading carrier data from the database. */
 #[Table(CarrierEntity::Table, CarrierEntity::PrimaryKey, entity: CarrierEntity::class)]
 class CarrierRepository
 {

@@ -44,9 +44,7 @@ class ReaderGeoLite
 	}
 
 
-	/**
-	 * Returns the ISO country code for the given IP address, or null if unavailable.
-	 */
+	/** Returns the ISO country code for the given IP address, or null if unavailable. */
 	public function getCountryIsoCode(string $ip): ?string
 	{
 		$city = $this->getCity($ip);

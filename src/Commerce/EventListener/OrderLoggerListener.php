@@ -20,9 +20,7 @@ class OrderLoggerListener
 	}
 
 
-	/**
-	 * @return array<string, mixed>
-	 */
+	/** @return array<string, mixed> */
 	public function toArray(OrderPlaced $event): array
 	{
 		$items = $event->items !== [] ? $event->items : $event->shoppingCartSession->getItems();

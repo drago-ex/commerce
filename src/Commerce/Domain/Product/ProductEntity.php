@@ -57,27 +57,21 @@ class ProductEntity extends Entity
 	}
 
 
-	/**
-	 * Checks if the product currently has a discount.
-	 */
+	/** Checks if the product currently has a discount. */
 	public function hasDiscount(): bool
 	{
 		return $this->discount !== null && $this->discount > 0;
 	}
 
 
-	/**
-	 * Returns the discount percentage (0 if none).
-	 */
+	/** Returns the discount percentage (0 if none). */
 	public function getDiscountPercent(): int
 	{
 		return $this->discount ?? 0;
 	}
 
 
-	/**
-	 * Returns the current stock quantity.
-	 */
+	/** Returns the current stock quantity. */
 	public function getStock(): int
 	{
 		return $this->stock ?? 0;

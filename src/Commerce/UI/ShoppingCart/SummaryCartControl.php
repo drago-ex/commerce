@@ -25,9 +25,7 @@ use Nette\Application\UI\InvalidLinkException;
 use Nette\Application\UI\Multiplier;
 
 
-/**
- * @property-read SummaryCartTemplate $template
- */
+/** @property-read SummaryCartTemplate $template */
 class SummaryCartControl extends BaseControl
 {
 	public function __construct(

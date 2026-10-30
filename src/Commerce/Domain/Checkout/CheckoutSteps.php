@@ -30,9 +30,7 @@ final class CheckoutSteps
 	private array $flow;
 
 
-	/**
-	 * @param array<string, mixed> $customSteps
-	 */
+	/** @param array<string, mixed> $customSteps */
 	public function __construct(array $customSteps = [])
 	{
 		$this->products = 'default';

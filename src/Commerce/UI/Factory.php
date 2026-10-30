@@ -15,9 +15,7 @@ readonly class Factory
 	}
 
 
-	/**
-	 * Creates a new form with translator configured.
-	 */
+	/** Creates a new form with translator configured. */
 	public function create(?Translator $translator = null): BaseForm
 	{
 		$form = new BaseForm;
@@ -52,9 +50,7 @@ readonly class Factory
 	}
 
 
-	/**
-	 * Creates a form for changing the quantity of a cart item.
-	 */
+	/** Creates a form for changing the quantity of a cart item. */
 	public function addChangeAmountInCart(
 		string $productId,
 		?int $variantId = null,

@@ -11,9 +11,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/**
- * Repository for reading payment method data from the database.
- */
+/** Repository for reading payment method data from the database. */
 #[Table(PaymentEntity::Table, PaymentEntity::PrimaryKey, entity: PaymentEntity::class)]
 class PaymentRepository
 {

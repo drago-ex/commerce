@@ -11,19 +11,13 @@ use Nette\Application\UI\Form;
 use stdClass;
 
 
-/**
- * Manages checkout steps and their completion state for breadcrumb rendering.
- */
+/** Manages checkout steps and their completion state for breadcrumb rendering. */
 class BaseControl extends ExtraControl
 {
-	/**
-	 * Optional custom template file for rendering the control.
-	 */
+	/** Optional custom template file for rendering the control. */
 	public ?string $templateControl = null;
 
-	/**
-	 * Redirect to the next step of the order.
-	 */
+	/** Redirect to the next step of the order. */
 	public string $linkRedirectTarget;
 
 	/**
@@ -83,9 +77,7 @@ class BaseControl extends ExtraControl
 	}
 
 
-	/**
-	 * Sets the template file (a custom one wins) and the translator.
-	 */
+	/** Sets the template file (a custom one wins) and the translator. */
 	protected function prepareTemplate(string $defaultFile): void
 	{
 		$this->template->setFile($this->templateControl ?: $defaultFile);

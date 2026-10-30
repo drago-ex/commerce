@@ -3,9 +3,7 @@
 namespace Drago\Commerce\Domain\Order;
 
 
-/**
- * Not enough stock is left for the requested quantity.
- */
+/** Not enough stock is left for the requested quantity. */
 final class OutOfStockException extends OrderException
 {
 	public function __construct(

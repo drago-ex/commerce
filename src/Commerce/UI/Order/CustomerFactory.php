@@ -14,9 +14,7 @@ use Nette\Localization\Translator;
 use function is_array, is_string;
 
 
-/**
- * Factory for building the customer information form with phone and address fields.
- */
+/** Factory for building the customer information form with phone and address fields. */
 class CustomerFactory
 {
 	public function __construct(
@@ -28,9 +26,7 @@ class CustomerFactory
 	}
 
 
-	/**
-	 * @throws InvalidDatabaseException
-	 */
+	/** @throws InvalidDatabaseException */
 	public function addCustomer(?Translator $translator = null): BaseForm
 	{
 		$form = $this->factory->create($translator);

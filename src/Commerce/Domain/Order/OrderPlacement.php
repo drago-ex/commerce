@@ -3,9 +3,7 @@
 namespace Drago\Commerce\Domain\Order;
 
 
-/**
- * Result of a successfully persisted order.
- */
+/** Result of a successfully persisted order. */
 class OrderPlacement
 {
 	public function __construct(

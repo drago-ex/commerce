@@ -7,9 +7,7 @@ use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 
 
-/**
- * Determines which checkout steps have been completed based on the current session state.
- */
+/** Determines which checkout steps have been completed based on the current session state. */
 final readonly class CheckoutStepResolver
 {
 	public function __construct(

@@ -24,9 +24,7 @@ use Nette\Application\UI\Form;
 use Nette\Utils\Html;
 
 
-/**
- * @property-read DeliveryTemplate $template
- */
+/** @property-read DeliveryTemplate $template */
 class DeliveryControl extends BaseControl
 {
 	public function __construct(
@@ -106,9 +104,7 @@ class DeliveryControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws AttributeDetectionException */
 	protected function createComponentDelivery(): BaseForm
 	{
 		$form = $this->factory->create($this->translator);

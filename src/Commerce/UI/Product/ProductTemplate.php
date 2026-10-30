@@ -9,9 +9,7 @@ use Drago\Commerce\UI\BaseTemplate;
 use Nette\Utils\Paginator;
 
 
-/**
- * Template data for the product listing.
- */
+/** Template data for the product listing. */
 class ProductTemplate extends BaseTemplate
 {
 	/** @var ProductEntity[] */

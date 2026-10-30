@@ -6,9 +6,7 @@ use Brick\Math\BigInteger;
 use Brick\Money\Money;
 
 
-/**
- * Represents an item in the cart.
- */
+/** Represents an item in the cart. */
 class ProductCart
 {
 	public function __construct(

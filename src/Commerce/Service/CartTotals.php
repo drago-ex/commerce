@@ -9,9 +9,7 @@ use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Product\ProductCart;
 
 
-/**
- * Prices of the cart as shown by every checkout step.
- */
+/** Prices of the cart as shown by every checkout step. */
 final readonly class CartTotals
 {
 	public function __construct(

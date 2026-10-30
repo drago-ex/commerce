@@ -14,9 +14,7 @@ class EventDispatcher
 	private array $listeners = [];
 
 
-	/**
-	 * @param class-string $eventClass
-	 */
+	/** @param class-string $eventClass */
 	public function addListener(string $eventClass, callable $listener): void
 	{
 		$this->listeners[$eventClass][] = $listener;

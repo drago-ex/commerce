@@ -5,9 +5,7 @@ namespace Drago\Commerce\Domain\Order;
 use DateTimeImmutable;
 
 
-/**
- * Represents a persisted customer order summary.
- */
+/** Represents a persisted customer order summary. */
 class OrderSummary
 {
 	public function __construct(

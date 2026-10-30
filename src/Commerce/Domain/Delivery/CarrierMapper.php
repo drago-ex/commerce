@@ -7,9 +7,7 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Drago\Commerce\Commerce;
 
 
-/**
- * Converts a CarrierEntity to a domain Carrier object.
- */
+/** Converts a CarrierEntity to a domain Carrier object. */
 readonly class CarrierMapper
 {
 	public function __construct(

@@ -17,9 +17,7 @@ readonly class OrderEmailListener
 	}
 
 
-	/**
-	 * A failed email is logged and never affects the placed order or other listeners.
-	 */
+	/** A failed email is logged and never affects the placed order or other listeners. */
 	public function __invoke(OrderPlaced $event): void
 	{
 		try {

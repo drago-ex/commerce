@@ -9,9 +9,7 @@ use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 
 
-/**
- * Converts a ProductVariantEntity to a domain ProductVariantOption object.
- */
+/** Converts a ProductVariantEntity to a domain ProductVariantOption object. */
 readonly class ProductVariantMapper
 {
 	public function __construct(

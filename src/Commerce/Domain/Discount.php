@@ -30,9 +30,7 @@ trait Discount
 	}
 
 
-	/**
-	 * Whether this item currently has an active (positive) discount.
-	 */
+	/** Whether this item currently has an active (positive) discount. */
 	public function hasDiscount(): bool
 	{
 		return $this->discount !== null && $this->discount > 0;
@@ -54,9 +52,7 @@ trait Discount
 	}
 
 
-	/**
-	 * Returns the amount saved per unit thanks to the discount (original price minus discounted price).
-	 */
+	/** Returns the amount saved per unit thanks to the discount (original price minus discounted price). */
 	public function getDiscountAmount(): Money
 	{
 		return $this->price->minus($this->getDiscountedPrice());

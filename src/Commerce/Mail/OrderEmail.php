@@ -10,9 +10,7 @@ use Throwable;
 use function sprintf;
 
 
-/**
- * Renders and sends the order confirmation email.
- */
+/** Renders and sends the order confirmation email. */
 readonly class OrderEmail
 {
 	public function __construct(

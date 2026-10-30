@@ -5,9 +5,7 @@ namespace Drago\Commerce\UI\ShoppingCart;
 use Drago\Commerce\UI\BaseTemplate;
 
 
-/**
- * Template data for the shopping cart summary.
- */
+/** Template data for the shopping cart summary. */
 class SummaryCartTemplate extends BaseTemplate
 {
 	public string $linkOrderDelivery;

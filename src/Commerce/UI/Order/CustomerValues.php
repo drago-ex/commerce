@@ -6,9 +6,7 @@ use Brick\PhoneNumber\PhoneNumber;
 use Nette\Utils\ArrayHash;
 
 
-/**
- * Holds customer information submitted by the checkout form.
- */
+/** Holds customer information submitted by the checkout form. */
 class CustomerValues extends ArrayHash
 {
 	public const string Id = 'id',

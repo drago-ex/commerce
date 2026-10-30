@@ -7,9 +7,7 @@ use Drago\Commerce\Domain\Delivery\Payment;
 use Drago\Commerce\UI\BaseTemplate;
 
 
-/**
- * Template for customer control.
- */
+/** Template for customer control. */
 class CustomerTemplate extends BaseTemplate
 {
 	public ?Carrier $carrier = null;

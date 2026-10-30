@@ -5,9 +5,7 @@ namespace Drago\Commerce\Domain\Product;
 use Brick\Money\Money;
 
 
-/**
- * One sellable variant of a product, ready for display or selection.
- */
+/** One sellable variant of a product, ready for display or selection. */
 final class ProductVariantOption
 {
 	public function __construct(
@@ -28,9 +26,7 @@ final class ProductVariantOption
 	}
 
 
-	/**
-	 * Combined, human-readable label, e.g. "Barva: Modrá, Velikost: M".
-	 */
+	/** Combined, human-readable label, e.g. "Barva: Modrá, Velikost: M". */
 	public function getLabel(): string
 	{
 		return implode(', ', $this->labels);

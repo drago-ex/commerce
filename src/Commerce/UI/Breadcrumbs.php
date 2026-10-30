@@ -3,9 +3,7 @@
 namespace Drago\Commerce\UI;
 
 
-/**
- * Represents checkout steps and their completion state for breadcrumb rendering.
- */
+/** Represents checkout steps and their completion state for breadcrumb rendering. */
 class Breadcrumbs
 {
 	public function __construct(

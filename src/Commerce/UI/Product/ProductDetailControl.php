@@ -28,9 +28,7 @@ use function is_string;
 use const JSON_THROW_ON_ERROR, JSON_UNESCAPED_UNICODE;
 
 
-/**
- * @property-read ProductDetailTemplate $template
- */
+/** @property-read ProductDetailTemplate $template */
 class ProductDetailControl extends BaseControl
 {
 	private int $productId;
@@ -62,9 +60,7 @@ class ProductDetailControl extends BaseControl
 	}
 
 
-	/**
-	 * Allows pre-selecting a specific variant (e.g. from a URL parameter ?variant=123).
-	 */
+	/** Allows pre-selecting a specific variant (e.g. from a URL parameter ?variant=123). */
 	public function setSelectedVariantId(?int $variantId): void
 	{
 		$this->selectedVariantId = $variantId;
@@ -129,9 +125,7 @@ class ProductDetailControl extends BaseControl
 	}
 
 
-	/**
-	 * Formats a Money object the same way BaseTemplate::money() does.
-	 */
+	/** Formats a Money object the same way BaseTemplate::money() does. */
 	public function formatMoney(?Money $money): string
 	{
 		return $money === null ? '' : Commerce::formatMoney($money);

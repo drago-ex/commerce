@@ -6,9 +6,7 @@ use Drago\Commerce\Domain\Discount;
 use Drago\Commerce\Domain\Item;
 
 
-/**
- * Basic product information.
- */
+/** Basic product information. */
 class Product extends Item
 {
 	use Discount;

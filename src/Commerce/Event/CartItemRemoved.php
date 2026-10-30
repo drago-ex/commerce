@@ -5,9 +5,7 @@ namespace Drago\Commerce\Event;
 use Drago\Commerce\Domain\Product\Product;
 
 
-/**
- * Event fired when a line is removed from the cart.
- */
+/** Event fired when a line is removed from the cart. */
 class CartItemRemoved
 {
 	public function __construct(

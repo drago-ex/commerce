@@ -5,9 +5,7 @@ namespace Drago\Commerce\Domain\Delivery;
 use Drago\Database\Entity;
 
 
-/**
- * Entity class representing a payment method.
- */
+/** Entity class representing a payment method. */
 class PaymentEntity extends Entity
 {
 	public const string Table = 'payment',

@@ -5,9 +5,7 @@ namespace Drago\Commerce\Domain\Delivery;
 use Drago\Database\Entity;
 
 
-/**
- * Entity class representing a shipping carrier stored in the database.
- */
+/** Entity class representing a shipping carrier stored in the database. */
 class CarrierEntity extends Entity
 {
 	public const string Table = 'carrier',

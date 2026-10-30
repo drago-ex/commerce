@@ -5,9 +5,7 @@ namespace Drago\Commerce\Domain\Order;
 use Drago\Commerce\Domain\Product\ProductCart;
 
 
-/**
- * Represents a product line stored in an order.
- */
+/** Represents a product line stored in an order. */
 class OrderProduct
 {
 	public function __construct(

@@ -38,9 +38,7 @@ class BaseTemplate extends ExtraTemplate
 	public ?string $discountCode = null;
 
 
-	/**
-	 * Formats a Money object to a localized currency string.
-	 */
+	/** Formats a Money object to a localized currency string. */
 	#[TemplateFilter]
 	public function money(Money $money): string
 	{

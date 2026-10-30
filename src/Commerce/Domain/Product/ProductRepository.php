@@ -10,9 +10,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/**
- * Repository for reading product data from the database.
- */
+/** Repository for reading product data from the database. */
 #[Table(ProductEntity::Table, ProductEntity::PrimaryKey, entity: ProductEntity::class)]
 class ProductRepository
 {

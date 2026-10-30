@@ -22,9 +22,7 @@ use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
 
 
-/**
- * @property-read CustomerTemplate $template
- */
+/** @property-read CustomerTemplate $template */
 class CustomerControl extends BaseControl
 {
 	public function __construct(
@@ -99,9 +97,7 @@ class CustomerControl extends BaseControl
 	}
 
 
-	/**
-	 * @throws InvalidDatabaseException
-	 */
+	/** @throws InvalidDatabaseException */
 	protected function createComponentCustomer(): BaseForm
 	{
 		$form = $this->customerFactory->addCustomer($this->translator);

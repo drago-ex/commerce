@@ -8,9 +8,7 @@ use Drago\Commerce\Domain\Delivery\Payment;
 use Drago\Commerce\UI\BaseTemplate;
 
 
-/**
- * Template variables for the order summary view.
- */
+/** Template variables for the order summary view. */
 class SummaryOrderTemplate extends BaseTemplate
 {
 	public ?Customer $customer = null;

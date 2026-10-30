@@ -6,9 +6,7 @@ use Drago\Commerce\Domain\Discount;
 use Drago\Commerce\Domain\Item;
 
 
-/**
- * Represents a shipping carrier with an optional discount.
- */
+/** Represents a shipping carrier with an optional discount. */
 class Carrier extends Item
 {
 	use Discount;

@@ -3,9 +3,7 @@
 namespace Drago\Commerce\UI\Product;
 
 
-/**
- * Holds the product ID submitted by the product form.
- */
+/** Holds the product ID submitted by the product form. */
 class ProductData
 {
 	public int $productId;

@@ -7,9 +7,7 @@ use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 
 
-/**
- * Determines which checkout step to redirect to based on the current order state.
- */
+/** Determines which checkout step to redirect to based on the current order state. */
 final readonly class CheckoutRedirectResolver
 {
 	public function __construct(

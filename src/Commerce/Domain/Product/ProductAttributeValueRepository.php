@@ -9,9 +9,7 @@ use Drago\Attr\Table;
 use Drago\Database\Database;
 
 
-/**
- * Repository for reading predefined attribute values (e.g. "Modrá", "M").
- */
+/** Repository for reading predefined attribute values (e.g. "Modrá", "M"). */
 #[Table(ProductAttributeValueEntity::Table, ProductAttributeValueEntity::PrimaryKey, entity: ProductAttributeValueEntity::class)]
 class ProductAttributeValueRepository
 {

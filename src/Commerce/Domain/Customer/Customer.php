@@ -6,9 +6,7 @@ use Brick\PhoneNumber\PhoneNumber;
 use DateTimeImmutable;
 
 
-/**
- * Represents a customer placing an order, including contact and address details.
- */
+/** Represents a customer placing an order, including contact and address details. */
 class Customer
 {
 	public function __construct(

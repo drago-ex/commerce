@@ -19,7 +19,7 @@ class ProductAttributeRepository
 	use Database;
 
 	public function __construct(
-		protected Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 

@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
@@ -47,6 +48,7 @@ class ProductControl extends BaseControl
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	public function render(): void
 	{
@@ -90,6 +92,7 @@ class ProductControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function processAddToCartForm(Form $form, ProductData $data): void
 	{

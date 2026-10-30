@@ -2,7 +2,10 @@
 
 namespace Drago\Commerce\UI\ShoppingCart;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
+use Dibi\Exception;
+use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Nette\Application\UI\InvalidLinkException;
@@ -20,6 +23,9 @@ class MiniCartControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 * @throws InvalidLinkException
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 * @throws MathException
 	 */
 	public function render(): void
 	{

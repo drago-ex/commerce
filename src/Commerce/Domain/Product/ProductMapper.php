@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Drago\Commerce\Commerce;
 
@@ -19,6 +20,7 @@ class ProductMapper
 
 	/**
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	public function map(ProductEntity $entity): Product
 	{

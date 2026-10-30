@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
@@ -36,6 +37,7 @@ class ProductEntity extends Entity
 	 * Returns the original product price as a Money object.
 	 *
 	 * @throws UnknownCurrencyException if the currency is invalid
+	 * @throws MathException
 	 */
 	public function getPrice(): Money
 	{
@@ -47,6 +49,7 @@ class ProductEntity extends Entity
 	 * Returns the price after discount as a Money object.
 	 *
 	 * @throws UnknownCurrencyException if the currency is invalid
+	 * @throws MathException
 	 */
 	public function getDiscountedPrice(): Money
 	{

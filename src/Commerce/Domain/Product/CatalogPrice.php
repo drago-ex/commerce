@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Money;
 
 
@@ -19,6 +20,7 @@ final readonly class CatalogPrice
 	}
 
 
+	/** @throws MathException */
 	public function equals(self $other): bool
 	{
 		return $this->price->isEqualTo($other->price)

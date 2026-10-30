@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
@@ -47,6 +48,7 @@ final class ProductVariantSummary
 	 * price, or the product's price after the product discount.
 	 *
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	public function getLowestPrice(ProductEntity $product, Commerce $commerce): Money
 	{

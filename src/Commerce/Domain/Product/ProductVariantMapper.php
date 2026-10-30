@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
 use Drago\Attr\AttributeDetectionException;
@@ -27,6 +28,7 @@ readonly class ProductVariantMapper
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
 	 * @throws AttributeDetectionException
+	 * @throws MathException
 	 */
 	public function map(ProductVariantEntity $entity, float $fallbackPrice): ProductVariantOption
 	{
@@ -50,6 +52,7 @@ readonly class ProductVariantMapper
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
 	 * @throws AttributeDetectionException
+	 * @throws MathException
 	 */
 	public function mapMany(int $productId, array $entities, float $fallbackPrice): array
 	{
@@ -74,6 +77,7 @@ readonly class ProductVariantMapper
 	 * @param list<string> $labels
 	 * @param list<int> $attributeValueIds
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	private function build(
 		ProductVariantEntity $entity,

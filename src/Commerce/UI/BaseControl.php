@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Drago\Application\UI\ExtraControl;
@@ -97,6 +98,7 @@ class BaseControl extends ExtraControl
 	 * (delivery, payment) are added to the total.
 	 *
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	protected function applyCartTotals(BaseTemplate $template, CartTotals $cart, Money ...$extras): void
 	{

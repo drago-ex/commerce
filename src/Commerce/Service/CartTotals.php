@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Service;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
@@ -31,6 +32,7 @@ final readonly class CartTotals
 	 * The cart total plus the given extra prices (delivery, payment).
 	 *
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function withExtras(Money ...$extras): Money
 	{

@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI\Order;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
@@ -20,6 +21,7 @@ use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
 use Drago\Commerce\UI\BaseForm;
 use Drago\Commerce\UI\Factory;
+use JsonException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\HiddenField;
 use Random\RandomException;
@@ -47,6 +49,10 @@ class SummaryOrderControl extends BaseControl
 	/**
 	 * @throws MoneyMismatchException
 	 * @throws RandomException
+	 * @throws MathException
+	 * @throws JsonException
+	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function render(): void
 	{
@@ -94,6 +100,8 @@ class SummaryOrderControl extends BaseControl
 	 * @throws Exception
 	 * @throws MoneyMismatchException
 	 * @throws UnknownCurrencyException
+	 * @throws JsonException
+	 * @throws MathException
 	 */
 	public function processOrder(Form $form): void
 	{

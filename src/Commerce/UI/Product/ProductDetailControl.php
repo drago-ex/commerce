@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
@@ -75,6 +76,7 @@ class ProductDetailControl extends BaseControl
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws JsonException
+	 * @throws MathException
 	 */
 	public function render(): void
 	{
@@ -141,6 +143,7 @@ class ProductDetailControl extends BaseControl
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function processAddToCartForm(Form $form, FactoryValues $data): void
 	{
@@ -204,6 +207,7 @@ class ProductDetailControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	protected function createComponentAddToCart(): BaseForm
 	{
@@ -273,6 +277,7 @@ class ProductDetailControl extends BaseControl
 	 *
 	 * @return array{price: Money, original: ?Money, percent: int}
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	private function resolvePrice(ProductEntity $entity, ?ProductVariantOption $variant): array
 	{
@@ -295,6 +300,7 @@ class ProductDetailControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	private function getVariantOptions(ProductEntity $entity): array
 	{

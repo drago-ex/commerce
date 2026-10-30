@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI\Order;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Postcode\Exception\InvalidPostcodeException;
 use Brick\Postcode\Exception\UnknownCountryException;
@@ -42,6 +43,7 @@ class CustomerControl extends BaseControl
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function render(): void
 	{

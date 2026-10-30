@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI\ShoppingCart;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
@@ -45,6 +46,7 @@ class SummaryCartControl extends BaseControl
 	 * @throws InvalidLinkException
 	 * @throws Exception
 	 * @throws AttributeDetectionException
+	 * @throws MathException
 	 */
 	public function render(): void
 	{
@@ -82,6 +84,7 @@ class SummaryCartControl extends BaseControl
 	 * @throws Exception
 	 * @throws AttributeDetectionException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function applyDiscountCode(Form $form, FactoryValues $data): void
 	{
@@ -110,6 +113,7 @@ class SummaryCartControl extends BaseControl
 	 * @throws AbortException
 	 * @throws AttributeDetectionException
 	 * @throws Exception
+	 * @throws MathException
 	 */
 	public function changeQuantity(Form $form, FactoryValues $data): void
 	{

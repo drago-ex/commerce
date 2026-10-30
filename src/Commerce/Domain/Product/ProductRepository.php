@@ -20,7 +20,7 @@ class ProductRepository
 	use Database;
 
 	public function __construct(
-		protected Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -42,6 +42,7 @@ class ProductRepository
 	 * Returns the number of active products.
 	 *
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function countActive(): int
 	{

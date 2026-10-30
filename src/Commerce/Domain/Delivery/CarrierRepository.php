@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Delivery;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Connection;
 use Dibi\Exception;
@@ -20,7 +21,7 @@ class CarrierRepository
 	use Database;
 
 	public function __construct(
-		protected Connection $connection,
+		private readonly Connection $connection,
 		private readonly CarrierMapper $carrier,
 	) {
 	}
@@ -73,6 +74,7 @@ class CarrierRepository
 	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	public function getCarrierItems(): array
 	{

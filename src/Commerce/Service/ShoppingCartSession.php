@@ -3,8 +3,11 @@
 namespace Drago\Commerce\Service;
 
 use Brick\Math\BigInteger;
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
+use Dibi\Exception;
+use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Product\Product;
@@ -56,6 +59,9 @@ class ShoppingCartSession
 	 * Pass an already loaded code to avoid looking it up again.
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 * @throws MathException
 	 */
 	public function getTotalPrice(?DiscountCodeEntity $discountCode = null): Money
 	{
@@ -67,6 +73,7 @@ class ShoppingCartSession
 	 * Returns the cart total after per-product discounts but before applying a discount code.
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
+	 * @throws MathException
 	 */
 	public function getSubtotalPrice(): Money
 	{
@@ -88,6 +95,7 @@ class ShoppingCartSession
 	 * per-product discounts are saving the customer.
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
+	 * @throws MathException
 	 */
 	public function getOriginalPrice(): Money
 	{
@@ -107,6 +115,9 @@ class ShoppingCartSession
 	 * Returns all prices of the cart at once, looking the discount code up only once.
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
+	 * @throws Exception
+	 * @throws AttributeDetectionException
+	 * @throws MathException
 	 */
 	public function getTotals(): CartTotals
 	{
@@ -130,6 +141,7 @@ class ShoppingCartSession
 
 	/**
 	 * Returns total quantity of all items in the basket.
+	 * @throws MathException
 	 */
 	public function getAmountItems(): int
 	{
@@ -155,6 +167,7 @@ class ShoppingCartSession
 	 *
 	 * Adding to a line that already exists also replaces its product, so the
 	 * line always carries the price from the latest add.
+	 * @throws MathException
 	 */
 	public function addItem(
 		Product $product,

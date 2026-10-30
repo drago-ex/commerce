@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Product;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Drago\Commerce\Commerce;
@@ -14,11 +15,11 @@ use Drago\Commerce\Event\ProductAddedToCart;
  * (sold without the product discount) or the product price with its percentage
  * discount, then the ProductAddedToCart listeners.
  */
-class PriceResolver
+readonly class PriceResolver
 {
 	public function __construct(
-		private readonly Commerce $commerce,
-		private readonly EventDispatcher $eventDispatcher,
+		private Commerce $commerce,
+		private EventDispatcher $eventDispatcher,
 	) {
 	}
 
@@ -27,6 +28,7 @@ class PriceResolver
 	 * Current catalog price, before any listener runs.
 	 *
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	public function catalog(ProductEntity $entity, ?ProductVariantEntity $variant = null): CatalogPrice
 	{
@@ -44,6 +46,7 @@ class PriceResolver
 	 *
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function forCart(
 		ProductEntity $entity,

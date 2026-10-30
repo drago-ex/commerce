@@ -17,7 +17,7 @@ class DiscountCodeRepository
 	use Database;
 
 	public function __construct(
-		protected Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -56,6 +56,7 @@ class DiscountCodeRepository
 	 * no longer be used by the time the order was placed.
 	 *
 	 * @throws Exception
+	 * @throws AttributeDetectionException
 	 */
 	public function incrementUsage(int $id): bool
 	{

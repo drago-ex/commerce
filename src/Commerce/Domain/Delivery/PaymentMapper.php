@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Delivery;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Drago\Commerce\Commerce;
 
@@ -19,6 +20,7 @@ readonly class PaymentMapper
 
 	/**
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	public function map(PaymentEntity $entity): Payment
 	{

@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Drago\Application\UI\ExtraTemplate;
@@ -51,6 +52,7 @@ class BaseTemplate extends ExtraTemplate
 	 * Converts a numeric amount to a formatted currency string.
 	 *
 	 * @throws UnknownCurrencyException
+	 * @throws MathException
 	 */
 	#[TemplateFilter]
 	public function price(float|int $amount): string

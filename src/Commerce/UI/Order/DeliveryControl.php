@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\UI\Order;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
@@ -46,6 +47,7 @@ class DeliveryControl extends BaseControl
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function render(): void
 	{
@@ -82,6 +84,7 @@ class DeliveryControl extends BaseControl
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
 	 * @throws BadRequestException
+	 * @throws MathException
 	 */
 	public function processDeliveryOptionsForm(Form $form, DeliveryValues $data): void
 	{

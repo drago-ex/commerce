@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Checkout;
 
+use Brick\Math\Exception\MathException;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 use Drago\Commerce\UI\BaseControl;
@@ -50,6 +51,7 @@ final class CheckoutProcess
 	 * Returns identifiers of completed checkout steps.
 	 *
 	 * @return list<string>
+	 * @throws MathException
 	 */
 	public function getCompletedSteps(): array
 	{
@@ -60,6 +62,7 @@ final class CheckoutProcess
 	/**
 	 * Returns the first missing checkout prerequisite for the requested action,
 	 * or null when no redirect is needed.
+	 * @throws MathException
 	 */
 	public function getRedirectTargetForAction(string $action): ?string
 	{
@@ -81,6 +84,7 @@ final class CheckoutProcess
 	 * Fully configures a step control for its place in the checkout flow:
 	 * the step map (for breadcrumbs), which steps are already completed,
 	 * which one is current, and where to send the customer next.
+	 * @throws MathException
 	 */
 	public function configureStep(BaseControl $control, string $step): BaseControl
 	{

@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Service;
 
+use Brick\Math\Exception\MathException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
@@ -122,6 +123,7 @@ class DiscountCodeService
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
+	 * @throws MathException
 	 */
 	public function applyTo(Money $total, ?DiscountCodeEntity $discountCode = null): Money
 	{

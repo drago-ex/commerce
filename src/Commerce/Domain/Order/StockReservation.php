@@ -17,11 +17,11 @@ use Drago\Commerce\Domain\Product\ProductVariantRepository;
  * Must run inside the caller's transaction: each stock decrement is atomic,
  * but the reservation as a whole is only undone by rolling that transaction back.
  */
-class StockReservation
+readonly class StockReservation
 {
 	public function __construct(
-		private readonly ProductRepository $productRepository,
-		private readonly ProductVariantRepository $variantRepository,
+		private ProductRepository $productRepository,
+		private ProductVariantRepository $variantRepository,
 	) {
 	}
 

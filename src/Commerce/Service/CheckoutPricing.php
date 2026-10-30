@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Service;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
@@ -20,18 +21,18 @@ use Drago\Commerce\Domain\Product\ProductVariantRepository;
  * with the database before an order is placed, so a customer never pays a price
  * that is no longer valid without having seen the change.
  */
-class CheckoutPricing
+readonly class CheckoutPricing
 {
 	public function __construct(
-		private readonly ShoppingCartSession $shoppingCartSession,
-		private readonly OrderSession $orderSession,
-		private readonly ProductRepository $productRepository,
-		private readonly ProductVariantRepository $variantRepository,
-		private readonly PriceResolver $priceResolver,
-		private readonly CarrierRepository $carrierRepository,
-		private readonly PaymentRepository $paymentRepository,
-		private readonly CarrierMapper $carrierMapper,
-		private readonly PaymentMapper $paymentMapper,
+		private ShoppingCartSession $shoppingCartSession,
+		private OrderSession $orderSession,
+		private ProductRepository $productRepository,
+		private ProductVariantRepository $variantRepository,
+		private PriceResolver $priceResolver,
+		private CarrierRepository $carrierRepository,
+		private PaymentRepository $paymentRepository,
+		private CarrierMapper $carrierMapper,
+		private PaymentMapper $paymentMapper,
 	) {
 	}
 
@@ -47,6 +48,7 @@ class CheckoutPricing
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function refreshCart(): array
 	{
@@ -94,6 +96,7 @@ class CheckoutPricing
 	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
+	 * @throws MathException
 	 */
 	public function refreshDelivery(): bool
 	{

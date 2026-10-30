@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Domain\Checkout;
 
+use Brick\Math\Exception\MathException;
 use Drago\Commerce\Service\OrderSession;
 use Drago\Commerce\Service\ShoppingCartSession;
 
@@ -21,6 +22,7 @@ final readonly class CheckoutStepResolver
 
 	/**
 	 * @return list<string>
+	 * @throws MathException
 	 */
 	public function getCompletedSteps(): array
 	{

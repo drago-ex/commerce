@@ -2,6 +2,7 @@
 
 namespace Drago\Commerce\Service;
 
+use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Drago\Commerce\Commerce;
@@ -57,7 +58,10 @@ class OrderSession
 	}
 
 
-	/** @throws MoneyMismatchException When currency types mismatch. */
+	/**
+	 * @throws MoneyMismatchException When currency types mismatch.
+	 * @throws MathException
+	 */
 	public function getCarrierPrice(): Money
 	{
 		$carrierPrice = $this->commerce->moneyZero();
@@ -89,7 +93,10 @@ class OrderSession
 	}
 
 
-	/** @throws MoneyMismatchException When currency types mismatch. */
+	/**
+	 * @throws MoneyMismatchException When currency types mismatch.
+	 * @throws MathException
+	 */
 	public function getPaymentPrice(): Money
 	{
 		$paymentPrice = $this->commerce->moneyZero();

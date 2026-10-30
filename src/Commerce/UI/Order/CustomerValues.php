@@ -21,6 +21,15 @@ class CustomerValues extends ArrayHash
 		Note = 'note',
 		CreatedAt = 'createdAt';
 
+	/** sizes of the columns of the customers table */
+	public const int EmailSize = 254,
+		NameSize = 255,
+		SurnameSize = 255,
+		StreetSize = 255,
+		CitySize = 255,
+		PostalCodeSize = 20,
+		CountrySize = 255;
+
 	public int $id;
 	public string $email;
 	public PhoneNumber $phone;

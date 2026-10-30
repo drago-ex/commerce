@@ -3,7 +3,7 @@
 -- -------------------
 CREATE TABLE customers (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(254) NOT NULL,
     phone VARCHAR(22) NOT NULL,
     name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,

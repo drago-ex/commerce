@@ -21,4 +21,5 @@ class DiscountCodeEntity extends Entity
 	public int $usedCount;
 	public ?float $minimumOrderAmount;
 	public int $active;
+	public DateTimeImmutable $createdAt;
 }

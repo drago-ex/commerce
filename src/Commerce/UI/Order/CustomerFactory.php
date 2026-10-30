@@ -32,7 +32,8 @@ class CustomerFactory
 		$form = $this->factory->create($translator);
 		$form->addEmailInput(CustomerValues::Email, 'Email')
 			->setAutocomplete(Autocomplete::Email)
-			->addRule($form::Email);
+			->addRule($form::Email)
+			->addRule($form::MaxLength, 'The email can have at most %d characters.', CustomerValues::EmailSize);
 
 		$phone = $form->addPhoneNumber(CustomerValues::Phone, 'Phone')
 			->setHtmlAttribute('autocomplete', Autocomplete::Tel->value)
@@ -68,32 +69,38 @@ class CustomerFactory
 		$form->addTextInput(CustomerValues::Name, 'Name')
 			->setAutocomplete(Autocomplete::GivenName)
 			->setPlaceholder('Your name')
-			->setRequired('Please enter your name');
+			->setRequired('Please enter your name')
+			->addRule($form::MaxLength, 'The name can have at most %d characters.', CustomerValues::NameSize);
 
 		$form->addTextInput(CustomerValues::Surname, 'Surname')
 			->setAutocomplete(Autocomplete::FamilyName)
 			->setPlaceholder('Your surname')
-			->setRequired('Please enter your surname');
+			->setRequired('Please enter your surname')
+			->addRule($form::MaxLength, 'The surname can have at most %d characters.', CustomerValues::SurnameSize);
 
 		$form->addTextInput(CustomerValues::Street, 'Street')
 			->setAutocomplete(Autocomplete::AddressLine1)
 			->setPlaceholder('Your street')
-			->setRequired('Please enter your street');
+			->setRequired('Please enter your street')
+			->addRule($form::MaxLength, 'The street can have at most %d characters.', CustomerValues::StreetSize);
 
 		$form->addTextInput(CustomerValues::City, 'City')
 			->setAutocomplete(Autocomplete::AddressLevel2)
 			->setPlaceholder('Your city')
-			->setRequired('Please enter your city');
+			->setRequired('Please enter your city')
+			->addRule($form::MaxLength, 'The city can have at most %d characters.', CustomerValues::CitySize);
 
 		$form->addTextInput(CustomerValues::Country, 'Country')
 			->setAutocomplete(Autocomplete::Country)
 			->setPlaceholder('Your country')
-			->setRequired('Please enter your country');
+			->setRequired('Please enter your country')
+			->addRule($form::MaxLength, 'The country can have at most %d characters.', CustomerValues::CountrySize);
 
 		$form->addTextInput(CustomerValues::PostalCode, 'Postal Code')
 			->setAutocomplete(Autocomplete::PostalCode)
 			->setPlaceholder('Your postal code')
-			->setRequired('Please enter your postal code');
+			->setRequired('Please enter your postal code')
+			->addRule($form::MaxLength, 'The postal code can have at most %d characters.', CustomerValues::PostalCodeSize);
 
 
 		$form->addTextArea(CustomerValues::Note, 'Note');

@@ -121,7 +121,7 @@ final class OrderFingerprint
 		return $discountCode === null ? null : [
 			'id' => $discountCode->id,
 			'code' => $discountCode->code,
-			'type' => $discountCode->type,
+			'type' => $discountCode->type->value,
 			'value' => $discountCode->value,
 			'minimumOrderAmount' => $discountCode->minimumOrderAmount,
 		];

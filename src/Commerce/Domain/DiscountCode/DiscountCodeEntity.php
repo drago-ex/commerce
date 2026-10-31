@@ -13,7 +13,7 @@ class DiscountCodeEntity extends Entity
 
 	public int $id;
 	public string $code;
-	public string $type;
+	public DiscountType $type;
 	public float $value;
 	public ?DateTimeImmutable $validFrom;
 	public ?DateTimeImmutable $validTo;

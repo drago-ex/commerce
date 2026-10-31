@@ -11,6 +11,7 @@ use Drago\Commerce\Domain\Delivery\Carrier;
 use Drago\Commerce\Domain\Delivery\Payment;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
+use Drago\Commerce\Domain\DiscountCode\DiscountType;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OrderProductRepository;
 use Drago\Commerce\Domain\Order\OrderRepository;
@@ -281,7 +282,7 @@ try {
 	$rejectedCode = new DiscountCodeEntity;
 	$rejectedCode->id = 1;
 	$rejectedCode->code = 'TEST10';
-	$rejectedCode->type = 'fixed';
+	$rejectedCode->type = DiscountType::Fixed;
 	$rejectedCode->value = 100;
 	$rejectedCode->validFrom = null;
 	$rejectedCode->validTo = null;

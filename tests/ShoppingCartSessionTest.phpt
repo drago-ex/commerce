@@ -6,6 +6,7 @@ use Brick\Money\Money;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
+use Drago\Commerce\Domain\DiscountCode\DiscountType;
 use Drago\Commerce\Domain\Product\Product;
 use Drago\Commerce\Service\DiscountCodeService;
 use Drago\Commerce\Service\ShoppingCartSession;
@@ -86,7 +87,7 @@ Assert::true($cartSession->getSubtotalPrice()->isEqualTo(Money::of(680, 'CZK')))
 $discountEntity = new DiscountCodeEntity;
 $discountEntity->id = 1;
 $discountEntity->code = 'DISCOUNT80';
-$discountEntity->type = 'fixed';
+$discountEntity->type = DiscountType::Fixed;
 $discountEntity->value = 80.0;
 $discountEntity->minimumOrderAmount = null;
 $discountRepo->codes['DISCOUNT80'] = $discountEntity;

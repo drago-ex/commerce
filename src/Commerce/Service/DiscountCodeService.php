@@ -12,6 +12,7 @@ use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
+use Drago\Commerce\Domain\DiscountCode\DiscountType;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 use function is_string;
@@ -143,7 +144,7 @@ class DiscountCodeService
 			return $total;
 		}
 
-		if ($discountCode->type === 'percent') {
+		if ($discountCode->type === DiscountType::Percent) {
 			// total × value / 100 exactly, rounded half up only at the end (12.5 % of 33.33 is 4.16625)
 			$discount = $total->toRational()
 				->multipliedBy(Commerce::decimal($discountCode->value))

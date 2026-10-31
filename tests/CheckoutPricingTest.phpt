@@ -116,7 +116,7 @@ $entity->description = '';
 $entity->discount = null;
 $entity->price = 500.0;
 $entity->photo = '';
-$entity->active = 1;
+$entity->active = true;
 $entity->stock = 10;
 $products->entities[1] = $entity;
 
@@ -169,11 +169,11 @@ Assert::true($unitPrice()->isEqualTo($czk(600)));
 Assert::same(3, $cart->getAmountItems());
 
 // ---- An inactive product is left to the stock reservation.
-$entity->active = 0;
+$entity->active = false;
 $entity->price = 700.0;
 Assert::same([], $pricing->refreshCart());
 Assert::true($unitPrice()->isEqualTo($czk(600)));
-$entity->active = 1;
+$entity->active = true;
 $cart->remove();
 
 // ---- A price set by a ProductAddedToCart listener survives while the catalog stays the same.

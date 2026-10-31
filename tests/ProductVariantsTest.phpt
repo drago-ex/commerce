@@ -96,7 +96,7 @@ $entityOverride->productId = 2;
 $entityOverride->sku = 'XYZ-256-BLK';
 $entityOverride->price = 14500.0;
 $entityOverride->stock = 4;
-$entityOverride->active = 1;
+$entityOverride->active = true;
 
 $optionOverride = $mapper->map($entityOverride, 12500.0);
 Assert::true($optionOverride->price?->isEqualTo(Money::of(14500, 'CZK')));
@@ -111,7 +111,7 @@ $entityFallback->productId = 2;
 $entityFallback->sku = 'XYZ-128-BLK';
 $entityFallback->price = null;
 $entityFallback->stock = 6;
-$entityFallback->active = 1;
+$entityFallback->active = true;
 
 $optionFallback = $mapper->map($entityFallback, 12500.0);
 Assert::true($optionFallback->price?->isEqualTo(Money::of(12500, 'CZK')));

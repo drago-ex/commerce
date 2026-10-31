@@ -26,7 +26,7 @@ class ProductVariantEntity extends Entity
 	public ?string $sku;
 	public ?float $price;
 	public int $stock;
-	public int $active;
+	public bool $active;
 
 
 	/**

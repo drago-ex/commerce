@@ -63,7 +63,7 @@ $percentCode->validTo = null;
 $percentCode->usageLimit = 10;
 $percentCode->usedCount = 0;
 $percentCode->minimumOrderAmount = 1000;
-$percentCode->active = 1;
+$percentCode->active = true;
 
 $fixedCode = new DiscountCodeEntity;
 $fixedCode->id = 12;
@@ -75,7 +75,7 @@ $fixedCode->validTo = null;
 $fixedCode->usageLimit = null;
 $fixedCode->usedCount = 0;
 $fixedCode->minimumOrderAmount = null;
-$fixedCode->active = 1;
+$fixedCode->active = true;
 
 $negativeCode = new DiscountCodeEntity;
 $negativeCode->id = 13;
@@ -87,7 +87,7 @@ $negativeCode->validTo = null;
 $negativeCode->usageLimit = null;
 $negativeCode->usedCount = 0;
 $negativeCode->minimumOrderAmount = null;
-$negativeCode->active = 1;
+$negativeCode->active = true;
 
 $repository->codes = [
 	$percentCode->code => $percentCode,

@@ -34,7 +34,7 @@ $code->validTo = null;
 $code->usageLimit = null;
 $code->usedCount = 0;
 $code->minimumOrderAmount = null;
-$code->active = 1;
+$code->active = true;
 
 $repository = new class ($code) extends DiscountCodeRepository {
 	public function __construct(

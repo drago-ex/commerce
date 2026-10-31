@@ -29,7 +29,7 @@ class ProductEntity extends Entity
 	public ?int $discount;
 	public float $price;
 	public string $photo;
-	public int $active;
+	public bool $active;
 	public int $stock;
 
 

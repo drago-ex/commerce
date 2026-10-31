@@ -288,7 +288,7 @@ try {
 	$rejectedCode->usageLimit = null;
 	$rejectedCode->usedCount = 0;
 	$rejectedCode->minimumOrderAmount = null;
-	$rejectedCode->active = 1;
+	$rejectedCode->active = true;
 
 	$rollbackOrderService = new OrderService(
 		$orderRepository,

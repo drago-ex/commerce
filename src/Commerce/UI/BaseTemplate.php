@@ -9,6 +9,7 @@ use Drago\Application\UI\ExtraTemplate;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Latte\Attributes\TemplateFilter;
+use function is_string;
 
 
 class BaseTemplate extends ExtraTemplate
@@ -56,5 +57,14 @@ class BaseTemplate extends ExtraTemplate
 	public function price(float|int $amount): string
 	{
 		return $this->money(Commerce::money($amount));
+	}
+
+
+	/** The name of a country by its ISO code, in the language of the page. */
+	#[TemplateFilter]
+	public function country(string $code): string
+	{
+		$lang = $this->presenter->getParameter('lang');
+		return Commerce::countryName($code, is_string($lang) ? $lang : null);
 	}
 }

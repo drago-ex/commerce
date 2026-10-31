@@ -42,7 +42,7 @@ class OrderLoggerListener
 				'variant_id' => $item->variantId,
 				'variant'    => $item->variantLabel,
 				'amount'     => $item->amount->toInt(),
-				'unit_price' => $item->getUnitPrice()->getAmount()->toFloat(),
+				'unit_price' => (string) $item->getUnitPrice()->getAmount(),
 			], array_values($items)),
 			'Subtotal'        => $event->orderSummary->subtotalPrice,
 			'Discount code'   => $event->orderSummary->discountCode,

@@ -100,7 +100,7 @@
 										<strong style="color:#243247;">{$order->customer->name} {$order->customer->surname}</strong><br>
 										{$order->customer->street}<br>
 										{$order->customer->postalCode} {$order->customer->city}<br>
-										{$order->customer->country}<br>
+										{Drago\Commerce\Commerce::countryName($order->customer->country, $lang)}<br>
 										<a href="mailto:{$order->customer->email}" style="color:#176b9a; text-decoration:none;">{$order->customer->email}</a>
 										<p n:if="$order->customer->note" style="margin:12px 0 0; padding-top:12px; border-top:1px solid #dce4ec;">
 											<strong style="color:#243247;">{_'Note'}:</strong><br>

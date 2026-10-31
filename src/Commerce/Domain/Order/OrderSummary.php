@@ -5,19 +5,19 @@ namespace Drago\Commerce\Domain\Order;
 use DateTimeImmutable;
 
 
-/** Represents a persisted customer order summary. */
+/** Represents a persisted customer order summary; the amounts are exact decimal strings ("150.00") for the DECIMAL columns. */
 class OrderSummary
 {
 	public function __construct(
 		public int $customerId,
 		public int $carrierId,
 		public int $paymentId,
-		public float $carrierPrice,
-		public float $paymentPrice,
-		public float $subtotalPrice,
-		public float $totalPrice,
+		public string $carrierPrice,
+		public string $paymentPrice,
+		public string $subtotalPrice,
+		public string $totalPrice,
 		public ?string $discountCode,
-		public float $discountAmount,
+		public string $discountAmount,
 		public DateTimeImmutable $createdAt,
 		public string $currency = '',
 		public string $carrierName = '',

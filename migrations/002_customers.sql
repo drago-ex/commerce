@@ -10,7 +10,7 @@ CREATE TABLE customers (
     street VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
     postal_code VARCHAR(20) NOT NULL,
-    country VARCHAR(255) NOT NULL,
+    country CHAR(2) NOT NULL COMMENT 'ISO 3166-1 alpha-2',
     note TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)

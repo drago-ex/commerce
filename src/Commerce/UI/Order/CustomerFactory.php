@@ -11,6 +11,7 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nepada\PhoneNumberInput\PhoneNumberInput;
 use Nette\Http\Request;
 use Nette\Localization\Translator;
+use Nette\Utils\Html;
 use function is_array, is_string;
 
 
@@ -26,8 +27,11 @@ class CustomerFactory
 	}
 
 
-	/** @throws InvalidDatabaseException */
-	public function addCustomer(?Translator $translator = null): BaseForm
+	/**
+	 * @param string|null $lang the language of the country names
+	 * @throws InvalidDatabaseException
+	 */
+	public function addCustomer(?Translator $translator = null, ?string $lang = null): BaseForm
 	{
 		$form = $this->factory->create($translator);
 		$form->addEmailInput(CustomerValues::Email, 'Email')
@@ -90,11 +94,17 @@ class CustomerFactory
 			->setRequired('Please enter your city')
 			->addRule($form::MaxLength, 'The city can have at most %d characters.', CustomerValues::CitySize);
 
-		$form->addTextInput(CustomerValues::Country, 'Country')
-			->setAutocomplete(Autocomplete::Country)
-			->setPlaceholder('Your country')
-			->setRequired('Please enter your country')
-			->addRule($form::MaxLength, 'The country can have at most %d characters.', CustomerValues::CountrySize);
+		// the delivery countries of the configuration, named by intl in the language (not translated again)
+		$countries = $this->commerce->getCountries();
+		$form->addSelect(CustomerValues::Country, 'Country', array_combine(
+			$countries,
+			array_map(fn(string $code): Html => Html::el()->setText(Commerce::countryName($code, $lang)), $countries),
+		))
+			->setHtmlAttribute('autocomplete', Autocomplete::Country->value)
+			// a country of the session that is no longer offered is not preselected instead of failing
+			->checkDefaultValue(false)
+			->setDefaultValue(in_array($countryIsoCode, $countries, true) ? $countryIsoCode : $countries[0])
+			->setRequired('Please choose your country');
 
 		$form->addTextInput(CustomerValues::PostalCode, 'Postal Code')
 			->setAutocomplete(Autocomplete::PostalCode)

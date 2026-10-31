@@ -26,7 +26,10 @@ class CommerceExtension extends CompilerExtension
 			'moneyFractionDigits' => Expect::int(),
 			'defaultRegionCode' => Expect::type('array|string|false'),
 			'allowedRegionPhoneNumber' => Expect::type('array|string'),
-			'postCodeOnRegionPhone' => Expect::bool(),
+			'countries' => Expect::listOf(Expect::string()->pattern('[A-Z]{2}'))
+				->default(Commerce::DefaultCountries)
+				->mergeDefaults(false),
+			'validatePostCode' => Expect::bool(true),
 			'itemsPerPage' => Expect::int()->min(0),
 			'geoLite2Path' => Expect::string()->nullable()->default(null),
 			'orderEmail' => Expect::structure([

@@ -73,7 +73,7 @@
 							<strong class="fw-semibold d-block mb-1">{_'Delivery address'}</strong>
 							{$customer->street}<br>
 							{$customer->postalCode} {$customer->city}<br>
-							{$customer->country}
+							{$customer->country|country}
 						</div>
 						<div class="col-12" n:if="$customer->note">
 							<strong class="fw-semibold d-block mb-1">{_'Order note'}</strong>

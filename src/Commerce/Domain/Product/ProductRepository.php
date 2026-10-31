@@ -98,4 +98,18 @@ class ProductRepository
 			->where('%n >= %i', ProductEntity::Stock, $amount)
 			->execute(Fluent::AffectedRows) > 0;
 	}
+
+
+	/**
+	 * Returns the amount to stock, for an item of a cancelled order.
+	 * @throws Exception
+	 */
+	public function incrementStock(int $id, int $amount): void
+	{
+		$this->table->command()
+			->update(ProductEntity::Table)
+			->set('%n = %n + %i', ProductEntity::Stock, ProductEntity::Stock, $amount)
+			->where('%n = ?', ProductEntity::PrimaryKey, $id)
+			->execute();
+	}
 }

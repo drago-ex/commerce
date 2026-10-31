@@ -115,12 +115,12 @@ try {
 		customerId: 1,
 		carrierId: 1,
 		paymentId: 1,
-		carrierPrice: 150,
-		paymentPrice: 0,
-		subtotalPrice: 107970,
-		totalPrice: 108120,
+		carrierPrice: '150.00',
+		paymentPrice: '0.00',
+		subtotalPrice: '107970.00',
+		totalPrice: '108120.00',
 		discountCode: null,
-		discountAmount: 0,
+		discountAmount: '0.00',
 		createdAt: new DateTimeImmutable,
 	));
 	$orderId = $orderRepository->table->getInsertId();

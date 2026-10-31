@@ -272,4 +272,18 @@ class ProductVariantRepository
 			->where('%n >= %i', ProductVariantEntity::Stock, $amount)
 			->execute(Fluent::AffectedRows) > 0;
 	}
+
+
+	/**
+	 * Returns the amount to the stock of a variant, for an item of a cancelled order.
+	 * @throws Exception
+	 */
+	public function incrementStock(int $id, int $amount): void
+	{
+		$this->table->command()
+			->update(ProductVariantEntity::Table)
+			->set('%n = %n + %i', ProductVariantEntity::Stock, ProductVariantEntity::Stock, $amount)
+			->where('%n = ?', ProductVariantEntity::PrimaryKey, $id)
+			->execute();
+	}
 }

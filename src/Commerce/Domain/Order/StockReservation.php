@@ -3,6 +3,7 @@
 namespace Drago\Commerce\Domain\Order;
 
 use Dibi\Exception;
+use Dibi\Row;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
@@ -15,6 +16,7 @@ use Drago\Commerce\Domain\Product\ProductVariantRepository;
  *
  * Must run inside the caller's transaction: each stock decrement is atomic,
  * but the reservation as a whole is only undone by rolling that transaction back.
+ * release() returns the stock of a cancelled order.
  */
 readonly class StockReservation
 {
@@ -68,6 +70,28 @@ readonly class StockReservation
 
 			if (!$this->variantRepository->decrementStock($variant->id, $amount)) {
 				throw new OutOfStockException($name);
+			}
+		}
+	}
+
+
+	/**
+	 * Returns the ordered amounts to stock, for a cancelled order: to the variant when the line has one,
+	 * otherwise to the product, as reserve() took them.
+	 * @param list<Row> $lines rows with product_id, variant_id and amount (OrderProductRepository::getByOrder())
+	 * @throws Exception
+	 */
+	public function release(array $lines): void
+	{
+		// the same order of the rows as reserve(), so a cancellation and an order cannot deadlock
+		usort($lines, static fn(Row $a, Row $b): int => [$a['product_id'], $a['variant_id'] ?? 0]
+			<=> [$b['product_id'], $b['variant_id'] ?? 0]);
+
+		foreach ($lines as $line) {
+			if ($line['variant_id'] !== null) {
+				$this->variantRepository->incrementStock((int) $line['variant_id'], (int) $line['amount']);
+			} else {
+				$this->productRepository->incrementStock((int) $line['product_id'], (int) $line['amount']);
 			}
 		}
 	}

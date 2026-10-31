@@ -6,8 +6,9 @@ use Brick\Math\Exception\MathException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
+use Locale;
 use NumberFormatter;
-use function is_int;
+use function is_array, is_int, is_string;
 
 
 /**
@@ -16,6 +17,9 @@ use function is_int;
  */
 class Commerce
 {
+	/** Delivery countries without the countries option, as ISO 3166-1 alpha-2 codes. */
+	public const array DefaultCountries = ['CZ', 'SK'];
+
 	public static string $currency;
 	public static string $moneyFormat;
 	public static string $moneySymbol;
@@ -57,14 +61,14 @@ class Commerce
 
 
 	/**
-	 * Creates a Money object from a number from the database, in the configured currency unless another is given.
+	 * Creates a Money object from a number from the database or a decimal string, in the configured currency unless another is given.
 	 *
 	 * @throws UnknownCurrencyException
 	 * @throws MathException
 	 */
-	public static function money(float|int $amount, ?string $currency = null): Money
+	public static function money(float|int|string $amount, ?string $currency = null): Money
 	{
-		return Money::of(self::decimal($amount), $currency ?? self::$currency);
+		return Money::of(is_string($amount) ? $amount : self::decimal($amount), $currency ?? self::$currency);
 	}
 
 
@@ -98,6 +102,14 @@ class Commerce
 	}
 
 
+	/** The name of a country by its ISO 3166-1 alpha-2 code in the language (English without one), or the code itself. */
+	public static function countryName(string $code, ?string $lang = null): string
+	{
+		$name = Locale::getDisplayRegion('-' . $code, $lang ?? 'en');
+		return is_string($name) && $name !== '' ? $name : $code;
+	}
+
+
 	public static function formatMoney(Money $money): string
 	{
 		$formatter = new NumberFormatter(self::$moneyFormat, NumberFormatter::CURRENCY);
@@ -128,10 +140,21 @@ class Commerce
 	}
 
 
-	/** Returns whether the postal code should be validated against the phone region. */
-	public function getPostCodeOnRegionPhone(): bool
+	/**
+	 * Delivery countries offered in the customer form, as ISO 3166-1 alpha-2 codes.
+	 * @return list<string>
+	 */
+	public function getCountries(): array
 	{
-		return (bool) ($this->config['postCodeOnRegionPhone'] ?? false);
+		$countries = $this->config['countries'] ?? null;
+		return is_array($countries) && $countries !== [] ? array_values($countries) : self::DefaultCountries;
+	}
+
+
+	/** Returns whether the postal code is validated and formatted for the country of the customer. */
+	public function getValidatePostCode(): bool
+	{
+		return (bool) ($this->config['validatePostCode'] ?? true);
 	}
 
 

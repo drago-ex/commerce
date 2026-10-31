@@ -66,4 +66,19 @@ class DiscountCodeRepository
 			->where('(usage_limit IS NULL OR used_count < usage_limit)')
 			->execute(Fluent::AffectedRows) > 0;
 	}
+
+
+	/**
+	 * Gives back one use of the code, for a cancelled order; the counter never drops below zero.
+	 * @throws Exception
+	 */
+	public function decrementUsage(string $code): void
+	{
+		$this->table->command()
+			->update(DiscountCodeEntity::Table)
+			->set('%n = %n - 1', 'used_count', 'used_count')
+			->where('%n = ?', 'code', $code)
+			->where('%n > 0', 'used_count')
+			->execute();
+	}
 }

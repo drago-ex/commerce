@@ -16,21 +16,21 @@ $firstVariantLine = new OrderProduct(
 	productId: 6,
 	variantId: 24,
 	amount: 2,
-	unitPrice: 490.0,
+	unitPrice: '490.00',
 );
 $secondVariantLine = new OrderProduct(
 	orderId: 42,
 	productId: 6,
 	variantId: 28,
 	amount: 1,
-	unitPrice: 490.0,
+	unitPrice: '490.00',
 );
 $nonVariantLine = new OrderProduct(
 	orderId: 42,
 	productId: 7,
 	variantId: null,
 	amount: 1,
-	unitPrice: 1250.0,
+	unitPrice: '1250.00',
 );
 
 Assert::same([
@@ -38,7 +38,7 @@ Assert::same([
 	'productId' => 6,
 	'variantId' => 24,
 	'amount' => 2,
-	'unitPrice' => 490.0,
+	'unitPrice' => '490.00',
 	'productName' => '',
 	'variantLabel' => null,
 ], (array) $firstVariantLine);
@@ -52,7 +52,7 @@ $variantCartItem = new ProductCart(
 	variantId: 31,
 );
 $persistedVariantLine = OrderProduct::fromCartItem(43, $variantCartItem);
-Assert::same(32490.0, $persistedVariantLine->unitPrice);
+Assert::same('32490.00', $persistedVariantLine->unitPrice);
 Assert::same(31, $persistedVariantLine->variantId);
 
 // The name and variant label are copied from the cart line, so the order keeps reading the same later.

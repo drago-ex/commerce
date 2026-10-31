@@ -79,8 +79,9 @@ Available `commerce` options:
 | `itemsPerPage` | `12` | Products per page; `0` disables pagination |
 | `defaultRegionCode` | none | Default phone region, e.g. `CZ`, or `['autoDetect', 'CZ']` to detect and fall back |
 | `allowedRegionPhoneNumber` | any | One or more allowed phone-region codes |
-| `postCodeOnRegionPhone` | `false` | Validate the postal code against the phone region |
-| `geoLite2Path` | none | Path to a GeoLite2 City database for phone-region detection |
+| `countries` | `[CZ, SK]` | Delivery countries offered in the customer form, ISO 3166-1 alpha-2 codes; the first one is preselected unless GeoLite2 finds another of them |
+| `validatePostCode` | `true` | Validate and format the postal code for the chosen country (countries brick/postcode does not know keep it as written) |
+| `geoLite2Path` | none | Path to a GeoLite2 City database for detecting the phone region and the country |
 
 ## Use in a presenter
 
@@ -207,6 +208,24 @@ services:
 
 Products with active variants must be purchased through a variant. A variant can use the product price and discount, or have its own price; variant-specific prices do not receive the product discount. Checkout refreshes catalog and delivery prices before order placement and asks the customer to review changes.
 
+## Order states
+
+A placed order is `new`. `OrderStatusService` changes its state along `OrderStatus`, and its payment separately:
+
+| State | Can change to |
+| --- | --- |
+| `new` | `processing`, `cancelled` |
+| `processing` | `shipped`, `cancelled` |
+| `shipped` | `completed` |
+| `completed`, `cancelled` | — |
+
+```php
+$orderStatusService->change($orderId, OrderStatus::Shipped);
+$orderStatusService->markPaid($orderId); // paid_at, false when already paid
+```
+
+A change that is not allowed throws `OrderStatusException`. Cancelling returns the ordered items to stock and the use of the discount code. Whether an order is paid is kept apart from its state (`paid_at`), as a bank transfer is paid before shipping and cash on delivery after it.
+
 ## Events
 
 Register callable listeners on the `EventDispatcher` service to customize behavior:
@@ -215,6 +234,7 @@ Register callable listeners on the `EventDispatcher` service to customize behavi
 - `CartItemChanged` and `CartItemRemoved` — react to cart updates.
 - `CustomerUpdated` and `DeliveryOptionsChanged` — react to checkout changes.
 - `OrderPlaced` — react after the order has been saved.
+- `OrderStatusChanged` — react after the state of an order has changed (e.g. send a shipping email).
 
 Listeners run synchronously. An `OrderPlaced` listener failure is logged and does not undo the saved order.
 

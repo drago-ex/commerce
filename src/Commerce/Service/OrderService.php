@@ -152,9 +152,10 @@ readonly class OrderService
 	}
 
 
-	private function getAmountPrice(Money $money): float
+	/** The amount as an exact decimal string ("150.00"), saved into a DECIMAL column without a float on the way. */
+	private function getAmountPrice(Money $money): string
 	{
-		return $money->getAmount()->toFloat();
+		return (string) $money->getAmount();
 	}
 
 

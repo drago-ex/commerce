@@ -79,8 +79,9 @@ Dostupné volby `commerce`:
 | `itemsPerPage` | `12` | Produktů na stránku; `0` stránkování vypne |
 | `defaultRegionCode` | žádná | Výchozí oblast telefonu, např. `CZ`, nebo `['autoDetect', 'CZ']` pro zjištění se záložní hodnotou |
 | `allowedRegionPhoneNumber` | libovolná | Jeden nebo více povolených kódů oblasti telefonu |
-| `postCodeOnRegionPhone` | `false` | Ověřit PSČ podle oblasti telefonu |
-| `geoLite2Path` | žádná | Cesta k databázi GeoLite2 City pro zjištění oblasti telefonu |
+| `countries` | `[CZ, SK]` | Země doručení nabízené ve formuláři zákazníka, kódy ISO 3166-1 alpha-2; předvybraná je první, pokud GeoLite2 nenajde jinou z nich |
+| `validatePostCode` | `true` | Ověřit a naformátovat PSČ podle vybrané země (země, které brick/postcode nezná, nechají PSČ, jak bylo zadané) |
+| `geoLite2Path` | žádná | Cesta k databázi GeoLite2 City pro zjištění oblasti telefonu a země |
 
 ## Použití v presenteru
 
@@ -207,6 +208,24 @@ services:
 
 Produkty s aktivními variantami se kupují přes variantu. Varianta může používat cenu a slevu produktu, nebo mít vlastní cenu; na vlastní ceny variant se sleva produktu neuplatní. Objednávka před odesláním obnoví ceny katalogu a dopravy a požádá zákazníka o kontrolu změn.
 
+## Stavy objednávky
+
+Vytvořená objednávka je ve stavu `new`. `OrderStatusService` mění její stav podle `OrderStatus` a zaplacení zvlášť:
+
+| Stav | Může přejít na |
+| --- | --- |
+| `new` | `processing`, `cancelled` |
+| `processing` | `shipped`, `cancelled` |
+| `shipped` | `completed` |
+| `completed`, `cancelled` | — |
+
+```php
+$orderStatusService->change($orderId, OrderStatus::Shipped);
+$orderStatusService->markPaid($orderId); // paid_at, false when already paid
+```
+
+Nepovolená změna vyhodí `OrderStatusException`. Zrušení vrátí objednané zboží na sklad a použití slevového kódu. Zaplacení se eviduje odděleně od stavu (`paid_at`), protože převodem se platí před odesláním a dobírkou až po něm.
+
 ## Události
 
 Pro úpravu chování zaregistrujte posluchače u služby `EventDispatcher`:
@@ -215,6 +234,7 @@ Pro úpravu chování zaregistrujte posluchače u služby `EventDispatcher`:
 - `CartItemChanged` a `CartItemRemoved` — reakce na změny košíku.
 - `CustomerUpdated` a `DeliveryOptionsChanged` — reakce na změny v objednávce.
 - `OrderPlaced` — reakce po uložení objednávky.
+- `OrderStatusChanged` — reakce po změně stavu objednávky (např. e-mail o odeslání).
 
 Posluchači běží synchronně. Chyba posluchače `OrderPlaced` se zaloguje a uloženou objednávku nevrátí.
 

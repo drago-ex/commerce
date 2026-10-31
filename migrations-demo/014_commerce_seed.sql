@@ -22,8 +22,8 @@ ON DUPLICATE KEY UPDATE
     price = VALUES(price);
 
 INSERT INTO customers (id, email, phone, name, surname, street, city, postal_code, country, note, created_at) VALUES
-(1, 'jan.novak@example.com', '+420777123456', 'Jan', 'Novák', 'Hlavní 123', 'Praha', '11000', 'Česká republika', '', '2025-05-30 10:00:00'),
-(2, 'petra.svobodova@example.com', '+420777654321', 'Petra', 'Svobodová', 'Náměstí 45', 'Brno', '60200', 'Česká republika', 'Zákazník preferuje dodání po poledni', '2025-05-31 09:30:00')
+(1, 'jan.novak@example.com', '+420777123456', 'Jan', 'Novák', 'Hlavní 123', 'Praha', '11000', 'CZ', '', '2025-05-30 10:00:00'),
+(2, 'petra.svobodova@example.com', '+420777654321', 'Petra', 'Svobodová', 'Náměstí 45', 'Brno', '60200', 'CZ', 'Zákazník preferuje dodání po poledni', '2025-05-31 09:30:00')
 ON DUPLICATE KEY UPDATE
     email = VALUES(email),
     phone = VALUES(phone),
@@ -64,8 +64,8 @@ ON DUPLICATE KEY UPDATE
     stock = VALUES(stock);
 
 INSERT INTO orders (id, customer_id, carrier_id, carrier_name, payment_id, payment_name, carrier_price, payment_price, subtotal_price, total_price, discount_code, discount_amount, currency, created_at, status) VALUES
-(1, 1, 1, 'DHL', 2, 'Dobírka', 150.00, 50.00, 1000.00, 1200.00, NULL, 0.00, 'CZK', '2025-06-01 12:00:00', 'pending'),
-(2, 2, 3, 'Osobní odběr', 1, 'Platba kartou', 0.00, 0.00, 399.00, 399.00, NULL, 0.00, 'CZK', '2025-06-02 15:30:00', 'pending')
+(1, 1, 1, 'DHL', 2, 'Dobírka', 150.00, 50.00, 1000.00, 1200.00, NULL, 0.00, 'CZK', '2025-06-01 12:00:00', 'new'),
+(2, 2, 3, 'Osobní odběr', 1, 'Platba kartou', 0.00, 0.00, 399.00, 399.00, NULL, 0.00, 'CZK', '2025-06-02 15:30:00', 'new')
 ON DUPLICATE KEY UPDATE
     customer_id = VALUES(customer_id),
     carrier_id = VALUES(carrier_id),

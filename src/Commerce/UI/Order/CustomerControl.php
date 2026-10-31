@@ -19,6 +19,7 @@ use Drago\Commerce\UI\BaseForm;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
+use function is_string;
 
 
 /** @property-read CustomerTemplate $template */
@@ -67,38 +68,41 @@ class CustomerControl extends BaseControl
 	/** @throws AbortException */
 	public function processCustomerDetailsForm(Form $form, CustomerValues $data): void
 	{
-		try {
-			$regionCode = $data->phone->getRegionCode();
-			$postCode = ($this->commerce->getPostCodeOnRegionPhone() && $regionCode !== null)
-				? (new PostcodeFormatter)->format($regionCode, $data->postalCode)
-				: $data->postalCode;
-
-			$customer = new Customer(
-				email: $data->email,
-				phone: $data->phone,
-				name: $data->name,
-				surname: $data->surname,
-				street: $data->street,
-				city: $data->city,
-				postalCode: $postCode,
-				country: $data->country,
-				note: $data->note,
-			);
-
-			$this->orderSession->setCustomer($customer);
-			$this->eventDispatcher->dispatch(new CustomerUpdated($customer));
-			$this->addRedirect($this->linkRedirectTarget);
-
-		} catch (InvalidPostcodeException|UnknownCountryException) {
-			$form->addError('The postal code does not match the same region as the phone number.');
+		$postCode = $data->postalCode;
+		if ($this->commerce->getValidatePostCode()) {
+			try {
+				$postCode = (new PostcodeFormatter)->format($data->country, $data->postalCode);
+			} catch (InvalidPostcodeException) {
+				$form->addError('The postal code is not valid for the chosen country.');
+				return;
+			} catch (UnknownCountryException) {
+				// brick/postcode does not know the format of the country, so the postal code stays as written
+			}
 		}
+
+		$customer = new Customer(
+			email: $data->email,
+			phone: $data->phone,
+			name: $data->name,
+			surname: $data->surname,
+			street: $data->street,
+			city: $data->city,
+			postalCode: $postCode,
+			country: $data->country,
+			note: $data->note,
+		);
+
+		$this->orderSession->setCustomer($customer);
+		$this->eventDispatcher->dispatch(new CustomerUpdated($customer));
+		$this->addRedirect($this->linkRedirectTarget);
 	}
 
 
 	/** @throws InvalidDatabaseException */
 	protected function createComponentCustomer(): BaseForm
 	{
-		$form = $this->customerFactory->addCustomer($this->translator);
+		$lang = $this->getPresenter()->getParameter('lang');
+		$form = $this->customerFactory->addCustomer($this->translator, is_string($lang) ? $lang : null);
 		$form->onSuccess[] = $this->processCustomerDetailsForm(...);
 
 		return $form;

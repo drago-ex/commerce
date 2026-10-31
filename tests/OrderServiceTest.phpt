@@ -160,8 +160,8 @@ try {
 
 	Assert::true($placement->orderId > 0);
 	Assert::same($successCustomerId, $placement->orderSummary->customerId);
-	Assert::same(490.0, $placement->orderSummary->subtotalPrice);
-	Assert::same(640.0, $placement->orderSummary->totalPrice);
+	Assert::same('490.00', $placement->orderSummary->subtotalPrice);
+	Assert::same('640.00', $placement->orderSummary->totalPrice);
 	Assert::same(
 		$stockBefore - 1,
 		(int) $connection->query(

@@ -27,8 +27,7 @@ class CustomerValues extends ArrayHash
 		SurnameSize = 255,
 		StreetSize = 255,
 		CitySize = 255,
-		PostalCodeSize = 20,
-		CountrySize = 255;
+		PostalCodeSize = 20;
 
 	public int $id;
 	public string $email;

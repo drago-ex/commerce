@@ -6,6 +6,7 @@ services:
 	- Drago\Commerce\Service\DiscountCodeService
 	- Drago\Commerce\Service\OrderSession
 	- Drago\Commerce\Service\OrderService
+	- Drago\Commerce\Service\OrderStatusService
 	- Drago\Commerce\Service\ShoppingCartSession
 
 	- Drago\Commerce\Domain\Customer\CustomerRepository

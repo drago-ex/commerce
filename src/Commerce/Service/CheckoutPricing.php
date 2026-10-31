@@ -6,7 +6,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Delivery\CarrierMapper;
 use Drago\Commerce\Domain\Delivery\CarrierRepository;
 use Drago\Commerce\Domain\Delivery\PaymentMapper;
@@ -45,7 +44,6 @@ readonly class CheckoutPricing
 	 *
 	 * @return list<string> Names of the products whose price changed.
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
 	 * @throws MathException
@@ -93,7 +91,6 @@ readonly class CheckoutPricing
 	 *
 	 * @return bool True when the selection changed.
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
 	 * @throws MathException

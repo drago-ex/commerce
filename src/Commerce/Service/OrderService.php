@@ -9,7 +9,6 @@ use Brick\PhoneNumber\PhoneNumberFormat;
 use DateTimeImmutable;
 use Dibi\Connection;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Domain\Customer\CustomerRepository;
 use Drago\Commerce\Domain\Delivery\Carrier;
@@ -75,7 +74,7 @@ readonly class OrderService
 			throw new InvalidArgumentException('The order total does not match the subtotal, discount, delivery and payment.');
 		}
 
-		$connection = $this->orderRepository->getConnection();
+		$connection = $this->orderRepository->table->getConnection();
 		$connection->begin();
 
 		try {
@@ -97,8 +96,8 @@ readonly class OrderService
 				paymentName: mb_substr($payment->name, 0, 100),
 			);
 
-			$this->orderRepository->save((array) $orderData);
-			$orderId = $this->orderRepository->getInsertId();
+			$this->orderRepository->table->save((array) $orderData);
+			$orderId = $this->orderRepository->table->getInsertId();
 
 			$this->stockReservation->reserve($items);
 			$this->saveProducts($orderId, $items);
@@ -116,10 +115,7 @@ readonly class OrderService
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws Exception */
 	private function saveCustomer(Customer $customer): int
 	{
 		$phone = $customer->phone instanceof PhoneNumber
@@ -138,21 +134,20 @@ readonly class OrderService
 			note: $customer->note,
 		);
 
-		$this->customerRepository->save((array) $customerData);
-		return $this->customerRepository->getInsertId();
+		$this->customerRepository->table->save((array) $customerData);
+		return $this->customerRepository->table->getInsertId();
 	}
 
 
 	/**
 	 * @param ProductCart[] $items
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	private function saveProducts(int $orderId, array $items): void
 	{
 		foreach ($items as $item) {
 			$orderProduct = OrderProduct::fromCartItem($orderId, $item);
-			$this->orderProductsRepository->insert((array) $orderProduct)->execute();
+			$this->orderProductsRepository->table->insert((array) $orderProduct)->execute();
 		}
 	}
 

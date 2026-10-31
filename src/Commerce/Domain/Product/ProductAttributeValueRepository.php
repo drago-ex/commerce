@@ -4,21 +4,24 @@ namespace Drago\Commerce\Domain\Product;
 
 use Dibi\Connection;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /** Repository for reading predefined attribute values (e.g. "Modrá", "M"). */
-#[Table(ProductAttributeValueEntity::Table, ProductAttributeValueEntity::PrimaryKey, entity: ProductAttributeValueEntity::class)]
-class ProductAttributeValueRepository
+readonly class ProductAttributeValueRepository
 {
-	/** @use Database<ProductAttributeValueEntity> */
-	use Database;
+	/** @var Table<ProductAttributeValueEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table(
+			$db,
+			ProductAttributeValueEntity::Table,
+			ProductAttributeValueEntity::PrimaryKey,
+			ProductAttributeValueEntity::class,
+		);
 	}
 
 
@@ -26,12 +29,11 @@ class ProductAttributeValueRepository
 	 * Returns all predefined values for a given attribute.
 	 *
 	 * @return ProductAttributeValueEntity[]
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getByAttribute(int $attributeId): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->where(ProductAttributeValueEntity::AttributeId, '= ?', $attributeId)
 			->orderBy(ProductAttributeValueEntity::Value)
 			->recordAll();

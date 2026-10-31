@@ -8,7 +8,6 @@ use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeRepository;
@@ -47,7 +46,6 @@ class DiscountCodeService
 	 * Applies a valid discount code to the current cart session.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function apply(string $code): bool
 	{
@@ -81,7 +79,6 @@ class DiscountCodeService
 	 * the order) rather than silently ignoring it.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function consume(?DiscountCodeEntity $discountCode = null): bool
 	{
@@ -94,10 +91,7 @@ class DiscountCodeService
 	}
 
 
-	/**
-	 * @throws Exception
-	 * @throws AttributeDetectionException
-	 */
+	/** @throws Exception */
 	public function getCode(): ?DiscountCodeEntity
 	{
 		$code = $this->sessionSection->get(self::Code);
@@ -121,7 +115,6 @@ class DiscountCodeService
 
 	/**
 	 * @throws MoneyMismatchException
-	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
 	 * @throws MathException

@@ -7,7 +7,6 @@ use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\PriceResolver;
 use Drago\Commerce\Domain\Product\ProductEntity;
@@ -44,7 +43,6 @@ class ProductControl extends BaseControl
 
 	/**
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MathException
 	 */
@@ -87,7 +85,6 @@ class ProductControl extends BaseControl
 	 * calculating its final price, and adding it to the cart.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
 	 * @throws MathException
@@ -155,7 +152,6 @@ class ProductControl extends BaseControl
 	 * with variants has to be bought through one of them on its detail page.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	private function validateProduct(?ProductEntity $product): void
 	{

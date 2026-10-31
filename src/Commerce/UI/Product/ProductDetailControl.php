@@ -8,7 +8,6 @@ use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\PriceResolver;
 use Drago\Commerce\Domain\Product\ProductEntity;
@@ -68,7 +67,6 @@ class ProductDetailControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws JsonException
@@ -133,7 +131,6 @@ class ProductDetailControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
@@ -198,7 +195,6 @@ class ProductDetailControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MathException
@@ -291,7 +287,6 @@ class ProductDetailControl extends BaseControl
 
 	/**
 	 * @return list<ProductVariantOption>
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MathException

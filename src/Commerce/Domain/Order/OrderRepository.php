@@ -4,19 +4,18 @@ namespace Drago\Commerce\Domain\Order;
 
 use Dibi\Connection;
 use Dibi\Row;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /** Repository for persisting order records. */
-#[Table('orders', 'id')]
-class OrderRepository
+readonly class OrderRepository
 {
-	/** @use Database<Row> */
-	use Database;
+	/** @var Table<Row> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, 'orders', 'id');
 	}
 }

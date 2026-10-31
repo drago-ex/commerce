@@ -6,7 +6,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Order\ItemUnavailableException;
 use Drago\Commerce\Domain\Order\OrderException;
 use Drago\Commerce\Domain\Order\OrderFingerprint;
@@ -50,7 +49,6 @@ class SummaryOrderControl extends BaseControl
 	 * @throws MathException
 	 * @throws JsonException
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function render(): void
 	{
@@ -94,7 +92,6 @@ class SummaryOrderControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws MoneyMismatchException
 	 * @throws UnknownCurrencyException

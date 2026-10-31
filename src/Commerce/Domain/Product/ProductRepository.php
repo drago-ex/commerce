@@ -5,21 +5,19 @@ namespace Drago\Commerce\Domain\Product;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /** Repository for reading product data from the database. */
-#[Table(ProductEntity::Table, ProductEntity::PrimaryKey, entity: ProductEntity::class)]
 class ProductRepository
 {
-	/** @use Database<ProductEntity> */
-	use Database;
+	/** @var Table<ProductEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, ProductEntity::Table, ProductEntity::PrimaryKey, ProductEntity::class);
 	}
 
 
@@ -27,11 +25,10 @@ class ProductRepository
 	 * Returns a single product entity by its ID, or null if not found.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getOne(int $id): ?ProductEntity
 	{
-		return $this->get($id)
+		return $this->table->get($id)
 			->record();
 	}
 
@@ -40,11 +37,10 @@ class ProductRepository
 	 * Returns the number of active products.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function countActive(): int
 	{
-		return $this->count([ProductEntity::Active => true]);
+		return $this->table->count([ProductEntity::Active => true]);
 	}
 
 
@@ -53,11 +49,10 @@ class ProductRepository
 	 *
 	 * @return ProductEntity[]
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getPage(int $limit, int $offset): array
 	{
-		$query = $this->read('*')
+		$query = $this->table->read('*')
 			->where(ProductEntity::Active, '= ?', 1)
 			->orderBy(ProductEntity::PrimaryKey);
 
@@ -71,12 +66,11 @@ class ProductRepository
 	 * Returns all active products.
 	 *
 	 * @return ProductEntity[]
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getAll(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->where(ProductEntity::Active, '= ?', 1)
 			->recordAll();
 	}
@@ -94,11 +88,10 @@ class ProductRepository
 	 * order) — in that case, no row was modified.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function decrementStock(int $id, int $amount): bool
 	{
-		return $this->command()
+		return $this->table->command()
 			->update(ProductEntity::Table)
 			->set('%n = %n - %i', ProductEntity::Stock, ProductEntity::Stock, $amount)
 			->where('%n = ?', ProductEntity::PrimaryKey, $id)

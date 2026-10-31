@@ -6,7 +6,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Dibi\Exception;
 use Drago\Application\UI\Alert;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
@@ -43,7 +42,6 @@ class SummaryCartControl extends BaseControl
 	 * @throws MoneyMismatchException
 	 * @throws InvalidLinkException
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws MathException
 	 */
 	public function render(): void
@@ -80,7 +78,6 @@ class SummaryCartControl extends BaseControl
 	/**
 	 * @throws AbortException
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws MoneyMismatchException
 	 * @throws MathException
 	 */
@@ -109,7 +106,6 @@ class SummaryCartControl extends BaseControl
 	 * add a product or variant at a price it was never offered for.
 	 *
 	 * @throws AbortException
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws MathException
 	 */
@@ -242,7 +238,6 @@ class SummaryCartControl extends BaseControl
 	 * Returns how many pieces can currently be bought, or null when the
 	 * product or variant is gone, inactive, or needs a variant that is missing.
 	 *
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	private function getAvailableStock(int $productId, ?int $variantId): ?int

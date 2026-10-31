@@ -4,19 +4,18 @@ namespace Drago\Commerce\Domain\Customer;
 
 use Dibi\Connection;
 use Dibi\Row;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /** Repository for persisting customer data. */
-#[Table('customers', 'id')]
-class CustomerRepository
+readonly class CustomerRepository
 {
-	/** @use Database<Row> */
-	use Database;
+	/** @var Table<Row> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, 'customers', 'id');
 	}
 }

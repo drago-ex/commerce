@@ -5,24 +5,22 @@ namespace Drago\Commerce\Domain\Product;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /**
  * Repository for reading product variants and their attribute labels, and
  * for atomically decrementing a variant's stock at checkout.
  */
-#[Table(ProductVariantEntity::Table, ProductVariantEntity::PrimaryKey, entity: ProductVariantEntity::class)]
 class ProductVariantRepository
 {
-	/** @use Database<ProductVariantEntity> */
-	use Database;
+	/** @var Table<ProductVariantEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, ProductVariantEntity::Table, ProductVariantEntity::PrimaryKey, ProductVariantEntity::class);
 	}
 
 
@@ -30,11 +28,10 @@ class ProductVariantRepository
 	 * Returns a single variant by its ID, or null if not found.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getOne(int $id): ?ProductVariantEntity
 	{
-		return $this->get($id)
+		return $this->table->get($id)
 			->record();
 	}
 
@@ -43,12 +40,11 @@ class ProductVariantRepository
 	 * Returns all active variants of a product.
 	 *
 	 * @return ProductVariantEntity[]
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getForProduct(int $productId): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->where(ProductVariantEntity::ProductId, '= ?', $productId)
 			->and(ProductVariantEntity::Active, '= ?', 1)
 			->orderBy(ProductVariantEntity::PrimaryKey)
@@ -61,11 +57,10 @@ class ProductVariantRepository
 	 * only be bought through a variant; its own stock and price are not used.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function hasActive(int $productId): bool
 	{
-		return $this->count([
+		return $this->table->count([
 			ProductVariantEntity::ProductId => $productId,
 			ProductVariantEntity::Active => true,
 		]) > 0;
@@ -80,7 +75,6 @@ class ProductVariantRepository
 	 * @param list<int>|null $productIds
 	 * @return array<int, ProductVariantSummary>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getSummaries(?array $productIds = null): array
 	{
@@ -88,7 +82,7 @@ class ProductVariantRepository
 			return [];
 		}
 
-		$query = $this->command()
+		$query = $this->table->command()
 			->select('%n', ProductVariantEntity::ProductId)
 			->select('%n', ProductVariantEntity::Price)
 			->select('%n', ProductVariantEntity::Stock)
@@ -123,11 +117,10 @@ class ProductVariantRepository
 	 *
 	 * @return array<int, list<array{attribute: string, value: string, valueId: int}>>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getAttributesForProduct(int $productId): array
 	{
-		$rows = $this->command()
+		$rows = $this->table->command()
 			->select('vv.variant_id AS variant_id')
 			->select('a.name AS attribute')
 			->select('v.value AS value')
@@ -164,11 +157,10 @@ class ProductVariantRepository
 	 *
 	 * @return list<string>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getLabels(int $variantId): array
 	{
-		$rows = $this->command()
+		$rows = $this->table->command()
 			->select('a.name AS attribute')
 			->select('v.value AS value')
 			->from('product_variant_values vv')
@@ -194,11 +186,10 @@ class ProductVariantRepository
 	 *
 	 * @return list<int>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getAttributeValueIds(int $variantId): array
 	{
-		$rows = $this->command()
+		$rows = $this->table->command()
 			->select('vv.attribute_value_id')
 			->from('product_variant_values vv')
 			->innerJoin('product_attribute_values v')
@@ -223,11 +214,10 @@ class ProductVariantRepository
 	 *
 	 * @return list<array{id: int, name: string, values: list<array{id: int, value: string}>}>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getProductAttributeGroups(int $productId): array
 	{
-		$rows = $this->command()
+		$rows = $this->table->command()
 			->select('DISTINCT a.id AS attribute_id')
 			->select('a.name AS attribute_name')
 			->select('v.id AS value_id')
@@ -272,11 +262,10 @@ class ProductVariantRepository
 	 * instead of the product row.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function decrementStock(int $id, int $amount): bool
 	{
-		return $this->command()
+		return $this->table->command()
 			->update(ProductVariantEntity::Table)
 			->set('%n = %n - %i', ProductVariantEntity::Stock, ProductVariantEntity::Stock, $amount)
 			->where('%n = ?', ProductVariantEntity::PrimaryKey, $id)

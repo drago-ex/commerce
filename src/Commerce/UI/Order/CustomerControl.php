@@ -8,7 +8,6 @@ use Brick\Postcode\Exception\InvalidPostcodeException;
 use Brick\Postcode\Exception\UnknownCountryException;
 use Brick\Postcode\PostcodeFormatter;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\Customer\Customer;
 use Drago\Commerce\Event\CustomerUpdated;
@@ -38,7 +37,6 @@ class CustomerControl extends BaseControl
 	/**
 	 * Renders the customer form, pre-filling it with session data if available.
 	 *
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws MoneyMismatchException
 	 * @throws MathException

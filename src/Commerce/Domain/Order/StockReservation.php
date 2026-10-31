@@ -3,7 +3,6 @@
 namespace Drago\Commerce\Domain\Order;
 
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Product\ProductCart;
 use Drago\Commerce\Domain\Product\ProductRepository;
 use Drago\Commerce\Domain\Product\ProductVariantRepository;
@@ -30,7 +29,6 @@ readonly class StockReservation
 	 * @param ProductCart[] $items
 	 * @throws OrderException An item is unavailable or out of stock.
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function reserve(array $items): void
 	{

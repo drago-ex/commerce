@@ -6,22 +6,21 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Connection;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /** Repository for reading payment method data from the database. */
-#[Table(PaymentEntity::Table, PaymentEntity::PrimaryKey, entity: PaymentEntity::class)]
 class PaymentRepository
 {
-	/** @use Database<PaymentEntity> */
-	use Database;
+	/** @var Table<PaymentEntity> */
+	public Table $table;
+
 
 	public function __construct(
-		private readonly Connection $connection,
+		Connection $db,
 		private readonly PaymentMapper $payment,
 	) {
+		$this->table = new Table($db, PaymentEntity::Table, PaymentEntity::PrimaryKey, PaymentEntity::class);
 	}
 
 
@@ -29,11 +28,10 @@ class PaymentRepository
 	 * Returns a map of payment IDs to themselves.
 	 *
 	 * @return array<int|string, int|string>
-	 * @throws AttributeDetectionException
 	 */
 	public function getOnlyIds(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->fetchPairs(PaymentEntity::PrimaryKey, PaymentEntity::PrimaryKey);
 	}
 
@@ -41,12 +39,11 @@ class PaymentRepository
 	/**
 	 * Returns a single payment entity by its ID, or null if not found.
 	 *
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getOne(int $id): ?PaymentEntity
 	{
-		return $this->get($id)
+		return $this->table->get($id)
 			->record();
 	}
 
@@ -55,7 +52,6 @@ class PaymentRepository
 	 * Returns all payment methods mapped to domain Payment objects.
 	 *
 	 * @return list<Payment>
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MathException
@@ -75,12 +71,11 @@ class PaymentRepository
 	 * Returns all payment entities.
 	 *
 	 * @return list<PaymentEntity>
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	private function getAll(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->recordAll();
 	}
 }

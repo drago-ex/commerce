@@ -6,22 +6,21 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Connection;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
 /** Repository for reading carrier data from the database. */
-#[Table(CarrierEntity::Table, CarrierEntity::PrimaryKey, entity: CarrierEntity::class)]
 class CarrierRepository
 {
-	/** @use Database<CarrierEntity> */
-	use Database;
+	/** @var Table<CarrierEntity> */
+	public Table $table;
+
 
 	public function __construct(
-		private readonly Connection $connection,
+		Connection $db,
 		private readonly CarrierMapper $carrier,
 	) {
+		$this->table = new Table($db, CarrierEntity::Table, CarrierEntity::PrimaryKey, CarrierEntity::class);
 	}
 
 
@@ -29,11 +28,10 @@ class CarrierRepository
 	 * Returns a map of carrier IDs to themselves.
 	 *
 	 * @return array<int|string, int|string>
-	 * @throws AttributeDetectionException
 	 */
 	public function getOnlyIds(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->fetchPairs(CarrierEntity::PrimaryKey, CarrierEntity::PrimaryKey);
 	}
 
@@ -41,12 +39,11 @@ class CarrierRepository
 	/**
 	 * Returns a single carrier entity by its ID, or null if not found.
 	 *
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getOne(int $id): ?CarrierEntity
 	{
-		return $this->get($id)
+		return $this->table->get($id)
 			->record();
 	}
 
@@ -55,12 +52,11 @@ class CarrierRepository
 	 * Returns all carrier entities.
 	 *
 	 * @return list<CarrierEntity>
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function getAll(): array
 	{
-		return $this->read('*')
+		return $this->table->read('*')
 			->recordAll();
 	}
 
@@ -69,7 +65,6 @@ class CarrierRepository
 	 * Returns all carriers mapped to domain Carrier objects.
 	 *
 	 * @return list<Carrier>
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MathException

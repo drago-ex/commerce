@@ -5,20 +5,18 @@ namespace Drago\Commerce\Domain\Product;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Row;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
-#[Table('product_images')]
-class ProductImageRepository
+readonly class ProductImageRepository
 {
-	/** @use Database<Row> */
-	use Database;
+	/** @var Table<Row> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, 'product_images');
 	}
 
 
@@ -27,11 +25,10 @@ class ProductImageRepository
 	 *
 	 * @return list<string>
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function getForProduct(int $productId): array
 	{
-		$rows = $this->read('image')
+		$rows = $this->table->read('image')
 			->where('product_id = ?', $productId)
 			->orderBy('position')
 			->orderBy('id')

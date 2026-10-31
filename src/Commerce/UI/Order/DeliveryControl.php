@@ -6,7 +6,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Domain\Delivery\CarrierMapper;
 use Drago\Commerce\Domain\Delivery\CarrierRepository;
 use Drago\Commerce\Domain\Delivery\PaymentMapper;
@@ -41,7 +40,6 @@ class DeliveryControl extends BaseControl
 
 
 	/**
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 * @throws UnknownCurrencyException
 	 * @throws MoneyMismatchException
@@ -78,7 +76,6 @@ class DeliveryControl extends BaseControl
 
 	/**
 	 * @throws AbortException
-	 * @throws AttributeDetectionException
 	 * @throws UnknownCurrencyException
 	 * @throws Exception
 	 * @throws BadRequestException
@@ -104,7 +101,6 @@ class DeliveryControl extends BaseControl
 	}
 
 
-	/** @throws AttributeDetectionException */
 	protected function createComponentDelivery(): BaseForm
 	{
 		$form = $this->factory->create($this->translator);

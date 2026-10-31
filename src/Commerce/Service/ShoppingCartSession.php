@@ -7,7 +7,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Dibi\Exception;
-use Drago\Attr\AttributeDetectionException;
 use Drago\Commerce\Commerce;
 use Drago\Commerce\Domain\DiscountCode\DiscountCodeEntity;
 use Drago\Commerce\Domain\Product\Product;
@@ -60,7 +59,6 @@ class ShoppingCartSession
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws MathException
 	 */
 	public function getTotalPrice(?DiscountCodeEntity $discountCode = null): Money
@@ -116,7 +114,6 @@ class ShoppingCartSession
 	 *
 	 * @throws MoneyMismatchException If currencies don't match during calculation.
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 * @throws MathException
 	 */
 	public function getTotals(): CartTotals

@@ -111,7 +111,7 @@ try {
 	Assert::false($variantRepository->decrementStock(17, 3));
 	Assert::same(2, (int) $connection->query('SELECT stock FROM product_variants WHERE id = %i', 17)->fetchSingle());
 
-	$orderRepository->save((array) new OrderSummary(
+	$orderRepository->table->save((array) new OrderSummary(
 		customerId: 1,
 		carrierId: 1,
 		paymentId: 1,
@@ -123,7 +123,7 @@ try {
 		discountAmount: 0,
 		createdAt: new DateTimeImmutable,
 	));
-	$orderId = $orderRepository->getInsertId();
+	$orderId = $orderRepository->table->getInsertId();
 
 	$firstVariant = new ProductCart(
 		new Product(id: 4, name: 'Herní notebook ASUS ROG Strix', price: Money::of(32490, 'CZK')),
@@ -141,7 +141,7 @@ try {
 	);
 
 	foreach ([$firstVariant, $secondVariant, $regularProduct] as $cartItem) {
-		$orderProductsRepository
+		$orderProductsRepository->table
 			->insert((array) OrderProduct::fromCartItem($orderId, $cartItem))
 			->execute();
 	}
@@ -161,7 +161,7 @@ try {
 	));
 
 	Assert::exception(
-		fn() => $orderProductsRepository->insert([
+		fn() => $orderProductsRepository->table->insert([
 			'order_id' => $orderId,
 			'product_id' => 4,
 			'variant_id' => 17,
@@ -172,7 +172,7 @@ try {
 	);
 
 	Assert::exception(
-		fn() => $orderProductsRepository->insert([
+		fn() => $orderProductsRepository->table->insert([
 			'order_id' => $orderId,
 			'product_id' => 2,
 			'variant_id' => 17,

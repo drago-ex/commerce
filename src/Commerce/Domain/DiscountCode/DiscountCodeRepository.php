@@ -5,27 +5,24 @@ namespace Drago\Commerce\Domain\DiscountCode;
 use Dibi\Connection;
 use Dibi\Exception;
 use Dibi\Fluent;
-use Drago\Attr\AttributeDetectionException;
-use Drago\Attr\Table;
-use Drago\Database\Database;
+use Drago\Database\Table;
 
 
-#[Table(DiscountCodeEntity::Table, DiscountCodeEntity::PrimaryKey, entity: DiscountCodeEntity::class)]
 class DiscountCodeRepository
 {
-	/** @use Database<DiscountCodeEntity> */
-	use Database;
+	/** @var Table<DiscountCodeEntity> */
+	public Table $table;
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+
+	public function __construct(Connection $db)
+	{
+		$this->table = new Table($db, DiscountCodeEntity::Table, DiscountCodeEntity::PrimaryKey, DiscountCodeEntity::class);
 	}
 
 
 	/**
 	 * Returns a currently usable discount code.
 	 *
-	 * @throws AttributeDetectionException
 	 * @throws Exception
 	 */
 	public function findValid(string $code): ?DiscountCodeEntity
@@ -35,7 +32,7 @@ class DiscountCodeRepository
 			return null;
 		}
 
-		return $this->read('*')
+		return $this->table->read('*')
 			->where('code = ?', $code)
 			->where('active = ?', 1)
 			->where('(valid_from IS NULL OR valid_from <= NOW())')
@@ -56,11 +53,10 @@ class DiscountCodeRepository
 	 * no longer be used by the time the order was placed.
 	 *
 	 * @throws Exception
-	 * @throws AttributeDetectionException
 	 */
 	public function incrementUsage(int $id): bool
 	{
-		return $this->command()
+		return $this->table->command()
 			->update(DiscountCodeEntity::Table)
 			->set('%n = %n + 1', 'used_count', 'used_count')
 			->where('%n = ?', DiscountCodeEntity::PrimaryKey, $id)

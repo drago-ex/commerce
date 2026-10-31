@@ -44,11 +44,7 @@ class ProductRepository
 	 */
 	public function countActive(): int
 	{
-		return (int) $this->command()
-			->select('COUNT(*)')
-			->from(ProductEntity::Table)
-			->where('%n = ?', ProductEntity::Active, 1)
-			->fetchSingle();
+		return $this->count([ProductEntity::Active => true]);
 	}
 
 

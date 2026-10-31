@@ -65,12 +65,10 @@ class ProductVariantRepository
 	 */
 	public function hasActive(int $productId): bool
 	{
-		return (int) $this->command()
-			->select('COUNT(*)')
-			->from(ProductVariantEntity::Table)
-			->where('%n = ?', ProductVariantEntity::ProductId, $productId)
-			->where('%n = ?', ProductVariantEntity::Active, 1)
-			->fetchSingle() > 0;
+		return $this->count([
+			ProductVariantEntity::ProductId => $productId,
+			ProductVariantEntity::Active => true,
+		]) > 0;
 	}
 
 
